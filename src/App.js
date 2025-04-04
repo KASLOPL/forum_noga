@@ -1,22 +1,32 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 
 function App() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    alert(`Wysłano: ${name}, ${email}`);
+  };
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload. Nigger
-        </p>
-        <a
-          className="App-link"
-          href="https://X.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Dont Learn React
-        </a>
+        <h1>Prosty Formularz</h1>
+        <form onSubmit={handleSubmit}>
+          <label>
+            Imię:
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+          </label>
+          <br />
+          <label>
+            Email:
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </label>
+          <br />
+          <button type="submit">Wyślij</button>
+        </form>
       </header>
     </div>
   );
