@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './App.css';
 
-function App() {
+function Logowanie() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
 
@@ -10,10 +11,12 @@ function App() {
     alert(`Wysłano: ${name}, ${email}`);
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Prosty Formularz</h1>
+        <h1>Logowanie</h1>
         <form onSubmit={handleSubmit}>
           <label>
             Imię:
@@ -25,11 +28,17 @@ function App() {
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </label>
           <br />
-          <button type="submit">Wyślij</button>
+          <button type="submit">Zaloguj się</button>
         </form>
+        <button 
+          onClick={() => navigate('/rejestracja')}
+          style={{ marginTop: '20px' }}
+        >
+          Zarejestruj się
+        </button>
       </header>
     </div>
   );
 }
 
-export default App;
+export default Logowanie;
