@@ -7,6 +7,7 @@ import Rejestracja from './rejestracja';
 import Main from './main';
 import AddQuestion from './addquestion';
 import Zakladki from './zakładki';
+import Settings from './settings';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -19,6 +20,7 @@ root.render(
         <Route path="/main" element={<Main />} />
         <Route path="/addquestion" element={<AddQuestion />} />
         <Route path="/zakładki" element={<Zakladki />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

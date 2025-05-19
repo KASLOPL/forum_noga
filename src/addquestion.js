@@ -34,7 +34,7 @@ function AddQuestion() {
           <li>My Questions</li>
           <li><button onClick={() => navigate('/zakładki')}>Bookmarks</button></li>
           <li>Activity & Stats</li>
-          <li>Settings</li>
+          <li><button onClick={() => navigate('/settings')}>Settings</button></li>
           <li>Help & FAQ</li>
         </ul>
         <div className="user-info">

@@ -19,19 +19,18 @@ function Zakladki() {
       }
     }, [navigate]);
   
-
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
       {/* Sidebar */}
       <div style={{ width: '220px', borderRight: '1px solid #ccc', padding: '20px' }}>
         <h2>SnapSolve</h2>
         <button onClick={() => navigate('/addquestion')}>Add question</button><br /><br />
-        <button onClick={() => navigate('/main')}></button><br /><br />
+        <button onClick={() => navigate('/main')}>Home</button><br /><br />
         <button>Notifications</button><br /><br />
         <button>Specialist</button><br /><br />
         <button>My Questions</button><br /><br />
         <button onClick={() => navigate('/zakładki')}>Bookmarks</button><br /><br />
-        <button>Settings</button><br /><br />
+        <button onClick={() => navigate('/settings')}>Settings</button><br /><br />
         <button>Help & FAQ</button><br /><br /><br /><br /><br /><br /><br /><br /><br />
         <button onClick={handleLogout}>Sign out</button>
       </div>
