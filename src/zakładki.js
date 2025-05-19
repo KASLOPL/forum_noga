@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 
-function Main() {
+function Zakladki() {
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
@@ -26,7 +26,7 @@ function Main() {
       <div style={{ width: '220px', borderRight: '1px solid #ccc', padding: '20px' }}>
         <h2>SnapSolve</h2>
         <button onClick={() => navigate('/addquestion')}>Add question</button><br /><br />
-        <button>Home</button><br /><br />
+        <button onClick={() => navigate('/main')}></button><br /><br />
         <button>Notifications</button><br /><br />
         <button>Specialist</button><br /><br />
         <button>My Questions</button><br /><br />
@@ -38,48 +38,30 @@ function Main() {
 
       {/* Main content */}
       <div style={{ flex: 1, padding: '20px' }}>
-        <h1>Hi, {currentUser?.name || 'Guest'}!</h1>
-        <p>Stuck on a question? SnapSolve connects you with experts for fast, accurate answers—no stress, just solutions!</p>
-
-        {/* Posts */}
-        <div style={{ marginTop: '30px' }}>
-          <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '15px' }}>
-            <p>Post Title Placeholder</p>
-            <p>Tags: [tag1] [tag2]</p>
-            <p>Short description of the post...</p>
-            <p>❤️ 23 👁️ 1284</p>
-          </div>
-
-          <div style={{ border: '1px solid #ccc', padding: '10px' }}>
-            <p>Post Title Placeholder</p>
-            <p>Tags: [tag3] [tag4]</p>
-            <p>Another post description...</p>
-            <p>❤️ 23 👁️ 1284</p>
-          </div>
-        </div>
+        
+       <div style={{background: '#505050', border: '1px solid #ccc', padding: '10px', marginBottom: '15px'}}>
+       <p>dupa dupa zakładeczki</p>
+        </div> 
+        <div style={{background: '#505050', border: '1px solid #ccc', padding: '10px', marginBottom: '15px'}}>
+       <p>dupa dupa zakładeczki</p>
+        </div> 
+        <div style={{background: '#505050', border: '1px solid #ccc', padding: '10px', marginBottom: '15px'}}>
+       <p>dupa dupa zakładeczki</p>
+        </div> 
+        <div style={{background: '#505050', border: '1px solid #ccc', padding: '10px', marginBottom: '15px'}}>
+       <p>dupa dupa zakładeczki</p>
+        </div> 
+        <div style={{background: '#505050', border: '1px solid #ccc', padding: '10px', marginBottom: '15px'}}>
+       <p>dupa dupa zakładeczki</p>
+        </div> 
+        <div style={{background: '#505050', border: '1px solid #ccc', padding: '10px', marginBottom: '15px'}}>
+       <p>dupa dupa zakładeczki</p>
+        </div> 
+        
       </div>
-
-      {/* Right Sidebar */}
-      <div style={{ width: '200px', borderLeft: '1px solid #ccc', padding: '20px' }}>
-        <h3>Top Experts</h3>
-        <ul>
-          <li>Anonymous</li>
-          <li>Anonymous</li>
-          <li>Anonymous</li>
-        </ul>
-
-        <h3>Popular Tags</h3>
-        <ul>
-          <li>Python</li>
-          <li>GitHub</li>
-          <li>Data Structures</li>
-          <li>React.js</li>
-          <li>Java</li>
-          <li>JavaScript</li>
-        </ul>
-      </div>
+      
     </div>
   );
 }
 
-export default Main;
+export default Zakladki;

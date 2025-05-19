@@ -1,24 +1,45 @@
 import React from 'react';
 import './addquestion.css';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 function AddQuestion() {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (!isLoggedIn || isLoggedIn !== 'true') {
+      navigate('/'); // przekierowanie do strony logowania
+    }
+  }, [navigate]);
+
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('currentUser');
+    navigate('/');
+  };
+
   return (
     <div className="container">
       <aside className="sidebar">
         <h2>Snapsolve</h2>
         <ul>
-          <li>Add Question</li>
-          <li>Home</li>
+          <li><button onClick={() => navigate('/addquestion')}>Add question</button></li>
+          <li><button onClick={() => navigate('/main')}>Home</button></li>
           <li>Notifications</li>
           <li>Specialists</li>
           <li>My Questions</li>
+          <li><button onClick={() => navigate('/zakładki')}>Bookmarks</button></li>
           <li>Activity & Stats</li>
           <li>Settings</li>
           <li>Help & FAQ</li>
         </ul>
         <div className="user-info">
-          <p><strong>Basjan Kojko</strong><br />Student</p>
-          <button>Sign out</button>
+          <p><strong>{currentUser?.name || 'Guest'}</strong><br />Student</p>
+          <button onClick={handleLogout}>Sign out</button>
         </div>
       </aside>
 
