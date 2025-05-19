@@ -2,11 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
-import Logowanie from './logowanie';
-import Rejestracja from './rejestracja';
-import Main from './main';
-import AddQuestion from './addquestion';
-import Zakladki from './zakładki';
+import Logowanie from './pages/log_in/logowanie.js';
+import './pages/log_in/logowanie.css';
+
+import Rejestracja from './pages/sing_up/rejestracja.js';
+
+import Main from './pages/main/main.js';
+
+import AddQuestion from './pages/add_question/addquestion.js';
+import './pages/add_question/addquestion.css';
+
+import Zakladki from './pages/bookmarks/zakładki.js';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
