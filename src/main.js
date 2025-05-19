@@ -16,7 +16,7 @@ function Main() {
       {/* Sidebar */}
       <div style={{ width: '220px', borderRight: '1px solid #ccc', padding: '20px' }}>
         <h2>SnapSolve</h2>
-        <button>Add question</button><br /><br />
+        <button onClick={() => navigate('/addquestion')}>Add question</button><br /><br />
         <button>Home</button><br /><br />
         <button>Notifications</button><br /><br />
         <button>Specialist</button><br /><br />

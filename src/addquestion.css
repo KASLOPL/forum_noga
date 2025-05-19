@@ -1,0 +1,86 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .sidebar {
+    width: 220px;
+    background-color: #f0f0f0;
+    padding: 20px;
+  }
+  
+  .sidebar h2 {
+    margin-top: 0;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    margin: 10px 0;
+  }
+  
+  .user-info {
+    margin-top: 40px;
+  }
+  
+  .main-content {
+    flex-grow: 1;
+    padding: 30px;
+    background-color: #ffffff;
+    overflow-y: auto;
+  }
+  
+  .form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .buttons button {
+    margin-left: 10px;
+  }
+  
+  .question-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 30px;
+  }
+  
+  .question-form input,
+  .question-form textarea,
+  .question-form select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+  }
+  
+  .tags span {
+    margin-right: 8px;
+    background: #ddd;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+  
+  .file-upload {
+    background: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ccc;
+  }
+  
+  .post-button {
+    background-color: black;
+    color: white;
+    padding: 10px;
+    border: none;
+    width: 100%;
+  }
+  
