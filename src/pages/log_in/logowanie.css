@@ -182,12 +182,61 @@
     align-items: center;
   }
   
-  .login-image-section img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  .login-image-section {
+    position: relative;
+    width: 400px;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
+  
+  .slider-image {
+    width: 100%;
+    border-radius: 10px;
+    transition: opacity 0.4s ease-in-out;
+    position: relative;
+    z-index: 1;
+    opacity: 1;
+  }
+  
+  .fade-out {
+    opacity: 0;
+  }
+  
+  .fade-in {
+    opacity: 1;
+  }
+  
+  .slider-indicators {
+    position: absolute;
+    bottom: 12px; /* Nachodzą na dolną część obrazka */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    z-index: 10;
+    pointer-events: auto;
+  }
+  
+  .bar {
+    height: 6px;
+    width: 30px;
+    background-color: rgba(128, 128, 128, 0.5);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+    opacity: 0.5;
+  }
+  
+  .bar.active {
+    background-color: #B0B996;
+    opacity: 1;
+  }
+  
+  
   
   /* === Suwak zakładek (Log in / Sign Up) === */
   .tab-switch {
@@ -239,3 +288,35 @@
   .slider.left {
     transform: translateX(0%);
   }
+  img[alt="apple"] {
+    width: 18px;
+    height: 18px;
+  }
+  img[alt="google"] {
+    width: 18px;
+    height: 18px;
+  }
+  img[alt="facebook"] {
+    width: 18px;
+    height: 18px;
+  }
+  img[alt="Login"] {
+    border-radius: round;
+  }
+  .logo-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .snapsolve-logo {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .logo-text {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
