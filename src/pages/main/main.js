@@ -31,7 +31,7 @@ function Main() {
         <button>Specialist</button><br /><br />
         <button>My Questions</button><br /><br />
         <button onClick={() => navigate('/zakładki')}>Bookmarks</button><br /><br />
-        <button>Settings</button><br /><br />
+        <button onClick={() => navigate('/settings')}>Settings</button><br /><br />
         <button>Help & FAQ</button><br /><br /><br /><br /><br /><br /><br /><br /><br />
         <button onClick={handleLogout}>Sign out</button>
       </div>
