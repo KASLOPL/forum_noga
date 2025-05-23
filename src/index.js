@@ -2,14 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
- HEAD
-import Logowanie from './logowanie';
-import Rejestracja from './rejestracja';
-import Main from './main';
-import AddQuestion from './addquestion';
-import Zakladki from './zakładki';
-import Settings from './settings';
-
 import Logowanie from './pages/log_in/logowanie.js';
 import './pages/log_in/logowanie.css';
 
