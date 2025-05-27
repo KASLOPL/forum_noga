@@ -101,6 +101,7 @@ function Main() {
   };
 
   return (
+    <div className="caloscMain">
     <div className="app">
       {/* Header - zawsze widoczny na górze */}
       <header className="header">
@@ -354,6 +355,7 @@ function Main() {
           </div>
         </aside>
       </div>
+    </div>
     </div>
   );
 }
