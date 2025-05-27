@@ -10,6 +10,8 @@ body {
     "Helvetica Neue", sans-serif;
   background-color: #fafafa;
   color: #272d33;
+  /* Ukrywa scrollbar dla całego body, bo teraz przewijamy tylko środkową część */
+  overflow: hidden;
 }
 
 a {
@@ -24,24 +26,28 @@ button {
   font-family: inherit;
 }
 
-/* App container */
+/* App container - ZMIENIONY: teraz zajmuje pełną wysokość ekranu */
 .app {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
-/* Header styles */
+/* Header styles - ZMODYFIKOWANY: fixed height */
 .header {
   background-color: white;
   border-bottom: 1px solid #e7e7e7;
   padding: 8px 16px;
+  flex-shrink: 0; /* Nie pozwala się header zmniejszyć */
+  z-index: 10;
 }
 
 .header-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 64px;
 }
 
 .logo-container {
@@ -75,10 +81,19 @@ button {
   color: #91a160;
 }
 
+/* Search group - bez zmian */
+.search-group {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 800px;
+  margin: 0 16px;
+  gap: 4px;
+}
+
 .search-container {
   flex: 1;
-  max-width: 560px;
-  margin: 0 16px;
+  min-width: 300px;
 }
 
 .search-input-wrapper {
@@ -108,21 +123,13 @@ button {
   color: #9d9d9d;
 }
 
-.header-actions {
+/* Search actions */
+.header-container .search-group .search-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  margin-left: 0px !important;
 }
-.header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 16px;
-  height: 64px;
-  background-color: white;
-  border-bottom: 1px solid #ededed;
-}
-
 
 .add-button {
   background-color: #cacfb9;
@@ -133,6 +140,12 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: 0;
+  transition: background-color 0.2s ease;
+}
+
+.add-button:hover {
+  background-color: #a9b18d;
 }
 
 .sort-dropdown {
@@ -143,10 +156,23 @@ button {
   border-radius: 16px;
   padding: 4px 12px;
   font-size: 14px;
+  margin-left: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.sort-dropdown:hover {
+  background-color: #1a1f24;
 }
 
 .sort-dropdown svg {
   margin-left: 4px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .divider {
@@ -164,12 +190,25 @@ button {
   align-items: center;
   justify-content: center;
   color: #5e5e5e;
+  transition: background-color 0.2s ease;
+}
+
+.icon-button:hover {
+  background-color: #f2f2f2;
 }
 
 .user-profile {
   display: flex;
   align-items: center;
   gap: 8px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.user-profile:hover {
+  background-color: #f2f2f2;
 }
 
 .avatar {
@@ -183,6 +222,12 @@ button {
   color: white;
   font-size: 14px;
   font-weight: 500;
+}
+
+.avatar-small {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
 }
 
 .avatar-placeholder {
@@ -209,24 +254,29 @@ button {
   font-size: 14px;
 }
 
-/* Main container */
+/* Main container - KLUCZOWA ZMIANA: teraz to flex container z fixed height */
 .main-container {
   display: flex;
   flex: 1;
+  height: calc(100vh - 80px); /* Odejmujemy wysokość header */
+  overflow: hidden; /* Blokuje przewijanie na tym poziomie */
 }
 
-/* Sidebar styles */
+/* Sidebar styles - ZMODYFIKOWANY: fixed width i height */
 .sidebar {
   width: 230px;
   border-right: 1px solid #e7e7e7;
   background-color: white;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0; /* Nie pozwala się sidebar zmniejszyć */
+  height: 100%; /* Pełna wysokość dostępnego miejsca */
 }
 
 .sidebar-content {
   flex: 1;
   padding: 16px 0;
+  overflow-y: auto; /* Pozwala przewijać sidebar jeśli potrzeba */
 }
 
 .add-question-button-container {
@@ -245,6 +295,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  transition: background-color 0.2s ease;
 }
 
 .add-question-button:hover {
@@ -268,6 +319,8 @@ button {
   gap: 12px;
   padding: 8px 16px;
   color: #5e5e5e;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
 }
 
 .nav-item:hover {
@@ -290,34 +343,48 @@ button {
 .sidebar-footer {
   padding: 16px;
   border-top: 1px solid #e7e7e7;
+  flex-shrink: 0; /* Footer pozostaje na dole */
 }
 
 .sign-out-button {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #5e5e5e;
+  color: white;
+  background-color: #272D33;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-weight: 500;
   width: 100%;
   text-align: left;
-  padding: 8px;
-  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .sign-out-button:hover {
-  background-color: #f2f2f2;
+  background-color: #8d976c;
 }
 
-/* Main content styles */
+.sign-out-button svg {
+  font-size: 16px;
+}
+
+/* Main content styles - ZMIENIONY: bez scroll, tylko kontener pytań ma scroll */
 .main-content {
   flex: 1;
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden; /* Główna sekcja nie przewija */
 }
 
 .welcome-banner {
   background-color: #cacfb9;
   border-radius: 8px;
   padding: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+  flex-shrink: 0; /* Banner zawsze widoczny */
 }
 
 .welcome-banner h1 {
@@ -334,12 +401,44 @@ button {
   font-size: 14px;
   color: #5e5e5e;
   margin-bottom: 16px;
+  font-weight: 500;
+  flex-shrink: 0; /* Licznik zawsze widoczny */
+}
+
+/* NOWY KONTENER - tylko on ma scroll */
+.question-cards-container {
+  flex: 1;
+  overflow-y: auto; /* TYLKO TUTAJ JEST SCROLL */
+  padding-right: 4px; /* Miejsce na scrollbar */
+  
+  /* Custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #cacfb9 #f2f2f2;
+}
+
+.question-cards-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.question-cards-container::-webkit-scrollbar-track {
+  background: #f8f8f8;
+  border-radius: 3px;
+}
+
+.question-cards-container::-webkit-scrollbar-thumb {
+  background: #cacfb9;
+  border-radius: 3px;
+}
+
+.question-cards-container::-webkit-scrollbar-thumb:hover {
+  background: #a9b18d;
 }
 
 .question-cards {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding-bottom: 20px; /* Padding na dole żeby ostatnie pytanie nie było przycięte */
 }
 
 .question-card {
@@ -347,8 +446,100 @@ button {
   border-radius: 8px;
   padding: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f0f0f0;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
 }
 
+.question-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Right sidebar styles - ZMODYFIKOWANY: fixed width i height */
+.right-sidebar {
+  width: 240px;
+  border-left: 1px solid #e7e7e7;
+  padding: 16px 12px;
+  background-color: white;
+  flex-shrink: 0; /* Nie pozwala się sidebar zmniejszyć */
+  height: 100%;
+  overflow-y: auto; /* Pozwala przewijać jeśli potrzeba */
+}
+
+.experts-section {
+  margin-bottom: 24px;
+}
+
+.experts-section h3,
+.tags-section h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.experts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.expert-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #5e5e5e;
+  font-size: 13px;
+  padding: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.expert-item:hover {
+  background-color: #f8f8f8;
+}
+
+.expert-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.expert-name {
+  font-weight: 500;
+  color: #272d33;
+}
+
+.expert-specialty {
+  font-size: 11px;
+  color: #9d9d9d;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  background-color: #f2f2f2;
+  color: #5e5e5e;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.tag-clickable {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.tag-clickable:hover {
+  background-color: #e6ead9;
+  color: #272d33;
+}
+
+/* Question card components - STYLE PYTAŃ */
 .question-card-header {
   display: flex;
   justify-content: space-between;
@@ -361,39 +552,20 @@ button {
   gap: 12px;
 }
 
-.placeholder-text {
+.author-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
-.placeholder-line-medium {
-  height: 16px;
-  width: 128px;
-  background-color: #f2f2f2;
-  border-radius: 4px;
+.author-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #272d33;
 }
 
-.placeholder-line-small {
-  height: 12px;
-  width: 56px;
-  background-color: #f2f2f2;
-  border-radius: 4px;
-}
-
-.placeholder-line-large {
-  height: 20px;
-  width: 100%;
-  background-color: #f2f2f2;
-  border-radius: 4px;
-}
-
-.placeholder-line-full {
-  height: 12px;
-  width: 100%;
-  background-color: #f2f2f2;
-  border-radius: 4px;
-  margin-bottom: 8px;
+.author-time {
+  font-size: 12px;
+  color: #9d9d9d;
 }
 
 .question-actions {
@@ -402,31 +574,58 @@ button {
 }
 
 .question-highlight {
-  border-left: 2px solid #a9b18d;
+  border-left: 3px solid #a9b18d;
   padding-left: 12px;
   margin-bottom: 12px;
+}
+
+.question-highlight h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #272d33;
+  line-height: 1.4;
 }
 
 .question-tags {
   display: flex;
   gap: 8px;
   margin-bottom: 12px;
-}
-
-.tag {
-  background-color: #f2f2f2;
-  color: #5e5e5e;
-  padding: 4px 12px;
-  border-radius: 4px;
-  font-size: 12px;
+  flex-wrap: wrap;
 }
 
 .question-content {
   margin-bottom: 16px;
 }
 
+.question-content p {
+  color: #5e5e5e;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+/* Przycisk rozwijania pytania */
+.expand-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #a9b18d;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 4px 0;
+}
+
+.expand-button:hover {
+  color: #91a160;
+}
+
+.expand-button svg {
+  font-size: 16px;
+}
+
 .question-footer {
-  border-top: 1px solid #e7e7e7;
+  border-top: 1px solid #f0f0f0;
   padding-top: 12px;
   display: flex;
   justify-content: space-between;
@@ -454,43 +653,4 @@ button {
 
 .heart-icon {
   color: #a9b18d;
-}
-
-/* Right sidebar styles */
-.right-sidebar {
-  width: 280px;
-  border-left: 1px solid #e7e7e7;
-  padding: 16px;
-  background-color: white;
-}
-
-.experts-section {
-  margin-bottom: 32px;
-}
-
-.experts-section h3,
-.tags-section h3 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-}
-
-.experts-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.expert-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: #5e5e5e;
-  font-size: 14px;
-}
-
-.tags-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
 }
