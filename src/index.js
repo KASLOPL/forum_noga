@@ -15,6 +15,7 @@ import './pages/add_question/addquestion.css';
 import Zakladki from './pages/bookmarks/zakładki';  
 import Settings from './pages/settings/settings.js';
 import Help from './pages/help/help.js';
+import Profile from './pages/profile/profile.js'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -27,6 +28,7 @@ root.render(
         <Route path="/addquestion" element={<AddQuestion />} />
         <Route path="/zakładki" element={<Zakladki />} />
         <Route path="/help" element={<Help />} />
+        <Route path='/profile' element={<Profile />}></Route>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

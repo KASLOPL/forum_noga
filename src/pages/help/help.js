@@ -12,241 +12,203 @@ import {
   Zap,
   ChevronDown
 } from 'lucide-react';
+// biblioteka icon 
+
+import { useNavigate } from 'react-router-dom'; 
 
 const Help = () => {
-  // Stan dla rozwiniętego pytania FAQ
-  const [expandedQuestion, setExpandedQuestion] = useState(2);
-  // Stan dla tekstu wyszukiwania
-  const [searchText, setSearchText] = useState('');
 
-  // Dane użytkownika (uproszczone)
-  const currentUser = { name: 'Guest' };
+  const navigate = useNavigate();
+  // zmienne, rozwinietePytanie rozwijanie pytan domyslnie zawsze 2 rozwiniete
+  const [rozwinietePytanie, ustawRozwiniete] = useState(2);
+  // pole wyszukiwania
+  const [szukajTekst, ustawSzukajTekst] = useState('');
 
-  // Lista tematów pomocy
-  const helpTopics = [
-    { 
-      title: 'Getting Started', 
-      description: 'Learn the basics of using SnapSolve and asking your first question.' 
-    },
-    { 
-      title: 'Account Management', 
-      description: 'Manage your profile, settings, and account preferences.' 
-    },
-    { 
-      title: 'Asking Questions', 
-      description: 'Best practices for asking questions to get better answers.' 
-    },
-    { 
-      title: 'Finding Experts', 
-      description: 'How to connect with specialists in your field of interest.' 
-    },
-    { 
-      title: 'Bookmarks & Saved Content', 
-      description: 'Organize and save important questions and answers.' 
-    },
-    { 
-      title: 'Safety & Privacy', 
-      description: 'Learn about our community guidelines and privacy settings.' 
-    }
+  // zawartosc
+  const uzytkownik = { imie: 'Gość' };
+
+  const tematyPomocy = [
+    { tytul: 'Jak zacząć', opis: 'Podstawy korzystania ze SnapSolve i jak zadać pierwsze pytanie.' },
+    { tytul: 'Zarządzanie kontem', opis: 'Zarządzaj swoim profilem, ustawieniami i preferencjami konta.' },
+    { tytul: 'Zadawanie pytań', opis: 'Najlepsze praktyki, aby zadawać pytania i otrzymywać lepsze odpowiedzi.' },
+    { tytul: 'Znajdowanie ekspertów', opis: 'Jak połączyć się ze specjalistami w Twojej dziedzinie.' },
+    { tytul: 'Zakładki i zapisane', opis: 'Organizuj i zapisuj ważne pytania i odpowiedzi.' },
+    { tytul: 'Bezpieczeństwo i prywatność', opis: 'Poznaj nasze zasady społeczności i ustawienia prywatności.' }
   ];
 
-  // Lista FAQ
-  const faqList = [
-    { 
-      question: 'How do I reset my password?', 
-      answer: 'You can reset your password by clicking "Forgot Password" on the login page and following the instructions sent to your email.' 
-    },
-    { 
-      question: 'How do I change my email address?', 
-      answer: 'Go to Settings > Account > Email Settings to update your email address. You\'ll need to verify the new email.' 
-    },
-    {
-      question: 'Where can I find my questions and answers?',
-      answer: 'You can find your questions in the "My Questions" section in the sidebar, and your answers in your profile page.'
-    },
-    { 
-      question: 'How do I delete my account?', 
-      answer: 'Go to Settings > Account > Delete Account. Please note that this action cannot be undone.' 
-    },
-    { 
-      question: 'How do I report a problem or inappropriate content?', 
-      answer: 'Use the three-dot menu on any post to report content, or contact our support team directly.' 
-    },
-    { 
-      question: 'Is my data safe and secure?', 
-      answer: 'Yes, we use industry-standard encryption and security measures to protect your personal information and data.' 
-    }
+  const listaFAQ = [
+    { pytanie: 'Jak zresetować hasło?', odpowiedz: 'Możesz zresetować hasło klikając „Zapomniałem hasła” na stronie logowania i postępując według instrukcji wysłanych na email.' },
+    { pytanie: 'Jak zmienić adres email?', odpowiedz: 'Przejdź do Ustawienia > Konto > Email, aby zaktualizować adres email. Będziesz musiał potwierdzić nowy email.' },
+    { pytanie: 'Gdzie znajdę swoje pytania i odpowiedzi?', odpowiedz: 'Swoje pytania znajdziesz w sekcji „Moje pytania” w menu bocznym, a odpowiedzi na stronie profilu.' },
+    { pytanie: 'Jak usunąć konto?', odpowiedz: 'Przejdź do Ustawienia > Konto > Usuń konto. Pamiętaj, że tej akcji nie można cofnąć.' },
+    { pytanie: 'Jak zgłosić problem lub nieodpowiednie treści?', odpowiedz: 'Użyj menu trzech kropek przy każdym poście, aby zgłosić treść lub skontaktuj się z zespołem wsparcia.' },
+    { pytanie: 'Czy moje dane są bezpieczne?', odpowiedz: 'Tak, używamy standardowego szyfrowania i zabezpieczeń, aby chronić Twoje dane osobowe.' }
   ];
 
-  // Linki nawigacyjne
-  const navLinks = [
-    { icon: <Home size={16} />, text: 'Home', active: false },
-    { icon: <Bell size={16} />, text: 'Notifications', active: false },
-    { icon: <BookOpen size={16} />, text: 'Specialists', active: false },
-    { icon: <MessageSquare size={16} />, text: 'My Questions', active: false }
+  const linkiNawigacji = [
+    { ikona: <Home size={16} />, tekst: 'Start', aktywny: false, sciezka: '/main' }, 
+    { ikona: <Bell size={16} />, tekst: 'Powiadomienia', aktywny: false },
+    { ikona: <BookOpen size={16} />, tekst: 'Specjaliści', aktywny: false },
+    { ikona: <MessageSquare size={16} />, tekst: 'Moje pytania', aktywny: false }
   ];
 
-  // Funkcja obsługi wyszukiwania
-  const handleSearch = (e) => {
+  // zapobiega odswierzaniu strony, sprawdzanie co wpisal urzytkownik + dodac prawdziwe wyszukiwanie ...
+  const szukaj = (e) => {
     e.preventDefault();
-    if (searchText.trim()) {
-      console.log('Searching for:', searchText);
-      // Tutaj można dodać logikę wyszukiwania
-    }
+    if (szukajTekst.trim()) console.log('Szukam:', szukajTekst);
+  };
+  // jedno pytanie naraz tylko moze sie rozwijac, zwiniecie rozwinietego pytania : null
+  const zmienFAQ = (index) => {
+    ustawRozwiniete(rozwinietePytanie === index ? null : index);
   };
 
-  // Funkcja przełączania FAQ
-  const toggleFAQ = (index) => {
-    if (expandedQuestion === index) {
-      setExpandedQuestion(null); // Zamknij jeśli już otwarte
-    } else {
-      setExpandedQuestion(index); // Otwórz wybrane pytanie
-    }
+
+  // strzałka w lewo do poprzedniej strony
+  const wroc = () => {
+    window.history.back();
   };
 
+  // app
   return (
-    <div className='calosc'>
-    <div className="app-container">
-      {/* Header */}
-      <header className="header">
-        <div className="navbar">
-          <div className="left-section">
-            <button className="back-button">
-              <ArrowLeft size={20} />
-            </button>
+    <div className="calosc">
+      <div className="app-container">
 
-            <div className="logo-container">
-              <div className="logo-icon">
-                <Zap size={20} />
-              </div>
-              <span className="logo-text">
-                Snap<span className="logo-text-highlight">solve</span>
-              </span>
-            </div>
-          </div>
-
-          <nav className="nav">
-            <ul>
-              {navLinks.map((item, index) => (
-                <li key={index} className={item.active ? 'active' : ''}>
-                  <a href="#" onClick={(e) => e.preventDefault()}>
-                    {item.icon}
-                    {item.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div className="right-nav">
-            <button className="icon-btn">
-              <Bell size={20} />
-            </button>
-
-            <div className="user-profile">
-              <div className="avatar">
-                <span>{currentUser.name.substring(0, 2)}</span>
-              </div>
-              <div className="user-info">
-                <div className="name">{currentUser.name}</div>
-                <div className="role">Student</div>
-              </div>
-              <ChevronDown size={16} style={{ color: '#9d9d9d', marginLeft: '4px' }} />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Główna treść */}
-      <main className="main">
-        {/* Sekcja wyszukiwania */}
-        <section className="search-section">
-          <h1>
-            How can <span className="highlight">we</span> help?
-          </h1>
-
-          <form className="search-container" onSubmit={handleSearch}>
-            <div className="search-icon">
-              <Search size={20} />
-            </div>
-            <input
-              type="text"
-              placeholder="Search for answer..."
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-            <button type="submit" className="search-btn">
-              Search
-            </button>
-          </form>
-
-          <div className="top-searches">
-            <h3>Top searches</h3>
-            <div className="search-links">
-              <a href="#" onClick={(e) => e.preventDefault()}>Account recovery</a>
-              <a href="#" onClick={(e) => e.preventDefault()}>Asking questions</a>
-              <a href="#" onClick={(e) => e.preventDefault()}>Finding experts</a>
-              <a href="#" onClick={(e) => e.preventDefault()}>Privacy settings</a>
-            </div>
-          </div>
-        </section>
-
-        {/* Sekcja tematów */}
-        <section className="topics-section">
-          <h2>Explore all topics</h2>
-          <div className="topics-grid">
-            {helpTopics.map((topic, index) => (
-              <div className="topic-card" key={index}>
-                <div className="topic-icon"></div>
-                <h3>{topic.title}</h3>
-                <p>{topic.description}</p>
-                <a 
-                  href="#" 
-                  className="see-detail" 
-                  onClick={(e) => e.preventDefault()}
-                >
-                  See detail →
-                </a>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Sekcja FAQ */}
-        <section className="faq-section">
-          <h2>Frequently asked questions</h2>
-          <p className="faq-description">
-            Find quick answers to the most common questions about using SnapSolve. 
-            If you can't find what you're looking for, feel free to contact our support team.
-          </p>
-
-          <div className="faq-container">
-            {faqList.map((item, index) => (
-              <div 
-                className={`faq-item ${expandedQuestion === index ? 'active' : ''}`} 
-                key={index}
+        {/* HEADER */}
+        <header className="header">
+          <div className="navbar">
+            <div className="left-section">
+              <button
+                className="back-button"
+                onClick={() => navigate(-1)} // >>> DODANE cofnięcie do poprzedniej strony
               >
-                <button
-                  className="faq-question"
-                  onClick={() => toggleFAQ(index)}
-                >
-                  <span className="faq-icon">
-                    {expandedQuestion === index ? <Minus size={16} /> : <Plus size={16} />}
-                  </span>
-                  <span>{item.question}</span>
-                </button>
+                <ArrowLeft size={20} />
+              </button>
 
-                <div 
-                  className={`faq-answer ${expandedQuestion === index ? 'visible' : ''}`}
-                >
-                  <p>{item.answer}</p>
-                </div>
+              <div className="logo-container">
+                <div className="logo-icon"><Zap size={20} /></div>
+                <span className="logo-text">Snap<span className="logo-text-highlight">solve</span></span>
               </div>
-            ))}
+            </div>
+
+            <nav className="nav">
+              <ul>
+                {linkiNawigacji.map((el, idx) => (
+                  <li key={idx} className={el.aktywny ? 'active' : ''}>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (el.sciezka) navigate(el.sciezka); // >>> DODANE nawigacja do main.js na "Start"
+                      }}
+                    >
+                      {el.ikona}{el.tekst}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div className="right-nav">
+              <button className="icon-btn"><Bell size={20} /></button>
+
+              <div
+                className="user-profile"
+                onClick={() => navigate('/profile')} // >>> DODANE nawigacja do profile.js
+                style={{ cursor: 'pointer' }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    navigate('/profile');
+                  }
+                }}
+                aria-label="Profil użytkownika"
+              >
+                <div className="avatar">
+                  <span>{uzytkownik.imie.substring(0, 2)}</span>
+                </div>
+                <div className="user-info">
+                  <div className="name">{uzytkownik.imie}</div>
+                  <div className="role">Student</div>
+                </div>
+                {/* ikona i jej styl dodany */}
+                <ChevronDown size={16} style={{ color: '#9d9d9d', marginLeft: '4px' }} />
+              </div>
+            </div>
           </div>
-        </section>
-      </main>
-    </div>
+        </header>
+
+        {/* MAIN */}
+        <main className="main">
+
+          {/* SEARCH */}
+          <section className="search-section">
+            <h1>How can <span className="highlight">we</span> help?</h1>
+            <form className="search-container" onSubmit={szukaj}>
+              <div className="search-icon"><Search size={20} /></div>
+              <input
+                type="text"
+                placeholder="Search for answer..."
+                value={szukajTekst}
+                onChange={(e) => ustawSzukajTekst(e.target.value)}
+              />
+              <button type="submit" className="search-btn">Search</button>
+            </form>
+
+            <div className="top-searches">
+              <h3>Top searches</h3>
+              <div className="search-links">
+                {['Odzyskiwanie konta', 'Zadawanie pytań', 'Znajdowanie ekspertów', 'Ustawienia prywatności'].map((txt, i) => (
+                  <a key={i} href="#" onClick={(e) => e.preventDefault()}>{txt}</a>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* HELP  */}
+          <section className="topics-section">
+            <h2>Explore all topics</h2>
+            <div className="topics-grid">
+              {tematyPomocy.map((temat, idx) => (
+                <div className="topic-card" key={idx}>
+                  <div className="topic-icon"></div>
+                  <h3>{temat.tytul}</h3>
+                  <p>{temat.opis}</p>
+                  <a href="#" className="see-detail" onClick={(e) => e.preventDefault()}>See detail →</a>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* FAQ - pytania */}
+          <section className="faq-section">
+            <h2>Frequently asked questions</h2>
+            <p className="faq-description">
+              Find quick answers to the most common questions about using SnapSolve. If you can't find what you're looking for, feel free to contact our support team.
+            </p>
+
+            <div className="faq-container">
+              {listaFAQ.map((item, idx) => (
+                // umozliwianie animacji ( rozwiniecie moze do zmiany)
+                <div className={`faq-item ${rozwinietePytanie === idx ? 'active' : ''}`} key={idx}>
+                  <button className="faq-question" onClick={() => zmienFAQ(idx)}>
+                    <span className="faq-icon">
+                      {rozwinietePytanie === idx ? <Minus size={16} /> : <Plus size={16} />}
+                    </span>
+                    <span>{item.pytanie}</span>
+                  </button>
+                  
+                  {/* pokazywanie odpowiedzi tylko po kliknieciu + dodanie po kliknieciu visible ( css )  */}
+                  <div className={`faq-answer ${rozwinietePytanie === idx ? 'visible' : ''}`}>
+                    <p>{item.odpowiedz}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+        </main>
+      </div>
     </div>
   );
 };
