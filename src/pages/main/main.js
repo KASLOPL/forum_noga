@@ -195,12 +195,17 @@ function Main() {
             </div>
 
             <div className="posts-count">{questions.length} posts</div>
-
             <div className="question-cards-container">
               <div className="question-cards">
                 {questions.map((question) => (
-                  <div key={question.id} className="question-card">
-                    <div className="question-card-header">
+                  <div 
+                    key={question.id} 
+                    className="question-card"
+                    onClick={() => navigate(`/answer_q/${question.id}`, { state: { question } })}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="question-card-header" 
+                    onClick={(e) => { e.stopPropagation(); }}> {/* zeby jak klikasz to nie przenosilo na podstrone */}
                       <div className="question-author">
                         <div className="avatar"><span>{question.author.substring(0, 2)}</span></div>
                         <div className="author-info">
@@ -209,27 +214,30 @@ function Main() {
                         </div>
                       </div>
                       <div className="question-actions">
-                        <button className="icon-button"><FiBookmark /></button>
-                        <button className="icon-button"><FiMoreVertical /></button>
+                        <button className="icon-button"
+                        onClick={(e) => { e.stopPropagation(); }}><FiBookmark /></button>
+                        <button className="icon-button"
+                        onClick={(e) => { e.stopPropagation(); }}><FiMoreVertical /></button> 
                       </div>
                     </div>
 
                     <div className="question-highlight"><h3>{question.highlight}</h3></div>
 
-                    <div className="question-tags">
-                      {question.tags.map((tag, index) => (
-                        <div key={index} className="tag">{tag}</div>
-                      ))}
-                    </div>
-
                     <div className="question-content">
                       <p>{expandedQuestion === question.id ? question.fullContent : question.content}</p>
-                      <button className="expand-button" onClick={() => toggleQuestion(question.id)}>
+                      <button 
+                        className="expand-button" 
+                        onClick={(e) => {
+                          e.stopPropagation(); // zeby jak klikasz to nie przenosilo na podstrone
+                          toggleQuestion(question.id);
+                        }}
+                      >
                         {expandedQuestion === question.id ? <><span>Show less</span><FiChevronUp /></> : <><span>Read more</span><FiChevronDown /></>}
                       </button>
                     </div>
 
-                    <div className="question-footer">
+                    <div className="question-footer"
+                    onClick={(e) => { e.stopPropagation(); }}>
                       <div className="question-responders">
                         {Array.from({ length: question.responders }, (_, i) => (
                           <div key={i} className="avatar avatar-small"><span>{String.fromCharCode(65 + i)}</span></div>

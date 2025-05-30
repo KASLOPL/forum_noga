@@ -1,0 +1,326 @@
+import * as React from "react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import "../main/main.css"; // główne style
+import "./answer_q.css"; // style dla tej strony
+
+// Ikony z react-icons
+import {
+  FiArrowLeft,
+  FiBookmark,
+  FiChevronDown,
+  FiEye,
+  FiHeart,
+  FiMail,
+  FiMessageSquare,
+  FiMoon,
+  FiMoreVertical,
+  FiSend,
+  FiThumbsUp,
+  FiUser,
+  FiZap,
+} from "react-icons/fi";
+
+function QuestionDetail() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { id } = useParams();
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  
+  // Pobieramy pytanie z state lub tworzymy przykładowe
+  const [question] = useState(location.state?.question || {
+    id: parseInt(id),
+    author: "Anna K.",
+    timeAgo: "2 hours ago",
+    highlight: "Jak zoptymalizować zapytania SQL w dużej bazie danych?",
+    tags: ["SQL", "Database", "Performance"],
+    fullContent: "Pracuję nad aplikacją, która musi przetwarzać duże ilości danych z bazy MySQL. Mam tabelę z 5 milionami rekordów i zapytania trwają bardzo długo. Próbowałem już indeksów, ale to nie pomogło wystarczająco. Czy ktoś może podpowiedzieć najlepsze praktyki optymalizacji zapytań SQL dla tak dużych zbiorów danych?",
+    likes: 23,
+    views: 1284,
+    responders: 3
+  });
+
+  const [newAnswer, setNewAnswer] = useState("");
+  const [answers] = useState([
+    {
+      id: 1,
+      author: "Dr. Marcin Kowalski",
+      authorTitle: "Database Specialist",
+      timeAgo: "1 hour ago",
+      content: "Świetne pytanie! Oto kilka kluczowych strategii:\n\n1. **Partycjonowanie tabel** - Podziel dużą tabelę na mniejsze części na podstawie dat lub innych kryteriów\n2. **Indeksy kompozytowe** - Zamiast pojedynczych indeksów, używaj indeksów na kilku kolumnach jednocześnie\n3. **EXPLAIN PLAN** - Zawsze sprawdzaj plan wykonania zapytania, żeby zobaczyć gdzie są wąskie gardła\n\nJeśli chcesz, mogę przygotować konkretny przykład dla twojego przypadku.",
+      likes: 15,
+      isExpert: true,
+      helpful: true
+    },
+    {
+      id: 2,
+      author: "Tomasz S.",
+      authorTitle: "Full Stack Developer",
+      timeAgo: "45 minutes ago",
+      content: "Dodatkowo do tego co napisał Dr. Kowalski, polecam:\n\n• **Cachowanie** - Redis lub Memcached dla często używanych zapytań\n• **Lazy loading** - Ładuj dane tylko wtedy, gdy są potrzebne\n• **Paginacja** - Nigdy nie ładuj wszystkich rekordów naraz\n\nU mnie te techniki zmniejszyły czas zapytań z 8 sekund do 200ms!",
+      likes: 8,
+      isExpert: false,
+      helpful: false
+    },
+    {
+      id: 3,
+      author: "Sarah Chen",
+      authorTitle: "Senior Database Engineer",
+      timeAgo: "20 minutes ago",
+      content: "Bardzo dobre rady powyżej! Dodam jeszcze kilka technicznych szczegółów:\n\n**Query Optimization:**\n• Unikaj SELECT * - zawsze wybieraj konkretne kolumny\n• Używaj LIMIT do ograniczania wyników\n• Sprawdź czy używasz odpowiednich JOIN-ów\n\n**Monitoring:**\n• Włącz slow query log w MySQL\n• Używaj EXPLAIN ANALYZE dla detali wykonania\n• Monitoruj I/O i CPU usage\n\n**Architektura:**\n• Rozważ read replicas dla zapytań SELECT\n• Database sharding dla bardzo dużych tabel\n• Connection pooling żeby nie otwierać za dużo połączeń\n\nJeśli potrzebujesz pomocy z konkretnym zapytaniem, chętnie pomogę!",
+      likes: 12,
+      isExpert: true,
+      helpful: true
+    }
+  ]);
+
+  // Sprawdzenie, czy użytkownik jest zalogowany
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (!isLoggedIn || isLoggedIn !== 'true') {
+      navigate('/');
+    }
+  }, [navigate]);
+
+  const handleSendAnswer = () => {
+    if (newAnswer.trim()) {
+      // Tutaj byłoby dodawanie odpowiedzi do bazy
+      console.log("Nowa odpowiedź:", newAnswer);
+      setNewAnswer("");
+    }
+  };
+
+  return (
+    <div className="caloscMain">
+      <div className="app">
+        
+        {/* HEADER - taki sam jak w main.js */}
+        <header className="header">
+          <div className="header-container">
+            <div className="logo-container">
+              <div className="logo">
+                <div className="logo-icon"><FiZap /></div>
+                <span className="logo-text">Snap<span className="logo-text-highlight">solve</span></span>
+              </div>
+            </div>
+
+            <div className="header-center">
+              <button className="back-button" onClick={() => navigate('/main')}>
+                <FiArrowLeft />
+                <span>Back to Home</span>
+              </button>
+            </div>
+
+            <div className="header-actions">
+              <button className="icon-button"><FiMoon /></button>
+              <button className="icon-button"><FiMail /></button>
+              <div className="user-profile" onClick={() => navigate('/profile')}>
+                <div className="avatar">
+                  <span>{currentUser?.name?.substring(0, 2) || 'GU'}</span>
+                </div>
+                <div className="user-info">
+                  <span className="user-name">{currentUser?.name || 'Guest'}</span>
+                  <span className="user-role">Student</span>
+                </div>
+                <FiChevronDown className="dropdown-icon" />
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* MAIN CONTENT */}
+        <div className="question-detail-container">
+          <main className="question-detail-main">
+            
+            {/* PYTANIE GŁÓWNE */}
+            <div className="main-question-card">
+              <div className="question-card-header">
+                <div className="question-author">
+                  <div className="avatar avatar-large">
+                    <span>{question.author.substring(0, 2)}</span>
+                  </div>
+                  <div className="author-info">
+                    <div className="author-name">{question.author}</div>
+                    <div className="author-time">{question.timeAgo}</div>
+                  </div>
+                </div>
+                <div className="question-actions">
+                  <button className="icon-button"><FiBookmark /></button>
+                  <button className="icon-button"><FiMoreVertical /></button>
+                </div>
+              </div>
+
+              <div className="question-content-detail">
+                <h1 className="question-title">{question.highlight}</h1>
+                <div className="question-tags">
+                  {question.tags?.map(tag => (
+                    <span key={tag} className="tag">{tag}</span>
+                  ))}
+                </div>
+                <p className="question-text">{question.fullContent}</p>
+              </div>
+
+              <div className="question-stats-detail">
+                <div className="stat-group">
+                  <button className="stat-button">
+                    <FiHeart className="heart-icon" />
+                    <span>{question.likes}</span>
+                  </button>
+                  <div className="stat">
+                    <FiEye />
+                    <span>{question.views}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ODPOWIEDZI */}
+            <div className="answers-section">
+              <div className="answers-header">
+                <h2>{answers.length} Answers</h2>
+                <div className="sort-answers">
+                  <span>Sort by: </span>
+                  <select>
+                    <option>Most Helpful</option>
+                    <option>Newest First</option>
+                    <option>Oldest First</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="answers-list">
+                {answers.map((answer) => (
+                  <div key={answer.id} className={`answer-card ${answer.isExpert ? 'expert-answer' : ''}`}>
+                    {answer.isExpert && (
+                      <div className="expert-badge">
+                        <span>Expert Answer</span>
+                      </div>
+                    )}
+                    
+                    <div className="answer-header">
+                      <div className="answer-author">
+                        <div className="avatar">
+                          <span>{answer.author.substring(0, 2)}</span>
+                        </div>
+                        <div className="author-info">
+                          <div className="author-name">
+                            {answer.author}
+                            {answer.isExpert && <span className="expert-icon">✓</span>}
+                          </div>
+                          <div className="author-title">{answer.authorTitle}</div>
+                          <div className="answer-time">{answer.timeAgo}</div>
+                        </div>
+                      </div>
+                      {answer.helpful && (
+                        <div className="helpful-badge">
+                          <FiThumbsUp />
+                          <span>Helpful</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="answer-content">
+                      <p>{answer.content}</p>
+                    </div>
+
+                    <div className="answer-actions">
+                      <button className="answer-action-btn">
+                        <FiThumbsUp />
+                        <span>{answer.likes}</span>
+                      </button>
+                      <button className="answer-action-btn">
+                        <FiMessageSquare />
+                        <span>Reply</span>
+                      </button>
+                      <button className="answer-action-btn">
+                        <FiBookmark />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* DODAJ ODPOWIEDŹ */}
+            <div className="add-answer-section">
+              <h3>Your Answer</h3>
+              <div className="answer-input-container">
+                <div className="user-avatar">
+                  <span>{currentUser?.name?.substring(0, 2) || 'GU'}</span>
+                </div>
+                <div className="answer-input-wrapper">
+                  <textarea
+                    className="answer-input"
+                    placeholder="Share your knowledge and help solve this question..."
+                    value={newAnswer}
+                    onChange={(e) => setNewAnswer(e.target.value)}
+                    rows={4}
+                  />
+                  <div className="answer-input-actions">
+                    <div className="input-tools">
+                      <span className="input-hint">Be specific and helpful</span>
+                    </div>
+                    <button 
+                      className="send-answer-btn"
+                      onClick={handleSendAnswer}
+                      disabled={!newAnswer.trim()}
+                    >
+                      <FiSend />
+                      <span>Post Answer</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </main>
+
+          {/* RIGHT SIDEBAR - podobny do main.js */}
+          <aside className="right-sidebar">
+            <div className="related-questions">
+              <h3>Related Questions</h3>
+              <div className="related-list">
+                <div className="related-item">
+                  <div className="related-title">MySQL performance tuning best practices</div>
+                  <div className="related-stats">
+                    <span>12 answers</span>
+                    <span>•</span>
+                    <span>324 views</span>
+                  </div>
+                </div>
+                <div className="related-item">
+                  <div className="related-title">Database indexing strategies</div>
+                  <div className="related-stats">
+                    <span>8 answers</span>
+                    <span>•</span>
+                    <span>156 views</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="question-stats-sidebar">
+              <h3>Question Stats</h3>
+              <div className="stats-list">
+                <div className="stat-item">
+                  <span className="stat-label">Asked</span>
+                  <span className="stat-value">{question.timeAgo}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">Viewed</span>
+                  <span className="stat-value">{question.views} times</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">Active</span>
+                  <span className="stat-value">20 minutes ago</span>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default QuestionDetail;

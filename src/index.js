@@ -16,6 +16,7 @@ import Zakladki from './pages/bookmarks/zakładki';
 import Settings from './pages/settings/settings.js';
 import Help from './pages/help/help.js';
 import Profile from './pages/profile/profile.js'
+import QuestionDetail from './pages/answ_question/answer_q';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -29,6 +30,7 @@ root.render(
         <Route path="/zakładki" element={<Zakladki />} />
         <Route path="/help" element={<Help />} />
         <Route path='/profile' element={<Profile />}></Route>
+        <Route path="/answer_q/:id" element={<QuestionDetail />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
