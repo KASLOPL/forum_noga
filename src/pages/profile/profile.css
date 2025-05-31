@@ -1,31 +1,26 @@
-/* Podstawowe style - taki sam reset jak w Help */
-.profile-app * {
-  margin: 0;
-  padding: 0;
+/* Reset */
+.app * {
   box-sizing: border-box;
 }
 
-.profile-app {
-  font-family: system-ui, -apple-system, sans-serif;
+.app {
+  font-family: system-ui, sans-serif;
   background-color: #fafafa;
   color: #272d33;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Header - identyczny jak w Help */
-.profile-app .header {
+/* Header */
+.Profall .header {
   background-color: white;
   border-bottom: 1px solid #e7e7e7;
   padding: 8px 16px;
   position: sticky;
-  top: 0;
-  z-index: 100;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.profile-app .navbar {
+.Profall .navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -34,30 +29,59 @@
   margin: 0 auto;
 }
 
-.profile-app .left-section,
-.profile-app .right-nav {
+.Profall .left-section, 
+.Profall .right-nav {
   display: flex;
   align-items: center;
 }
 
-.profile-app .right-nav {
+.Profall .right-nav {
   gap: 12px;
 }
 
-/* Logo - identyczny jak w Help */
-.profile-app .logo-container {
+/* Buttons */
+.Profall .back-btn, 
+.Profall .icon-btn {
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Profall .back-btn {
+  color: #5e5e5e;
+  width: 32px;
+  height: 32px;
+  margin-right: 16px;
+}
+
+.Profall .back-btn:hover, 
+.Profall .nav a:hover, 
+.Profall .user-profile:hover {
+  background-color: #f2f2f2;
+}
+
+.Profall .icon-btn {
+  width: 36px;
+  height: 36px;
+  background-color: #f2f2f2;
+}
+
+/* Logo */
+.Profall .logo {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.profile-app .logo-icon {
+.Profall .logo-icon {
   background-color: #a9b18d;
-  border-radius: 4px;
+  border-radius: 50%;
   padding: 4px;
   width: 28px;
   height: 28px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,23 +90,23 @@
   font-weight: 500;
 }
 
-.profile-app .logo-text {
+.Profall .logo-text {
   font-weight: 600;
   font-size: 18px;
 }
 
-.profile-app .logo-text-highlight {
+.Profall .highlight {
   color: #91a160;
 }
 
-/* Nawigacja - identyczna jak w Help */
-.profile-app .nav ul {
+/* Navigation */
+.Profall .nav ul {
   display: flex;
   list-style: none;
   gap: 24px;
 }
 
-.profile-app .nav a {
+.Profall .nav a {
   text-decoration: none;
   color: #5e5e5e;
   font-size: 14px;
@@ -92,53 +116,28 @@
   gap: 8px;
   padding: 8px 12px;
   border-radius: 6px;
-  transition: background-color 0.2s;
 }
 
-.profile-app .nav a:hover {
+.Profall .nav a:hover {
+  color: #272d33;
+}
+
+.Profall .nav li.active a {
   background-color: #f2f2f2;
   color: #272d33;
 }
 
-.profile-app .nav li.active a {
-  background-color: #f2f2f2;
-  color: #272d33;
-}
-
-/* Przyciski - identyczne jak w Help */
-.profile-app .icon-btn {
-  background-color: #f2f2f2;
-  border: none;
-  cursor: pointer;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  transition: background-color 0.2s;
-}
-
-.profile-app .icon-btn:hover {
-  background-color: #e0e0e0;
-}
-
-/* User profile - identyczny jak w Help */
-.profile-app .user-profile {
+/* User Profile */
+.Profall .user-profile {
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
   padding: 4px;
   border-radius: 8px;
-  transition: background-color 0.2s;
 }
 
-.profile-app .user-profile:hover {
-  background-color: #f2f2f2;
-}
-
-.profile-app .avatar {
+.Profall .avatar {
   width: 36px;
   height: 36px;
   background-color: #cacfb9;
@@ -151,18 +150,18 @@
   font-weight: 500;
 }
 
-.profile-app .user-info .name {
+.Profall .user-info .name {
   font-size: 14px;
   font-weight: 500;
 }
 
-.profile-app .user-info .role {
+.Profall .user-info .role {
   font-size: 12px;
   color: #9d9d9d;
 }
 
-/* Main Container */
-.profile-app .main-container {
+/* Main */
+.Profall .main {
   display: flex;
   gap: 24px;
   padding: 24px;
@@ -173,14 +172,14 @@
 }
 
 /* Sidebar */
-.profile-app .sidebar {
+.Profall .sidebar {
   width: 280px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.profile-app .profile-card {
+.Profall .profile-card {
   background: white;
   border-radius: 12px;
   padding: 24px;
@@ -188,12 +187,12 @@
   border: 1px solid #e7e7e7;
 }
 
-.profile-app .profile-header {
+.Profall .profile-header {
   text-align: center;
   margin-bottom: 16px;
 }
 
-.profile-app .profile-avatar {
+.Profall .profile-avatar {
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -207,58 +206,57 @@
   margin: 0 auto 16px;
 }
 
-.profile-app .profile-name {
+.Profall .profile-name {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 4px;
 }
 
-.profile-app .profile-username {
+.Profall .profile-username {
   color: #666;
   font-size: 14px;
   margin-bottom: 8px;
 }
 
-.profile-app .profile-school {
+.Profall .profile-school {
   color: #666;
   font-size: 12px;
   line-height: 1.4;
 }
 
-.profile-app .profile-description {
+.Profall .profile-bio {
   margin-bottom: 16px;
   font-size: 14px;
   line-height: 1.4;
   color: #333;
+  text-align: center;
 }
 
-.profile-app .profile-stats {
+.Profall .stats {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  justify-content: space-around;
+  padding: 16px 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.profile-app .stat-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.Profall .stat {
+  text-align: center;
 }
 
-.profile-app .stat-icon {
-  width: 16px;
-  height: 16px;
-  background: #e0e0e0;
-  border-radius: 2px;
+.Profall .stat-num {
+  font-size: 18px;
+  font-weight: 600;
+  color: #272d33;
 }
 
-.profile-app .stat-text {
-  height: 12px;
-  background: #e0e0e0;
-  border-radius: 2px;
-  flex: 1;
+.Profall .stat-label {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
 }
 
-.profile-app .interests-section {
+.Profall .interests {
   background: white;
   border-radius: 12px;
   padding: 20px;
@@ -266,19 +264,19 @@
   border: 1px solid #e7e7e7;
 }
 
-.profile-app .interests-section h3 {
+.Profall .interests h3 {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 12px;
 }
 
-.profile-app .interest-tags {
+.Profall .tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.profile-app .tag {
+.Profall .tag {
   background: #f0f0f0;
   padding: 6px 12px;
   border-radius: 16px;
@@ -286,8 +284,8 @@
   color: #666;
 }
 
-/* Main Content */
-.profile-app .content {
+/* Content */
+.Profall .content {
   flex: 1;
   background: white;
   border-radius: 12px;
@@ -296,20 +294,20 @@
   overflow: hidden;
 }
 
-.profile-app .content-header {
-  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+.Profall .content-header {
+  background: #2d3748;
   padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.profile-app .tabs {
+.Profall .tabs {
   display: flex;
   gap: 24px;
 }
 
-.profile-app .tab {
+.Profall .tab {
   background: none;
   border: none;
   color: white;
@@ -320,17 +318,17 @@
   transition: border-color 0.2s;
 }
 
-.profile-app .tab.active {
+.Profall .tab.active {
   border-bottom-color: white;
 }
 
-.profile-app .header-actions {
+.Profall .actions {
   display: flex;
   gap: 12px;
 }
 
-.profile-app .btn-secondary {
-  background: rgba(255, 255, 255, 0.1);
+.Profall .btn-edit {
+  background: #B0B996;
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   padding: 8px 16px;
@@ -340,37 +338,56 @@
   transition: background-color 0.2s;
 }
 
-.profile-app .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.2);
+.Profall .btn-settings {
+  background: #2d3748;
+  border: 1px solid #B0B996;
+  color: #B0B996;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
 }
 
-/* Questions List */
-.profile-app .questions-list {
+.Profall .btn-edit:hover {
+  background: #2d3748;
+  color: #B0B996;
+  border: 1px solid #B0B996;
+}
+
+.Profall .btn-settings:hover {
+  background: #B0B996;
+  color: white;
+  border: 1px solid #2d3748;
+}
+
+/* Questions */
+.Profall .questions {
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.profile-app .question-card {
+.Profall .question {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 16px;
   background: white;
 }
 
-.profile-app .question-header {
+.Profall .question-header {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   margin-bottom: 12px;
 }
 
-.profile-app .user-avatar-small {
+.Profall .user-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #a9b18d;
+  background: #ccc;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -379,18 +396,14 @@
   font-size: 12px;
 }
 
-.profile-app .user-avatar-small.gray {
-  background: #ccc;
-}
-
-.profile-app .question-meta {
+.Profall .meta {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.profile-app .menu-btn {
+.Profall .menu-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -400,15 +413,15 @@
   transition: background-color 0.2s;
 }
 
-.profile-app .menu-btn:hover {
+.Profall .menu-btn:hover {
   background-color: #f0f0f0;
 }
 
-.profile-app .question-content {
+.Profall .question-content {
   margin-bottom: 12px;
 }
 
-.profile-app .highlighted-content {
+.Profall .highlight-box {
   background: #fff3cd;
   border-left: 4px solid #ffc107;
   padding: 12px;
@@ -416,31 +429,31 @@
   border-radius: 4px;
 }
 
-.profile-app .content-tags {
+.Profall .content-tags {
   display: flex;
   gap: 8px;
   margin-bottom: 12px;
 }
 
-.profile-app .content-tag {
+.Profall .content-tag {
   width: 60px;
   height: 20px;
   background: #e0e0e0;
   border-radius: 10px;
 }
 
-.profile-app .question-footer {
+.Profall .question-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.profile-app .user-reactions {
+.Profall .reactions {
   display: flex;
   gap: 4px;
 }
 
-.profile-app .reaction-avatar {
+.Profall .reaction {
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -453,12 +466,12 @@
   font-weight: bold;
 }
 
-.profile-app .engagement {
+.Profall .engagement {
   display: flex;
   gap: 16px;
 }
 
-.profile-app .engagement-item {
+.Profall .engagement-item {
   font-size: 12px;
   color: #666;
   display: flex;
@@ -466,55 +479,42 @@
   gap: 4px;
 }
 
-/* Placeholder Elements */
-.profile-app .placeholder-text {
+/* Placeholders */
+.Profall .placeholder {
   background: #e0e0e0;
   border-radius: 4px;
   height: 12px;
 }
 
-.profile-app .placeholder-text.short {
-  width: 80px;
-}
+.Profall .placeholder.short { width: 80px; }
+.Profall .placeholder.medium { width: 120px; }
+.Profall .placeholder.long { width: 100%; margin-bottom: 8px; }
+.Profall .placeholder.extra-long { width: 100%; height: 40px; }
 
-.profile-app .placeholder-text.medium {
-  width: 120px;
-}
-
-.profile-app .placeholder-text.long {
-  width: 100%;
-  margin-bottom: 8px;
-}
-
-.profile-app .placeholder-text.extra-long {
-  width: 100%;
-  height: 40px;
-}
-
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 768px) {
-  .profile-app .navbar {
+  .Profall .navbar {
     flex-direction: column;
     gap: 16px;
     height: auto;
     padding: 16px 0;
   }
   
-  .profile-app .nav ul {
+  .Profall .nav ul {
     justify-content: space-around;
     width: 100%;
   }
   
-  .profile-app .main-container {
+  .Profall .main {
     flex-direction: column;
     padding: 16px;
   }
 
-  .profile-app .sidebar {
+  .Profall .sidebar {
     width: 100%;
   }
 
-  .profile-app .content-header {
+  .Profall .content-header {
     flex-direction: column;
     gap: 12px;
     align-items: flex-start;

@@ -1,98 +1,108 @@
 import React, { useState } from 'react';
 import './profile.css';
 import {
-  Bell,
-  Home,
-  BookOpen,
-  MessageSquare,
-  Settings,
-  HelpCircle,
-  Moon,
-  Mail,
-  ChevronDown,
-  MoreVertical,
-  ThumbsUp,
-  Eye,
-  Heart,
-  Zap
-} from 'lucide-react';
+  FiSearch, FiArrowLeft, FiMail, FiHome, FiUsers, FiMessageSquare,
+  FiPlus, FiMinus, FiZap, FiChevronDown, FiBookmark, FiUser,
+  FiHelpCircle, FiMoreVertical, FiHeart, FiEye
+} from 'react-icons/fi';
+import { ThumbsUp, Eye, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const navigate = useNavigate();
   
-  const uzytkownik = {
-    imie: 'Basjan Kojko',
+  const user = {
+    name: 'Basjan Kojko',
     username: '@basjan.kojko',
-    szkola: 'Zespół Szkół Energetycznych Technikum nr 13',
-    opis: 'Klepię kod jak combo w ulubionych grze, bo nie ma lepszego uczucia niż zobaczyć jak wszystko w końcu działa 😎'
+    school: 'Zespół Szkół Energetycznych Technikum nr 13',
+    bio: 'Klepię kod jak combo w ulubionych grze, bo nie ma lepszego uczucia niż zobaczyć jak wszystko w końcu działa 😎'
   };
 
-  const linkiNawigacji = [
-    { ikona: <Home size={16} />, tekst: 'Home', aktywny: true, sciezka: '/main' },
-    { ikona: <Bell size={16} />, tekst: 'Notifications', aktywny: false },
-    { ikona: <BookOpen size={16} />, tekst: 'Specialists', aktywny: false },
-    { ikona: <MessageSquare size={16} />, tekst: 'My Answers', aktywny: false }
+  const navLinks = [
+    { icon: <FiHome size={16} />, text: 'Home', active: false, path: '/main' }, 
+    { icon: <FiMessageSquare size={16} />, text: 'Notifications', active: false },
+    { icon: <FiUsers size={16} />, text: 'Specialists', active: false },
+    { icon: <FiUser size={16} />, text: 'My Questions', active: false },
+    { icon: <FiBookmark size={16} />, text: 'Bookmarks', active: false, path: '/zakładki'}
   ];
 
   const [activeTab, setActiveTab] = useState('Questions & Replies');
 
-  const pytania = [
+  const questions = [
     {
       id: 1,
-      user: 'U',
-      likes: 2,
-      views: 36,
-      hasHighlight: false,
-      reactions: []
+      author: "Anna K.",
+      timeAgo: "2 godziny temu",
+      highlight: "Jak zoptymalizować zapytania SQL w dużej bazie danych?",
+      tags: ["SQL", "Database", "Performance"],
+      content: "Mam problem z wydajnością zapytań SQL w bazie danych zawierającej miliony rekordów...",
+      fullContent: "Pracuję nad aplikacją, która musi przetwarzać duże ilości danych...",
+      likes: 23,
+      views: 1284,
+      responders: 3
     },
     {
       id: 2,
-      user: 'U',
-      hasHighlight: true,
-      tags: 3,
-      reactions: ['U', 'U', 'U'],
-      hasHeart: true
+      author: "Tomasz M.",
+      timeAgo: "4 godziny temu",
+      highlight: "React Hook useEffect - problem z nieskończoną pętlą",
+      tags: ["React", "JavaScript", "Hooks"],
+      content: "Mój useEffect wchodzi w nieskończoną pętlą rerenderowania...",
+      fullContent: "Pracuję nad komponentem React, który ma pobierać dane z API...",
+      likes: 45,
+      views: 892,
+      responders: 5
     },
     {
       id: 3,
-      user: 'U',
-      likes: 2,
-      views: 36,
-      hasHighlight: false,
-      reactions: []
+      author: "Michał P.",
+      timeAgo: "6 godzin temu",
+      highlight: "Algorytmy sortowania - który wybrać dla dużych zbiorów danych?",
+      tags: ["Algorithms", "Performance", "Data Structures"],
+      content: "Potrzebuję posortować tablicę z 100,000+ elementów...",
+      fullContent: "Pracuję nad aplikacją, która musi sortować bardzo duże zbiory danych...",
+      likes: 31,
+      views: 567,
+      responders: 4
     },
     {
       id: 4,
-      user: 'U',
-      hasContent: false
+      author: "Julia W.",
+      timeAgo: "8 godzin temu",
+      highlight: "CSS Grid vs Flexbox - kiedy używać którego?",
+      tags: ["CSS", "Layout", "Frontend"],
+      content: "Ciągle się zastanawiam, kiedy powinienem używać CSS Grid...",
+      fullContent: "Uczę się nowoczesnego CSS-a i mam problem z wyborem między Grid a Flexbox...",
+      likes: 18,
+      views: 743,
+      responders: 6
     }
   ];
 
   return (
-    <div className="profile-app">
-      {/* HEADER - taki sam jak w Help */}
+    <div className='Profall'>
+    <div className="app">
       <header className="header">
         <div className="navbar">
           <div className="left-section">
-            <div className="logo-container">
-              <div className="logo-icon"><Zap size={20} /></div>
-              <span className="logo-text">Snap<span className="logo-text-highlight">solve</span></span>
+            <button className="back-btn" onClick={() => navigate(-1)}>
+              <FiArrowLeft size={20} />
+            </button>
+            <div className="logo">
+              <div className="logo-icon"><FiZap size={20} /></div>
+              <span className="logo-text">Snap<span className="highlight">solve</span></span>
             </div>
           </div>
 
           <nav className="nav">
             <ul>
-              {linkiNawigacji.map((el, idx) => (
-                <li key={idx} className={el.aktywny ? 'active' : ''}>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (el.sciezka) navigate(el.sciezka);
-                    }}
-                  >
-                    {el.ikona}{el.tekst}
+              {navLinks.map((item, i) => (
+                <li key={i} className={item.active ? 'active' : ''}>
+                  <a href="#" onClick={(e) => {
+                    e.preventDefault();
+                    if (item.path) navigate(item.path);
+                  }}>
+                    {item.icon}{item.text}
                   </a>
                 </li>
               ))}
@@ -100,70 +110,50 @@ const Profile = () => {
           </nav>
 
           <div className="right-nav">
-            <button className="icon-btn"><Settings size={18} /></button>
-            <button className="icon-btn"><HelpCircle size={18} /></button>
-            <button className="icon-btn"><Moon size={18} /></button>
-            <button className="icon-btn"><Mail size={18} /></button>
-
-            <div className="user-profile">
-              <div className="avatar">
-                <span>BK</span>
-              </div>
+            <button className="icon-btn"><FiMail size={20} /></button>
+            <div className="user-profile" onClick={() => navigate('/profile')}>
+              <div className="avatar"><span>BK</span></div>
               <div className="user-info">
                 <div className="name">Basjan Kojko</div>
                 <div className="role">Student</div>
               </div>
-              <ChevronDown size={16} style={{ color: '#9d9d9d', marginLeft: '4px' }} />
+              <FiChevronDown size={16} />
             </div>
           </div>
         </div>
       </header>
 
-      {/* GŁÓWNA ZAWARTOŚĆ */}
-      <div className="main-container">
-        {/* SIDEBAR */}
+      <div className="main">
         <aside className="sidebar">
           <div className="profile-card">
             <div className="profile-header">
               <div className="profile-avatar">BK</div>
-              <h2 className="profile-name">{uzytkownik.imie}</h2>
-              <p className="profile-username">{uzytkownik.username}</p>
-              <p className="profile-school">{uzytkownik.szkola}</p>
+              <h2 className="profile-name">{user.name}</h2>
+              <p className="profile-username">{user.username}</p>
+              <p className="profile-school">{user.school}</p>
             </div>
-
-            <div className="profile-description">
-              <p>{uzytkownik.opis}</p>
+            <div className="profile-bio">
+              <p>{user.bio}</p>
             </div>
-
-            <div className="profile-stats">
-              <div className="stat-item">
-                <div className="stat-icon"></div>
-                <div className="stat-text"></div>
+            <div className="stats">
+              <div className="stat">
+                <div className="stat-num">23</div>
+                <div className="stat-label">Questions</div>
               </div>
-              <div className="stat-item">
-                <div className="stat-icon"></div>
-                <div className="stat-text"></div>
+              <div className="stat">
+                <div className="stat-num">47</div>
+                <div className="stat-label">Answers</div>
               </div>
-              <div className="stat-item">
-                <div className="stat-icon"></div>
-                <div className="stat-text"></div>
+              <div className="stat">
+                <div className="stat-num">156</div>
+                <div className="stat-label">Likes</div>
               </div>
             </div>
           </div>
 
-          <div className="interests-section">
+          <div className="interests">
             <h3>Interests</h3>
-            <div className="interest-tags">
-              <span className="tag">Hgagddf</span>
-              <span className="tag">Programming</span>
-              <span className="tag">Programming</span>
-              <span className="tag">Hgagddf</span>
-            </div>
-          </div>
-
-          <div className="interests-section">
-            <h3>Interests</h3>
-            <div className="interest-tags">
+            <div className="tags">
               <span className="tag">Hgagddf</span>
               <span className="tag">Programming</span>
               <span className="tag">Programming</span>
@@ -172,7 +162,6 @@ const Profile = () => {
           </div>
         </aside>
 
-        {/* GŁÓWNA ZAWARTOŚĆ */}
         <main className="content">
           <div className="content-header">
             <div className="tabs">
@@ -189,75 +178,62 @@ const Profile = () => {
                 Questions
               </button>
             </div>
-            <div className="header-actions">
-              <button className="btn-secondary">Edit profile</button>
-              <button className="btn-secondary">Settings</button>
+            <div className="actions">
+              <button className="btn-edit">Edit profile</button>
+              <button className="btn-settings">Settings</button>
             </div>
           </div>
 
-          <div className="questions-list">
-            {pytania.map((pytanie) => (
-              <div className="question-card" key={pytanie.id}>
+          <div className="questions">
+            {questions.map((question) => (
+              <div className="question" key={question.id}>
                 <div className="question-header">
-                  <div className="user-avatar-small gray">{pytanie.user}</div>
-                  <div className="question-meta">
-                    <div className="placeholder-text short"></div>
-                    <div className="placeholder-text medium"></div>
+                  <div className="user-avatar">{question.author.substring(0, 2)}</div>
+                  <div className="meta">
+                    <div className="author-name">{question.author}</div>
+                    <div className="author-time">{question.timeAgo}</div>
                   </div>
-                  <button className="menu-btn"><MoreVertical size={16} /></button>
+                  <button className="menu-btn"><FiMoreVertical size={16} /></button>
                 </div>
                 
-                {pytanie.hasContent !== false && (
-                  <>
-                    <div className="question-content">
-                      {pytanie.hasHighlight && (
-                        <div className="highlighted-content">
-                          <div className="placeholder-text long"></div>
-                        </div>
-                      )}
-                      
-                      {pytanie.tags && (
-                        <div className="content-tags">
-                          {Array.from({ length: pytanie.tags }).map((_, i) => (
-                            <span key={i} className="content-tag"></span>
-                          ))}
-                        </div>
-                      )}
-                      
-                      {!pytanie.hasHighlight && (
-                        <div className="placeholder-text long"></div>
-                      )}
-                      
-                      {pytanie.hasHighlight && (
-                        <div className="placeholder-text extra-long"></div>
-                      )}
-                    </div>
+                <div className="question-content">
+                  <div className="question-highlight">
+                    <h3>{question.highlight}</h3>
+                  </div>
+                  
+                  <div className="content-tags">
+                    {question.tags.map((tag, i) => (
+                      <span key={i} className="content-tag">{tag}</span>
+                    ))}
+                  </div>
+                  
+                  <div className="question-text">
+                    <p>{question.content}</p>
+                  </div>
+                </div>
 
-                    <div className="question-footer">
-                      {pytanie.reactions.length > 0 ? (
-                        <div className="user-reactions">
-                          {pytanie.reactions.map((reaction, i) => (
-                            <div key={i} className="reaction-avatar">{reaction}</div>
-                          ))}
-                        </div>
-                      ) : <div></div>}
-                      
-                      <div className="engagement">
-                        {pytanie.hasHeart ? (
-                          <span className="engagement-item"><Heart size={16} /></span>
-                        ) : (
-                          <span className="engagement-item"><ThumbsUp size={14} /> {pytanie.likes}</span>
-                        )}
-                        <span className="engagement-item"><Eye size={14} /> {pytanie.views || ''}</span>
-                      </div>
-                    </div>
-                  </>
-                )}
+                <div className="question-footer">
+                  <div className="reactions">
+                    {Array.from({ length: question.responders }, (_, i) => (
+                      <div key={i} className="reaction">{String.fromCharCode(65 + i)}</div>
+                    ))}
+                  </div>
+                  
+                  <div className="engagement">
+                    <span className="engagement-item">
+                      <FiHeart size={14} /> {question.likes}
+                    </span>
+                    <span className="engagement-item">
+                      <FiEye size={14} /> {question.views}
+                    </span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </main>
       </div>
+    </div>
     </div>
   );
 };
