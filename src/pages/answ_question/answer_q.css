@@ -1,6 +1,46 @@
-/* === STYLES FOR QUESTION DETAIL PAGE === */
+/* Wymuszenie przewijania całej strony */
+.caloscMain {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-.header-center {
+.app {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: white;
+  height: 64px;
+}
+
+.question-detail-container {
+  flex: 1;
+  margin-top: 64px; /* wysokość header */
+  overflow-y: auto;
+  padding: 20px;
+}
+  
+  /* Header statyczny */
+  .header-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .header-center {
     flex: 1;
     display: flex;
     justify-content: center;
@@ -32,6 +72,8 @@
     padding: 24px;
     gap: 24px;
     min-height: calc(100vh - 80px);
+    margin-top: 80px; /* żeby contentu nie zasłaniał header */
+    padding-bottom: 100px; /* dodatkowy padding na dole */
   }
   
   .question-detail-main {
@@ -149,29 +191,7 @@
     background: white;
   }
   
-  .answers-list {
-    max-height: 80vh;
-    overflow-y: auto;
-    padding-right: 8px;
-  }
-  
-  .answers-list::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  .answers-list::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 3px;
-  }
-  
-  .answers-list::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
-  }
-  
-  .answers-list::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-  }
+
   
   /* Karta odpowiedzi */
   .answer-card {
@@ -352,7 +372,7 @@
     align-items: center;
     gap: 6px;
     padding: 8px 16px;
-    background: #3b82f6;
+    background: #1e2b40;
     color: white;
     border: none;
     border-radius: 6px;
@@ -459,6 +479,7 @@
     .question-detail-container {
       flex-direction: column;
       gap: 16px;
+      margin-top: 70px; /* mniejszy margines na mobile */
     }
     
     .question-title {
@@ -471,10 +492,6 @@
     
     .user-avatar {
       align-self: flex-start;
-    }
-    
-    .answers-list {
-      max-height: 60vh;
     }
     
     .answers-header {

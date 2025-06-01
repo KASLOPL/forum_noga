@@ -1,7 +1,6 @@
 import * as React from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import "../main/main.css"; // główne style
 import "./answer_q.css"; // style dla tej strony
 
 // Ikony z react-icons
@@ -74,17 +73,21 @@ function QuestionDetail() {
     }
   ]);
 
-  // Sprawdzenie, czy użytkownik jest zalogowany
-  useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    if (!isLoggedIn || isLoggedIn !== 'true') {
-      navigate('/');
-    }
-  }, [navigate]);
+   // Funkcja do wyświetlania nazwy użytkownika
+   const getUserDisplayName = () => {
+    return currentUser?.userName || currentUser?.name || 'Guest';
+  };
+
+  // Funkcja do wyświetlania inicjałów użytkownika
+  const getUserInitials = () => {
+    const displayName = getUserDisplayName();
+    if (displayName === 'Guest') return 'GU';
+    return displayName.substring(0, 2).toUpperCase();
+  };
 
   const handleSendAnswer = () => {
     if (newAnswer.trim()) {
-      // Tutaj byłoby dodawanie odpowiedzi do bazy
+      // tutaj byłoby dodawanie odpowiedzi do bazy
       console.log("Nowa odpowiedź:", newAnswer);
       setNewAnswer("");
     }
@@ -94,8 +97,8 @@ function QuestionDetail() {
     <div className="caloscMain">
       <div className="app">
         
-        {/* HEADER - taki sam jak w main.js */}
-        <header className="header">
+        {/* HEADER - statyczny */}
+        <header className="header header-fixed">
           <div className="header-container">
             <div className="logo-container">
               <div className="logo">
@@ -128,7 +131,7 @@ function QuestionDetail() {
           </div>
         </header>
 
-        {/* MAIN CONTENT */}
+        {/* MAIN CONTENT - przewijalna cała strona */}
         <div className="question-detail-container">
           <main className="question-detail-main">
             
@@ -275,7 +278,7 @@ function QuestionDetail() {
 
           </main>
 
-          {/* RIGHT SIDEBAR - podobny do main.js */}
+          {/* RIGHT SIDEBAR */}
           <aside className="right-sidebar">
             <div className="related-questions">
               <h3>Related Questions</h3>
