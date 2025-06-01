@@ -47,7 +47,7 @@ const Pomoc = () => {
     { icon: <Home size={16} />, text: 'Start', active: false, path: '/main' },
     { icon: <Bell size={16} />, text: 'Powiadomienia', active: false },
     { icon: <Book size={16} />, text: 'Specjaliści', active: false },
-    { icon: <Message size={16} />, text: 'Moje pytania', active: false },
+    { icon: <Message size={16} />, text: 'Moje pytania', active: false, path: '/my_questions' },
     { icon: <Bookmark size={16} />, text: 'Zakładki', active: false, path: '/zakładki'}
   ];
   
