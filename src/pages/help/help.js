@@ -1,149 +1,150 @@
 import React, { useState } from 'react';
 import './help.css';
 import {
-  FiSearch as SzukajIkona,
-  FiArrowLeft as StrzalkaLewo,
-  FiBell as Dzwonek,
-  FiHome as Dom,
-  FiBookOpen as Ksiazka,
-  FiMessageSquare as Wiadomosc,
+  FiSearch as SearchIcon,
+  FiArrowLeft as BackArrow,
+  FiBell as Bell,
+  FiHome as Home,
+  FiBookOpen as Book,
+  FiMessageSquare as Message,
   FiPlus as Plus,
   FiMinus as Minus,
-  FiZap as Piorun,
-  FiChevronDown as StrzalkaDol,
-  FiBookmark as Zakladka
+  FiZap as Lightning,
+  FiChevronDown as ArrowDown,
+  FiBookmark as Bookmark
 } from 'react-icons/fi';
 
 import { useNavigate } from 'react-router-dom';
 
 const Pomoc = () => {
-  const nawiguj = useNavigate();
+  const navigate = useNavigate();
 
-  const [aktywnePytanie, ustawAktywnePytanie] = useState(2);
-  const [tekstWyszukiwania, ustawTekstWyszukiwania] = useState('');
+// KTORE PYTANIE JEST ROZWINIETE, tekst w polu wyszukiwania
+  const [openQuestion, setOpenQuestion] = useState(2);
+  const [searchText, setSearchText] = useState('');
 
-  const uzytkownik = { imie: 'Gość' };
+  const user = { name: 'Gość' };
 
-  const tematyPomocnicze = [
-    { tytul: 'Jak zacząć', opis: 'Podstawy korzystania ze SnapSolve i jak zadać pierwsze pytanie.' },
-    { tytul: 'Zarządzanie kontem', opis: 'Zarządzaj swoim profilem, ustawieniami i preferencjami konta.' },
-    { tytul: 'Zadawanie pytań', opis: 'Najlepsze praktyki, aby zadawać pytania i otrzymywać lepsze odpowiedzi.' },
-    { tytul: 'Znajdowanie ekspertów', opis: 'Jak połączyć się ze specjalistami w Twojej dziedzinie.' },
-    { tytul: 'Zakładki i zapisane', opis: 'Organizuj i zapisuj ważne pytania i odpowiedzi.' },
-    { tytul: 'Bezpieczeństwo i prywatność', opis: 'Poznaj nasze zasady społeczności i ustawienia prywatności.' }
+  const helpTopics = [
+    { title: 'Jak zacząć', desc: 'Podstawy korzystania ze SnapSolve i jak zadać pierwsze pytanie.' },
+    { title: 'Zarządzanie kontem', desc: 'Zarządzaj swoim profilem, ustawieniami i preferencjami konta.' },
+    { title: 'Zadawanie pytań', desc: 'Najlepsze praktyki, aby zadawać pytania i otrzymywać lepsze odpowiedzi.' },
+    { title: 'Znajdowanie ekspertów', desc: 'Jak połączyć się ze specjalistami w Twojej dziedzinie.' },
+    { title: 'Zakładki i zapisane', desc: 'Organizuj i zapisuj ważne pytania i odpowiedzi.' },
+    { title: 'Bezpieczeństwo i prywatność', desc: 'Poznaj nasze zasady społeczności i ustawienia prywatności.' }
   ];
 
-  const czestoZadawane = [
-    { pytanie: 'Jak zresetować hasło?', odpowiedz: 'Możesz zresetować hasło klikając „Zapomniałem hasła” na stronie logowania i postępując według instrukcji wysłanych na email.' },
-    { pytanie: 'Jak zmienić adres email?', odpowiedz: 'Przejdź do Ustawienia > Konto > Email, aby zaktualizować adres email. Będziesz musiał potwierdzić nowy email.' },
-    { pytanie: 'Gdzie znajdę swoje pytania i odpowiedzi?', odpowiedz: 'Swoje pytania znajdziesz w sekcji „Moje pytania” w menu bocznym, a odpowiedzi na stronie profilu.' },
-    { pytanie: 'Jak usunąć konto?', odpowiedz: 'Przejdź do Ustawienia > Konto > Usuń konto. Pamiętaj, że tej akcji nie można cofnąć.' },
-    { pytanie: 'Jak zgłosić problem lub nieodpowiednie treści?', odpowiedz: 'Użyj menu trzech kropek przy każdym poście, aby zgłosić treść lub skontaktuj się z zespołem wsparcia.' },
-    { pytanie: 'Czy moje dane są bezpieczne?', odpowiedz: 'Tak, używamy standardowego szyfrowania i zabezpieczeń, aby chronić Twoje dane osobowe.' }
+  const faqItems = [
+    { q: 'Jak zresetować hasło?', a: 'Możesz zresetować hasło klikając „Zapomniałem hasła" na stronie logowania i postępując według instrukcji wysłanych na email.' },
+    { q: 'Jak zmienić adres email?', a: 'Przejdź do Ustawienia > Konto > Email, aby zaktualizować adres email. Będziesz musiał potwierdzić nowy email.' },
+    { q: 'Gdzie znajdę swoje pytania i odpowiedzi?', a: 'Swoje pytania znajdziesz w sekcji „Moje pytania" w menu bocznym, a odpowiedzi na stronie profilu.' },
+    { q: 'Jak usunąć konto?', a: 'Przejdź do Ustawienia > Konto > Usuń konto. Pamiętaj, że tej akcji nie można cofnąć.' },
+    { q: 'Jak zgłosić problem lub nieodpowiednie treści?', a: 'Użyj menu trzech kropek przy każdym poście, aby zgłosić treść lub skontaktuj się z zespołem wsparcia.' },
+    { q: 'Czy moje dane są bezpieczne?', a: 'Tak, używamy standardowego szyfrowania i zabezpieczeń, aby chronić Twoje dane osobowe.' }
   ];
 
-  const linkiNawigacyjne = [
-    { ikona: <Dom size={16} />, tekst: 'Start', aktywny: false, sciezka: '/main' },
-    { ikona: <Dzwonek size={16} />, tekst: 'Powiadomienia', aktywny: false },
-    { ikona: <Ksiazka size={16} />, tekst: 'Specjaliści', aktywny: false },
-    { ikona: <Wiadomosc size={16} />, tekst: 'Moje pytania', aktywny: false },
-    { ikona: <Zakladka size={16} />, tekst: 'Zakładki', aktywny: false}
+  const navLinks = [
+    { icon: <Home size={16} />, text: 'Start', active: false, path: '/main' },
+    { icon: <Bell size={16} />, text: 'Powiadomienia', active: false },
+    { icon: <Book size={16} />, text: 'Specjaliści', active: false },
+    { icon: <Message size={16} />, text: 'Moje pytania', active: false },
+    { icon: <Bookmark size={16} />, text: 'Zakładki', active: false, path: '/zakładki'}
   ];
-
-  const wyszukaj = (e) => {
-    e.preventDefault();
-    if (tekstWyszukiwania.trim()) console.log('Szukam:', tekstWyszukiwania);
-  };
-
-  const przelaczFAQ = (index) => {
-    ustawAktywnePytanie(aktywnePytanie === index ? null : index);
+  
+  // jesli klikasz otwarte pytanie zzamyka uzywa null jesli na odwrot index 
+  const toggleFAQ = (idx) => {
+    setOpenQuestion(openQuestion === idx ? null : idx);
   };
 
   return (
     <div className="calosc">
       <div className="app-container">
 
-        {/* NAGŁÓWEK */}
+        {/* HEADER */}
         <header className="header">
           <div className="navbar">
             <div className="left-section">
-              <button className="back-button" onClick={() => nawiguj(-1)}>
-                <StrzalkaLewo size={20} />
+              {/* cofanie do poprzednio otwartej strony */}
+              <button className="back-button" onClick={() => navigate(-1)}>
+                <BackArrow size={20} />
               </button>
 
               <div className="logo-container">
-                <div className="logo-icon"><Piorun size={20} /></div>
+                <div className="logo-icon"><Lightning size={20} /></div>
                 <span className="logo-text">Snap<span className="logo-text-highlight">solve</span></span>
               </div>
             </div>
 
+            {/* menu z linkami */}
             <nav className="nav">
               <ul>
-                {linkiNawigacyjne.map((el, idx) => (
-                  <li key={idx} className={el.aktywny ? 'active' : ''}>
+                {/* lista linkow np main help itp odnoszenie */}
+                {navLinks.map((link, i) => (
+                  <li key={i} className={link.active ? 'active' : ''}>
                     <a
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        if (el.sciezka) nawiguj(el.sciezka);
+                        if (link.path) navigate(link.path);
                       }}
                     >
-                      {el.ikona}{el.tekst}
+                      {link.icon}{link.text}
                     </a>
                   </li>
                 ))}
               </ul>
             </nav>
 
+            {/* powiadomienia + profil uzytkownika */}
             <div className="right-nav">
-              <button className="icon-btn"><Dzwonek size={20} /></button>
+              <button className="icon-btn"><Bell size={20} /></button>
 
               <div
-                className="user-profile"
-                onClick={() => nawiguj('/profile')}
-                role="button"
-                tabIndex={0}
-                style={{ cursor: 'pointer' }}
+                className="user-profile" onClick={() => navigate('/profile')}
+                role="button" style={{ cursor: 'pointer' }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
-                    nawiguj('/profile');
+                    navigate('/profile');
                   }
                 }}
                 aria-label="Profil użytkownika"
               >
                 <div className="avatar">
-                  <span>{uzytkownik.imie.substring(0, 2)}</span>
+                  {/* dwie peirwsze litery w logo profilu */}
+                  <span>{user.name.substring(0, 2)}</span>
                 </div>
                 <div className="user-info">
-                  <div className="name">{uzytkownik.imie}</div>
+                  <div className="name">{user.name}</div>
                   <div className="role">Student</div>
                 </div>
-                <StrzalkaDol size={16} style={{ color: '#9d9d9d', marginLeft: '4px' }} />
+                <ArrowDown size={16} style={{ color: '#9d9d9d', marginLeft: '4px' }} />
               </div>
             </div>
           </div>
         </header>
 
-        {/* GŁÓWNA TREŚĆ */}
+        {/* MAIN */}
         <main className="main">
 
-          {/* WYSZUKIWARKA */}
+          {/* SEARCH */}
           <section className="search-section">
             <h1>W czym możemy <span className="highlight">pomóc</span>?</h1>
-            <form className="search-container" onSubmit={wyszukaj}>
-              <div className="search-icon"><SzukajIkona size={20} /></div>
+            <div className="search-container">
+              <div className="search-icon"><SearchIcon size={20} /></div>
               <input
                 type="text"
                 placeholder="Wpisz, czego szukasz..."
-                value={tekstWyszukiwania}
-                onChange={(e) => ustawTekstWyszukiwania(e.target.value)}
+                value={searchText}
+                // zapamietanie wpisanego tekstu w search - przechowanie go do pozniejszego uzycia 
+                onChange={(e) => setSearchText(e.target.value)}
               />
-              <button type="submit" className="search-btn">Szukaj</button>
-            </form>
+              <button type="button" className="search-btn">Szukaj</button>
+            </div>
 
             <div className="top-searches">
               <h3>Popularne wyszukiwania</h3>
               <div className="search-links">
+                {/* 4 linki tekstowe nic nie robia , nie przeladowuja strony */}
                 {['Odzyskiwanie konta', 'Zadawanie pytań', 'Znajdowanie ekspertów', 'Ustawienia prywatności'].map((txt, i) => (
                   <a key={i} href="#" onClick={(e) => e.preventDefault()}>{txt}</a>
                 ))}
@@ -151,22 +152,23 @@ const Pomoc = () => {
             </div>
           </section>
 
-          {/* TEMATY POMOCY */}
+          {/* QUESTIONS - POMOC */}
           <section className="topics-section">
             <h2>Przeglądaj tematy</h2>
             <div className="topics-grid">
-              {tematyPomocnicze.map((temat, idx) => (
-                <div className="topic-card" key={idx}>
+              {/* dla kazdego temtu tworzy karte z opisem i tytulem + link */}
+              {helpTopics.map((topic, i) => (
+                <div className="topic-card" key={i}>
                   <div className="topic-icon"></div>
-                  <h3>{temat.tytul}</h3>
-                  <p>{temat.opis}</p>
+                  <h3>{topic.title}</h3>
+                  <p>{topic.desc}</p>
                   <a href="#" className="see-detail" onClick={(e) => e.preventDefault()}>Zobacz więcej →</a>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* FAQ */}
+          {/* PYTANIA ZADAWANE */}
           <section className="faq-section">
             <h2>Najczęściej zadawane pytania</h2>
             <p className="faq-description">
@@ -174,16 +176,19 @@ const Pomoc = () => {
             </p>
 
             <div className="faq-container">
-              {czestoZadawane.map((item, idx) => (
-                <div className={`faq-item ${aktywnePytanie === idx ? 'active' : ''}`} key={idx}>
-                  <button className="faq-question" onClick={() => przelaczFAQ(idx)}>
+              {/* czestozadawane => jesli pytanie aktywne */}
+              {faqItems.map((item, i) => (
+                <div className={`faq-item ${openQuestion === i ? 'active' : ''}`} key={i}>
+                  <button className="faq-question" onClick={() => toggleFAQ(i)}>
                     <span className="faq-icon">
-                      {aktywnePytanie === idx ? <Minus size={16} /> : <Plus size={16} />}
+                      {/* WTEDY ikona minus albo plus */}
+                      {openQuestion === i ? <Minus size={16} /> : <Plus size={16} />}
                     </span>
-                    <span>{item.pytanie}</span>
+                    <span>{item.q}</span>
                   </button>
-                  <div className={`faq-answer ${aktywnePytanie === idx ? 'visible' : ''}`}>
-                    <p>{item.odpowiedz}</p>
+                  {/* jesli pytanie otwarte dodaje visible jesli nie bez  */}
+                  <div className={`faq-answer ${openQuestion === i ? 'visible' : ''}`}>
+                    <p>{item.a}</p>
                   </div>
                 </div>
               ))}

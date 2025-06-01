@@ -82,8 +82,8 @@
   gap: 8px;
 }
 
-.calosc .logo-icon, .calosc .avatar {
-  border-radius: 50%;
+.calosc .logo-icon {
+  border-radius: 0%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,6 +91,20 @@
   font-size: 14px;
   font-weight: 500;
 }
+
+.calosc .avatar {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+
+}
+
+
+
 
 .calosc .logo-icon {
   background-color: #a9b18d;
