@@ -4,10 +4,10 @@ import { Heart, Bookmark } from 'lucide-react';
 import { FiBookmark, FiHome, FiLogOut, FiMessageSquare, FiPlus, FiSettings, FiUser, FiUsers, FiHelpCircle, FiZap } from 'react-icons/fi';
 import './zakładki.css';
 
-// Custom hook for bookmarks management
 function useBookmarks() {
   const [bookmarks, setBookmarks] = useState(() => {
     try {
+      // zakladki w localStorage - pamiec przegladarki ladowe po starcie dopiero
       const saved = localStorage.getItem("bookmarks");
       return saved ? JSON.parse(saved) : [];
     } catch {
@@ -15,6 +15,7 @@ function useBookmarks() {
     }
   });
 
+  // zapisuje nowy stan zakladek do localStorage - po usunieciu np
   const saveBookmarks = useCallback((newBookmarks) => {
     try {
       localStorage.setItem("bookmarks", JSON.stringify(newBookmarks));
@@ -23,8 +24,10 @@ function useBookmarks() {
     }
   }, []);
 
+  // automatyczny zapis gdy cos sie zmiania w zakladkach 
   useEffect(() => saveBookmarks(bookmarks), [bookmarks, saveBookmarks]);
 
+  // usuwa albo dodaje zakladke w zaleznosci czy istnieje juz
   const toggleBookmark = useCallback((item) => {
     setBookmarks(prev => {
       const exists = prev.some(b => b.id === item.id);
@@ -32,6 +35,7 @@ function useBookmarks() {
     });
   }, []);
 
+  // usuwa zakladki po ich id 
   const removeBookmark = useCallback((id) => {
     setBookmarks(prev => prev.filter(b => b.id !== id));
   }, []);
@@ -39,8 +43,9 @@ function useBookmarks() {
   return { bookmarks, toggleBookmark, removeBookmark };
 }
 
-// Bookmark item component
+// rect.memo - zeby recat nie generowal od nowa tej samej zakladki w ktorej nic sie nie zmienilo
 const BookmarkItem = React.memo(({ bookmark, onRemove }) => {
+  // usuwa zakladke po kliknieciu przycisku
   const handleRemove = useCallback(() => onRemove(bookmark.id), [bookmark.id, onRemove]);
 
   return (
@@ -74,7 +79,7 @@ const BookmarkItem = React.memo(({ bookmark, onRemove }) => {
   );
 });
 
-// Empty state component
+// strona kiedy niema zapisanych zadnych zakladek 
 const EmptyState = React.memo(() => (
   <div className="empty-state">
     <div className="empty-state-icon">
@@ -86,16 +91,21 @@ const EmptyState = React.memo(() => (
 ));
 
 function Zakladki() {
+  // pzremieszczanie sie bez przeladowywania strony 
   const navigate = useNavigate();
+  // aktywna podstrona teraz
   const [activeItem, setActiveItem] = useState('/bookmarks');
+  // hook do zarzadzania zakladkami
   const { bookmarks, removeBookmark } = useBookmarks();
 
+  // przechodznie do innych stron
   const handleNavigation = useCallback((path) => {
     setActiveItem(path);
     navigate(path);
   }, [navigate]);
 
   const handleLogout = useCallback(() => {
+    // usuwa z localStorage informacje o zalogowanym urzytkowniku - przenosi do logowania
     try {
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('currentUser');
@@ -105,7 +115,6 @@ function Zakladki() {
     navigate('/');
   }, [navigate]);
 
-  // Auth check
   useEffect(() => {
     try {
       const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -115,7 +124,7 @@ function Zakladki() {
     }
   }, [navigate]);
 
-  // Navigation items config
+  // NAWIGACJA 
   const navItems = [
     { path: '/main', icon: FiHome, label: 'Home' },
     { path: '/notifications', icon: FiMessageSquare, label: 'Notifications' },
@@ -124,11 +133,13 @@ function Zakladki() {
     { path: '/bookmarks', icon: FiBookmark, label: 'Bookmarks' }
   ];
 
+  // POD NAWIGACJA
   const secondaryNavItems = [
     { path: '/settings', icon: FiSettings, label: 'Settings' },
     { path: '/help', icon: FiHelpCircle, label: 'Help & FAQ' }
   ];
 
+  // podswietlenie zaladowanej teraz strony np
   const NavItem = ({ item }) => {
     const Icon = item.icon;
     return (
@@ -144,6 +155,7 @@ function Zakladki() {
   };
 
   return (
+    <div className='bookall'>
     <div className="template-app">
       <header className="template-header">
         <div className="template-header-container">
@@ -164,6 +176,7 @@ function Zakladki() {
           <div className="template-sidebar-content">
             <div className="template-add-question-button-container">
               <button 
+                // przenosi do formularza
                 className="template-add-question-button" 
                 onClick={() => handleNavigation('/addquestion')}
               >
@@ -172,17 +185,21 @@ function Zakladki() {
               </button>
             </div>
 
+            {/* tablica opisujaca kazda czesc nawigacji, nacitem ikona i + nazwa */}
             <nav className="template-sidebar-nav">
               {navItems.map(item => <NavItem key={item.path} item={item} />)}
             </nav>
 
+            {/* menu z settings i help */}
             <div className="template-sidebar-nav-secondary">
               {secondaryNavItems.map(item => <NavItem key={item.path} item={item} />)}
             </div>
           </div>
 
+          {/* wylogowywanie => do handleLogout */}
           <div className="template-sidebar-footer">
             <button className="template-sign-out-button" onClick={handleLogout}>
+              {/* ikona  */}
               <FiLogOut /> Sign out
             </button>
           </div>
@@ -190,9 +207,13 @@ function Zakladki() {
 
         <main className="template-main-content">
           <div className="bookmarks-main-content">
+            {/* sprawdza czy jest jakas zakladka czy nie  */}
             {bookmarks.length === 0 ? (
+              // jesli niema nic do funkcji EmptyState
               <EmptyState />
             ) : (
+              // jesli nie jest pusta kazda zakladka swoje osobne dane oraz 
+              // podlaczoan do funkcji ktora daje mozliwosc jej usuniecia 
               <div className="bookmark-list">
                 {bookmarks.map(bookmark => (
                   <BookmarkItem
@@ -206,6 +227,7 @@ function Zakladki() {
           </div>
         </main>
       </div>
+    </div>
     </div>
   );
 }

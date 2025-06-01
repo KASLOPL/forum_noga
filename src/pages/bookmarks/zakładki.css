@@ -1,20 +1,20 @@
 /* Reset */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+.bookall * { margin: 0; padding: 0; box-sizing: border-box; }
 
-body {
+.bookall body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: #fafafa;
   color: #272d33;
   overflow: hidden;
 }
 
-a { text-decoration: none; color: inherit; }
-button { background: none; border: none; cursor: pointer; font-family: inherit; }
+.bookall a { text-decoration: none; color: inherit; }
+.bookall button { background: none; border: none; cursor: pointer; font-family: inherit; }
 
 /* Layout */
-.template-app { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+.bookall .template-app { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-.template-header {
+.bookall .template-header {
   background: white;
   border-bottom: 1px solid #e7e7e7;
   padding: 8px 16px;
@@ -22,16 +22,16 @@ button { background: none; border: none; cursor: pointer; font-family: inherit; 
   z-index: 10;
 }
 
-.template-header-container {
+.bookall .template-header-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 64px;
 }
 
-.template-logo { display: flex; align-items: center; gap: 8px; }
+.bookall .template-logo { display: flex; align-items: center; gap: 8px; }
 
-.template-logo-icon {
+.bookall .template-logo-icon {
   background: #a9b18d;
   border-radius: 4px;
   padding: 4px;
@@ -41,12 +41,12 @@ button { background: none; border: none; cursor: pointer; font-family: inherit; 
   color: white;
 }
 
-.template-logo-text { font-weight: 600; color: #272d33; }
-.template-logo-text-highlight { color: #91a160; }
+.bookall .template-logo-text { font-weight: 600; color: #272d33;  font-size: 20px;}
+.bookall .template-logo-text-highlight { color: #91a160; }
 
-.template-header-title h1 { font-size: 18px; font-weight: 600; color: #272d33; }
+.bookall .template-header-title h1 { font-size: 18px; font-weight: 600; color: #272d33; }
 
-.template-main-container {
+.bookall .template-main-container {
   display: flex;
   flex: 1;
   height: calc(100vh - 80px);
@@ -54,7 +54,7 @@ button { background: none; border: none; cursor: pointer; font-family: inherit; 
 }
 
 /* Sidebar */
-.template-sidebar {
+.bookall .template-sidebar {
   width: 230px;
   border-right: 1px solid #e7e7e7;
   background: white;
@@ -64,11 +64,11 @@ button { background: none; border: none; cursor: pointer; font-family: inherit; 
   height: 100%;
 }
 
-.template-sidebar-content { flex: 1; padding: 16px 0; overflow-y: auto; }
+.bookall .template-sidebar-content { flex: 1; padding: 16px 0; overflow-y: auto; }
 
-.template-add-question-button-container { padding: 0 16px; margin-bottom: 16px; }
+.bookall .template-add-question-button-container { padding: 0 16px; margin-bottom: 16px; }
 
-.template-add-question-button {
+.bookall .template-add-question-button {
   width: 100%;
   background: #272d33;
   color: white;
@@ -82,18 +82,18 @@ button { background: none; border: none; cursor: pointer; font-family: inherit; 
   transition: background-color 0.2s;
 }
 
-.template-add-question-button:hover { background: #181e24; }
+.bookall .template-add-question-button:hover { background: #181e24; }
 
-.template-plus-icon-container {
+.bookall .template-plus-icon-container {
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 2px;
   padding: 2px;
   display: flex;
 }
 
-.template-sidebar-nav { margin-bottom: 24px; }
+.bookall .template-sidebar-nav { margin-bottom: 24px; }
 
-.template-nav-item {
+.bookall .template-nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -103,28 +103,28 @@ button { background: none; border: none; cursor: pointer; font-family: inherit; 
   cursor: pointer;
 }
 
-.template-nav-item:hover { background: #f2f2f2; }
+.bookall .template-nav-item:hover { background: #f2f2f2; }
 
-.template-nav-item.active {
+.bookall .template-nav-item.active {
   background: #e6ead9;
   color: #272d33;
   border-left: 2px solid #a9b18d;
   font-weight: 500;
 }
 
-.template-sidebar-nav-secondary {
+.bookall .template-sidebar-nav-secondary {
   margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid #e7e7e7;
 }
 
-.template-sidebar-footer {
+.bookall .template-sidebar-footer {
   padding: 16px;
   border-top: 1px solid #e7e7e7;
   flex-shrink: 0;
 }
 
-.template-sign-out-button {
+.bookall .template-sign-out-button {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -138,10 +138,10 @@ button { background: none; border: none; cursor: pointer; font-family: inherit; 
   transition: background-color 0.2s;
 }
 
-.template-sign-out-button:hover { background: #8d976c; }
+.bookall .template-sign-out-button:hover { background: #8d976c; }
 
 /* Main content */
-.template-main-content {
+.bookall .template-main-content {
   flex: 1;
   padding: 24px;
   display: flex;
@@ -151,10 +151,10 @@ button { background: none; border: none; cursor: pointer; font-family: inherit; 
   background: #fafafa;
 }
 
-.bookmarks-main-content { width: 100%; max-width: 800px; margin: 0 auto; }
+.bookall .bookmarks-main-content { width: 100%; max-width: 800px; margin: 0 auto; }
 
 /* Empty state */
-.empty-state {
+.bookall .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -164,21 +164,21 @@ button { background: none; border: none; cursor: pointer; font-family: inherit; 
   color: #9d9d9d;
 }
 
-.empty-state-icon { margin-bottom: 16px; color: #cacfb9; }
+.bookall .empty-state-icon { margin-bottom: 16px; color: #cacfb9; }
 
-.empty-state p:first-of-type {
+.bookall .empty-state p:first-of-type {
   font-size: 18px;
   font-weight: 500;
   margin-bottom: 8px;
   color: #5e5e5e;
 }
 
-.empty-state p:last-of-type { font-size: 14px; max-width: 400px; }
+.bookall .empty-state p:last-of-type { font-size: 14px; max-width: 400px; }
 
 /* Bookmarks */
-.bookmark-list { display: flex; flex-direction: column; gap: 16px; }
+.bookall .bookmark-list { display: flex; flex-direction: column; gap: 16px; }
 
-.bookmark-item {
+.bookall .bookmark-item {
   background: white;
   border-radius: 8px;
   padding: 20px;
@@ -190,14 +190,14 @@ button { background: none; border: none; cursor: pointer; font-family: inherit; 
   align-items: flex-start;
 }
 
-.bookmark-item:hover {
+.bookall .bookmark-item:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
 }
 
-.bookmark-content { display: flex; align-items: flex-start; gap: 16px; flex: 1; }
+.bookall .bookmark-content { display: flex; align-items: flex-start; gap: 16px; flex: 1; }
 
-.bookmark-avatar {
+.bookall .bookmark-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -211,9 +211,9 @@ button { background: none; border: none; cursor: pointer; font-family: inherit; 
   flex-shrink: 0;
 }
 
-.bookmark-text { flex: 1; }
+.bookall .bookmark-text { flex: 1; }
 
-.bookmark-title {
+.bookall .bookmark-title {
   font-size: 16px;
   font-weight: 600;
   color: #272d33;
@@ -221,23 +221,23 @@ button { background: none; border: none; cursor: pointer; font-family: inherit; 
   line-height: 1.4;
 }
 
-.bookmark-description {
+.bookall .bookmark-description {
   color: #5e5e5e;
   line-height: 1.6;
   margin-bottom: 8px;
   font-size: 14px;
 }
 
-.bookmark-separator { font-size: 12px; color: #9d9d9d; }
+.bookall .bookmark-separator { font-size: 12px; color: #9d9d9d; }
 
-.bookmark-actions { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+.bookall .bookmark-actions { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
 
-.bookmark-likes { display: flex; align-items: center; gap: 6px; color: #5e5e5e; font-size: 14px; }
+.bookall .bookmark-likes { display: flex; align-items: center; gap: 6px; color: #5e5e5e; font-size: 14px; }
 
-.heart-icon { color: #a9b18d; }
-.likes-count { font-size: 14px; font-weight: 600; color: #272d33; }
+.bookall .heart-icon { color: #a9b18d; }
+.bookall .likes-count { font-size: 14px; font-weight: 600; color: #272d33; }
 
-.bookmark-button {
+.bookall .bookmark-button {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -248,14 +248,14 @@ button { background: none; border: none; cursor: pointer; font-family: inherit; 
   transition: background-color 0.2s;
 }
 
-.bookmark-button:hover { background: #f2f2f2; }
+.bookall .bookmark-button:hover { background: #f2f2f2; }
 
-.bookmark-icon { fill: #a9b18d; transition: transform 0.2s; }
-.bookmark-button:hover .bookmark-icon { transform: scale(1.1); }
+.bookall .bookmark-icon { fill: #a9b18d; transition: transform 0.2s; }
+.bookall .bookmark-button:hover .bookmark-icon { transform: scale(1.1); }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .template-sidebar { width: 200px; }
-  .bookmark-item { padding: 16px; }
-  .bookmark-actions { margin-left: 12px; }
+  .bookall .template-sidebar { width: 200px; }
+  .bookall .bookmark-item { padding: 16px; }
+  .bookall .bookmark-actions { margin-left: 12px; }
 }
