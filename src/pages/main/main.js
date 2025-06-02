@@ -86,7 +86,7 @@ function Main() {
     if (displayName === 'Guest') return 'GU';
     return displayName.substring(0, 2).toUpperCase();
   };
-
+console.log('questions:', questions, 'isArray:', Array.isArray(questions));
   return (
     <div className="caloscMain">
       <div className="app">
@@ -175,7 +175,7 @@ function Main() {
             <div className="posts-count">{questions.length} posts</div>
             <div className="question-cards-container">
               <div className="question-cards">
-                {questions.map((question) => (
+                {Array.isArray(questions) && questions.map((question) => (
                   <div 
                     key={question.id} 
                     className="question-card"
