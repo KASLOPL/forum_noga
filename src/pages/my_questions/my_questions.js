@@ -2,6 +2,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import "./my_questions.css";
+import defaultQuestions from '../../data/questions';  
 import {
   FiBookmark, FiChevronDown, FiChevronUp, FiEye, FiHeart, FiHelpCircle,
   FiHome, FiLogOut, FiMessageSquare, FiMoreVertical, FiPlus, FiSettings, 
@@ -30,74 +31,7 @@ const settingsItems = [
   { icon: FiHelpCircle, text: "Help & FAQ", path: "/help" }
 ];
 
-// Przykładowe pytania
-const questions = [
-  { 
-    id: 1, 
-    author: "You", 
-    timeAgo: "2 dni temu", 
-    title: "Jak zoptymalizować React hooks w dużych aplikacjach?", 
-    tags: ["React", "Hooks", "Performance"], 
-    content: "Pracuję nad dużym projektem React i mam problem z wydajnością...",
-    fullContent: "Pracuję nad dużym projektem React i mam problem z wydajnością komponentów. Używam wielu useState i useEffect hooków, ale aplikacja staje się coraz wolniejsza. Czy są jakieś najlepsze praktyki dla optymalizacji hooków w dużych aplikacjach? Szczególnie interesuje mnie jak unikać niepotrzebnych rerenderów.", 
-    likes: 15, 
-    views: 234, 
-    responseCount: 3,
-    status: "complete"
-  },
-  { 
-    id: 2, 
-    author: "You", 
-    timeAgo: "5 dni temu", 
-    title: "Problem z CSS Grid w responsive design", 
-    tags: ["CSS", "Grid", "Responsive"], 
-    content: "Mam problem z układem CSS Grid na różnych urządzeniach...",
-    fullContent: "Tworzę responsive layout używając CSS Grid, ale na mniejszych ekranach układ się psuje. Próbowałem różnych podejść z media queries, ale nie mogę uzyskać pożądanego efektu. Czy ktoś może podpowiedzieć jak prawidłowo obsłużyć breakpointy w Grid?", 
-    likes: 8, 
-    views: 167, 
-    responseCount: 2,
-    status: "in_progress"
-  },
-  { 
-    id: 3, 
-    author: "You", 
-    timeAgo: "1 tydzień temu", 
-    title: "Najlepsze praktyki dla API calls w React", 
-    tags: ["React", "API", "JavaScript"], 
-    content: "Szukam najlepszych praktyk dla wykonywania zapytań API...",
-    fullContent: "Pracuję nad aplikacją która wykonuje dużo zapytań do API. Używam fetch w useEffect, ale zastanawiam się czy to najlepsze rozwiązanie. Czy powinienem używać bibliotek jak Axios czy React Query? Jakie są zalety i wady różnych podejść?", 
-    likes: 23, 
-    views: 445, 
-    responseCount: 5,
-    status: "complete"
-  },
-  { 
-    id: 4, 
-    author: "You", 
-    timeAgo: "2 tygodnie temu", 
-    title: "TypeScript vs JavaScript w nowych projektach", 
-    tags: ["TypeScript", "JavaScript", "Development"], 
-    content: "Zastanawiam się czy warto przejść na TypeScript...",
-    fullContent: "Rozpoczynam nowy projekt i zastanawiam się czy użyć TypeScript czy zostać przy JavaScript. Słyszałem wiele pozytywnych opinii o TS, ale martwię się o krzywą uczenia i dodatkową złożoność. Czy dla średniego projektu React warto inwestować czas w naukę TypeScript?", 
-    likes: 12, 
-    views: 298, 
-    responseCount: 4,
-    status: "in_progress"
-  },
-  { 
-    id: 5, 
-    author: "You", 
-    timeAgo: "3 tygodnie temu", 
-    title: "Optymalizacja obrazów na stronie internetowej", 
-    tags: ["Performance", "Images", "Web"], 
-    content: "Moja strona ładuje się wolno z powodu dużych obrazów...",
-    fullContent: "Moja strona internetowa ładuje się bardzo wolno, głównie z powodu dużej ilości obrazów. Próbowałem kompresji, ale jakość się pogorszyła. Czy są jakieś nowoczesne formaty obrazów które powinienem rozważyć? Jak obsłużyć lazy loading?", 
-    likes: 19, 
-    views: 356, 
-    responseCount: 6,
-    status: "in_progress"
-  }
-];
+
 
 // Hook do zarządzania zakładkami
 const useBookmarks = () => {
@@ -220,7 +154,7 @@ const QuestionCard = ({
     <div className="question-card-header" onClick={(e) => e.stopPropagation()}>
       <div className="question-author">
         <div className="avatar">
-          <span>{question.author === "You" ? "YU" : question.author.substring(0, 2)}</span>
+          <span>{question.author === "You" ? "YU" : (question.author || "??").substring(0, 2)}</span>
         </div>
         <div className="author-info">
           <div className="author-name">{question.author}</div>
@@ -288,6 +222,13 @@ const StatItem = ({ number, label, className }) => (
 
 // Główny komponent
 function MyQuestions() {
+
+  // Przykładowe pytania
+const [questions, setQuestions] = useState(() => {
+  const saved = localStorage.getItem("questions");
+  return saved ? JSON.parse(saved) : defaultQuestions;
+});
+
   const navigate = useNavigate();
   const [expandedQuestion, setExpandedQuestion] = useState(null);
   
@@ -311,6 +252,10 @@ function MyQuestions() {
   }, [navigate]);
 
   const stats = getStats(questions);
+
+const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+const userName = currentUser?.userName;
+console.log(userName)
 
   return (
     <div className="caloscMyQuestions">
@@ -337,14 +282,16 @@ function MyQuestions() {
             <div className="stats-banner">
               <StatItem number={stats.complete || 0} label="Complete" className="complete" />
               <StatItem number={stats.in_progress || 0} label="In Progress" className="in-progress" />
-              <StatItem number={stats.total} label="Total Questions" className="total" />
+              <StatItem number={questions.filter(q => q.author === userName).length} label="Total Questions" className="total" />
             </div>
             
-            <div className="posts-count">{questions.length} questions asked</div>
+            <div className="posts-count">{questions.filter(q => q.author === userName).length} questions asked</div>
             
             <div className="question-cards-container">
               <div className="question-cards">
-                {questions.map((question) => (
+                {questions
+                .filter((question) => question.author === userName)
+                .map((question) => (
                   <QuestionCard
                     key={question.id}
                     question={question}

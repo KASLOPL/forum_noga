@@ -147,7 +147,7 @@ function Main() {
                 <a href="#" className="nav-item active" onClick={(e) => { e.preventDefault(); handleNavigation('/main'); }}><FiHome /><span>Home</span></a>
                 <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/notifications'); }}><FiMessageSquare /><span>Notifications</span></a>
                 <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/specialists'); }}><FiUsers /><span>Specialists</span></a>
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/myquestions'); }}><FiUser /><span>My Questions</span></a>
+                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/my_questions'); }}><FiUser /><span>My Questions</span></a>
                 <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/zakładki'); }}><FiBookmark /><span>Bookmarks</span></a>
               </nav>
 
