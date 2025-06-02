@@ -9,15 +9,18 @@ import { ThumbsUp, Eye, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
+  // nawiagcja meidzy stronami
   const navigate = useNavigate();
   
   const user = {
+    // dane urzytkownika 
     name: 'Basjan Kojko',
     username: '@basjan.kojko',
     school: 'Zespół Szkół Energetycznych Technikum nr 13',
     bio: 'Klepię kod jak combo w ulubionych grze, bo nie ma lepszego uczucia niż zobaczyć jak wszystko w końcu działa 😎'
   };
 
+  // nawigacja 
   const navLinks = [
     { icon: <FiHome size={16} />, text: 'Home', active: false, path: '/main' }, 
     { icon: <FiMessageSquare size={16} />, text: 'Notifications', active: false },
@@ -26,8 +29,10 @@ const Profile = () => {
     { icon: <FiBookmark size={16} />, text: 'Bookmarks', active: false, path: '/zakładki'}
   ];
 
+  // ktora podstrona aktywna 
   const [activeTab, setActiveTab] = useState('Questions & Replies');
 
+  // dane pytan - pyatnia do zmiany tak ja na main
   const questions = [
     {
       id: 1,
@@ -82,6 +87,7 @@ const Profile = () => {
   return (
     <div className='Profall'>
     <div className="app">
+      {/* HEADER */}
       <header className="header">
         <div className="navbar">
           <div className="left-section">
@@ -96,6 +102,7 @@ const Profile = () => {
 
           <nav className="nav">
             <ul>
+              {/* klikniecia nawigacji - profil i nav */}
               {navLinks.map((item, i) => (
                 <li key={i} className={item.active ? 'active' : ''}>
                   <a href="#" onClick={(e) => {
@@ -126,6 +133,7 @@ const Profile = () => {
       <div className="main">
         <aside className="sidebar">
           <div className="profile-card">
+            {/* PROFIL - karta dane zle ale to z funkcjonalnoscia do naprawy  */}
             <div className="profile-header">
               <div className="profile-avatar">BK</div>
               <h2 className="profile-name">{user.name}</h2>
@@ -137,6 +145,7 @@ const Profile = () => {
             </div>
             <div className="stats">
               <div className="stat">
+                {/* statystki urzytkownika  */}
                 <div className="stat-num">23</div>
                 <div className="stat-label">Questions</div>
               </div>
@@ -152,6 +161,7 @@ const Profile = () => {
           </div>
 
           <div className="interests">
+            {/* TAGI urzytkownika  */}
             <h3>Interests</h3>
             <div className="tags">
               <span className="tag">Hgagddf</span>
@@ -166,6 +176,7 @@ const Profile = () => {
           <div className="content-header">
             <div className="tabs">
               <button 
+              // zmiana miedzy questions a questions i replies narazie bez roznicy
                 className={`tab ${activeTab === 'Questions & Replies' ? 'active' : ''}`}
                 onClick={() => setActiveTab('Questions & Replies')}
               >
@@ -178,47 +189,57 @@ const Profile = () => {
                 Questions
               </button>
             </div>
+            {/* przyciski settings i edit  - nie dzialaja dlatego bez onClick */}
             <div className="actions">
               <button className="btn-edit">Edit profile</button>
               <button className="btn-settings">Settings</button>
             </div>
           </div>
 
+          {/* kazde pytanie dane z tablicy jako osobny elemnt  */}
           <div className="questions">
             {questions.map((question) => (
               <div className="question" key={question.id}>
                 <div className="question-header">
+                  {/* inicjaly */}
                   <div className="user-avatar">{question.author.substring(0, 2)}</div>
                   <div className="meta">
                     <div className="author-name">{question.author}</div>
                     <div className="author-time">{question.timeAgo}</div>
                   </div>
+                  {/* ikona 3 kropek */}
                   <button className="menu-btn"><FiMoreVertical size={16} /></button>
                 </div>
                 
+                {/* tytul pytania  */}
                 <div className="question-content">
                   <div className="question-highlight">
                     <h3>{question.highlight}</h3>
                   </div>
                   
+                  {/* tagi pytania wybierane lososwo - wedlug tablicy */}
                   <div className="content-tags">
                     {question.tags.map((tag, i) => (
                       <span key={i} className="content-tag">{tag}</span>
                     ))}
                   </div>
                   
+                  {/* skrocy opis */}
                   <div className="question-text">
                     <p>{question.content}</p>
                   </div>
                 </div>
 
+                    
                 <div className="question-footer">
                   <div className="reactions">
+                    {/* liczba osob ktore odpowiedzialy */}
                     {Array.from({ length: question.responders }, (_, i) => (
                       <div key={i} className="reaction">{String.fromCharCode(65 + i)}</div>
                     ))}
                   </div>
                   
+                  {/* liczba polubien i wyswietlenia  */}
                   <div className="engagement">
                     <span className="engagement-item">
                       <FiHeart size={14} /> {question.likes}
