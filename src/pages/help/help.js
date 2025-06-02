@@ -22,8 +22,7 @@ const Pomoc = () => {
 // KTORE PYTANIE JEST ROZWINIETE, tekst w polu wyszukiwania
   const [openQuestion, setOpenQuestion] = useState(2);
   const [searchText, setSearchText] = useState('');
-
-  const user = { name: 'Gość' };
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
   const helpTopics = [
     { title: 'Jak zacząć', desc: 'Podstawy korzystania ze SnapSolve i jak zadać pierwsze pytanie.' },
@@ -54,6 +53,17 @@ const Pomoc = () => {
   // jesli klikasz otwarte pytanie zzamyka uzywa null jesli na odwrot index 
   const toggleFAQ = (idx) => {
     setOpenQuestion(openQuestion === idx ? null : idx);
+  };
+  // Funkcja do wyświetlania nazwy użytkownika
+  const getUserDisplayName = () => {
+    return currentUser?.userName || currentUser?.name || 'Guest';
+  };
+
+  // Funkcja do wyświetlania inicjałów użytkownika
+  const getUserInitials = () => {
+    const displayName = getUserDisplayName();
+    if (displayName === 'Guest') return 'GU';
+    return displayName.substring(0, 2).toUpperCase();
   };
 
   return (
@@ -110,11 +120,10 @@ const Pomoc = () => {
                 aria-label="Profil użytkownika"
               >
                 <div className="avatar">
-                  {/* dwie peirwsze litery w logo profilu */}
-                  <span>{user.name.substring(0, 2)}</span>
+                <span>{getUserInitials()}</span>
                 </div>
                 <div className="user-info">
-                  <div className="name">{user.name}</div>
+                <span className="user-name">{getUserDisplayName()}</span>
                   <div className="role">Student</div>
                 </div>
                 <ArrowDown size={16} style={{ color: '#9d9d9d', marginLeft: '4px' }} />

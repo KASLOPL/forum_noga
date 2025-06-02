@@ -73,8 +73,8 @@ function QuestionDetail() {
     }
   ]);
 
-   // Funkcja do wyświetlania nazwy użytkownika
-   const getUserDisplayName = () => {
+  // Funkcja do wyświetlania nazwy użytkownika
+  const getUserDisplayName = () => {
     return currentUser?.userName || currentUser?.name || 'Guest';
   };
 
@@ -118,11 +118,11 @@ function QuestionDetail() {
               <button className="icon-button"><FiMoon /></button>
               <button className="icon-button"><FiMail /></button>
               <div className="user-profile" onClick={() => navigate('/profile')}>
-                <div className="avatar">
-                  <span>{currentUser?.name?.substring(0, 2) || 'GU'}</span>
+              <div className="avatar">
+                  <span>{getUserInitials()}</span>
                 </div>
                 <div className="user-info">
-                  <span className="user-name">{currentUser?.name || 'Guest'}</span>
+                <span className="user-name">{getUserDisplayName()}</span>
                   <span className="user-role">Student</span>
                 </div>
                 <FiChevronDown className="dropdown-icon" />
@@ -248,8 +248,8 @@ function QuestionDetail() {
             <div className="add-answer-section">
               <h3>Your Answer</h3>
               <div className="answer-input-container">
-                <div className="user-avatar">
-                  <span>{currentUser?.name?.substring(0, 2) || 'GU'}</span>
+              <div className="user-avatar">
+                  <span>{getUserInitials()}</span>
                 </div>
                 <div className="answer-input-wrapper">
                   <textarea
