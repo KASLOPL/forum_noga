@@ -25,7 +25,7 @@ import {
   FiZap,
 } from "react-icons/fi";
 
-// Custom hook do obsługi bookmarks
+// Custom hook do obsługi bookmarks - zarzadza zakladkami uzrytkownika 
 const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState(() => {
     const saved = localStorage.getItem("bookmarks");
@@ -33,9 +33,11 @@ const useBookmarks = () => {
   });
 
   useEffect(() => {
+    // przy kazdej aktualizacji zakladki zapisuje zmiany w localStorage 
     localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
   }, [bookmarks]);
 
+  // dodawnaie usuwanie zakladek , usecallback - optymalizacja i sprawdza czy istnieje juz taki element w zakladkach 
   const toggleBookmark = useCallback((item) => {
     setBookmarks(prev => {
       const isBookmarked = prev.some(b => b.id === item.id);
@@ -53,10 +55,11 @@ function Main() {
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
-  // id pytania ktore jest rozwijane
+  // id pytania ktore jest rozwijane aktualnie 
   const [expandedQuestion, setExpandedQuestion] = useState(null);
   const { toggleBookmark, isBookmarked } = useBookmarks();
   
+  // dane do pytan 
   const [questions] = useState([
     {
       id: 1,
@@ -162,6 +165,7 @@ function Main() {
         {/* HEADER */}
         <header className="header">
           <div className="header-container">
+            {/* logo apliakcji i jego ikona  */}
             <div className="logo-container">
               <div className="logo">
                 <div className="logo-icon"><FiZap /></div>
@@ -169,6 +173,7 @@ function Main() {
               </div>
             </div>
 
+            {/* pasek wyszukiwania  */}
             <div className="search-group">
               <div className="search-container">
                 <div className="search-input-wrapper">
@@ -176,6 +181,7 @@ function Main() {
                   <input className="search-input" placeholder="Got a question? See if it's already asked!" type="text" />
                 </div>
               </div>
+              {/* przycisk do dodawnia pytan - add question */}
               <button className="add-button" onClick={() => handleNavigation('/addquestion')}>
                 <FiPlus />
               </button>
@@ -189,6 +195,7 @@ function Main() {
               <div className="divider"></div>
               <button className="icon-button"><FiMoon /></button>
               <button className="icon-button"><FiMail /></button>
+              {/* scierzka do profilu + awatar i nazwa */}
               <div className="user-profile" onClick={() => handleNavigation('/profile')}>
                 <div className="avatar">
                   <span>{getUserInitials()}</span>
@@ -209,6 +216,7 @@ function Main() {
           {/* SIDEBAR */}
           <aside className="sidebar">
             <div className="sidebar-content">
+              {/* nawigacja + ikony  */}
               <div className="add-question-button-container">
                 <button className="add-question-button" onClick={() => handleNavigation('/addquestion')}>
                   <span>ADD QUESTION</span>
@@ -218,6 +226,7 @@ function Main() {
 
               <nav className="sidebar-nav">
                 {/* zmienione na navigate zamiast href, home do main.js */}
+                {/* active ma aktulanie wyswietlana strona (mozliwosc wyroznienia ) */}
                 <a href="#" className="nav-item active" onClick={(e) => { e.preventDefault(); handleNavigation('/main'); }}><FiHome /><span>Home</span></a>
                 <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/notifications'); }}><FiMessageSquare /><span>Notifications</span></a>
                 <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/specialists'); }}><FiUsers /><span>Specialists</span></a>
@@ -250,6 +259,8 @@ function Main() {
             <div className="posts-count">{questions.length} posts</div>
             <div className="question-cards-container">
               <div className="question-cards">
+                {/* kazda karta jest mozliwa do klikniecia ( pytanie ) */}
+                {/* pzrez tablice nadaje im ich wypelnienie  */}
                 {questions.map((question) => (
                   <div 
                     key={question.id} 
@@ -257,7 +268,8 @@ function Main() {
                     onClick={() => handleCardClick(question)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <div className="question-card-header" 
+                    <div className="question-card-header"
+                    // naglowek pytania + autor  
                     onClick={(e) => { e.stopPropagation(); }}> {/* zeby jak klikasz to nie przenosilo na podstrone */}
                       <div className="question-author">
                         <div className="avatar"><span>{question.author.substring(0, 2)}</span></div>
@@ -268,12 +280,14 @@ function Main() {
                       </div>
                       <div className="question-actions">
                         <button 
+                        // zmienia kolor icona zakladki po kliknieciu - zapisanie 
                           className={`icon-button ${isBookmarked(question.id) ? 'bookmarked' : ''}`}
                           onClick={(e) => handleBookmarkToggle(question, e)}
                         >
                           <FiBookmark style={{ fill: isBookmarked(question.id) ? '#4CAF50' : 'none' }} />
                         </button>
                         <button className="icon-button"
+                        // header niemoze przenosic nas do strony pytania - zablokowane 
                         onClick={(e) => { e.stopPropagation(); }}><FiMoreVertical /></button> 
                       </div>
                     </div>
@@ -281,18 +295,21 @@ function Main() {
                     <div className="question-highlight"><h3>{question.highlight}</h3></div>
 
                     <div className="question-content">
+                      {/* pytanie + rozwijanie ( nie dziala ) */}
                       <p>{expandedQuestion === question.id ? question.fullContent : question.content}</p>
                       <button 
                         className="expand-button" 
                         onClick={(e) => handleToggleQuestion(question.id, e)}
                       >
+                        {/* ikona i tekst zmienione w zaleznosci czy rozwiniete czy nie  */}
                         {expandedQuestion === question.id ? <><span>Show less</span><FiChevronUp /></> : <><span>Read more</span><FiChevronDown /></>}
                       </button>
                     </div>
 
-                    <div className="question-footer"
-                    onClick={(e) => { e.stopPropagation(); }}>
+                    {/* blokowanie zeby klikniecie w stopke nie przenosilo na strone pytania  */}
+                    <div className="question-footer" onClick={(e) => { e.stopPropagation(); }}>
                       <div className="question-responders">
+                        {/* generownie jakis przykladowych awatarow - losowa ilosc  */}
                         {Array.from({ length: question.responders }, (_, i) => (
                           <div key={i} className="avatar avatar-small"><span>{String.fromCharCode(65 + i)}</span></div>
                         ))}
@@ -314,6 +331,7 @@ function Main() {
             <div className="experts-section">
               <h3>Top Experts</h3>
               <div className="experts-list">
+                {/* sekcja z expertami */}
                 {[
                   { name: "Dr. Sarah Chen", specialty: "Machine Learning" },
                   { name: "Mike Johnson", specialty: "Web Development" },
@@ -323,6 +341,7 @@ function Main() {
                   { name: "Alex Rodriguez", specialty: "DevOps" }
                 ].map((expert, index) => (
                   <div key={index} className="expert-item">
+                    {/* awatary generowane z inicjalow imienia i nazwiska */}
                     <div className="avatar avatar-small"><span>{expert.name.split(' ').map(n => n[0]).join('')}</span></div>
                     <div className="expert-details">
                       <div className="expert-name">{expert.name}</div>
@@ -336,6 +355,7 @@ function Main() {
             <div className="tags-section">
               <h3>Popular Tags</h3>
               <div className="tags-list">
+                {/* dla kazdego tagu tablica tworzy div -  osobne pole  */}
                 {["Python", "GitHub", "Data Structures", "React.js", "Java", "JavaScript", "CSS", "Machine Learning", "SQL", "Node.js"].map(tag => (
                   <div key={tag} className="tag tag-clickable">{tag}</div>
                 ))}
