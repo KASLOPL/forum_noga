@@ -8,6 +8,9 @@ import {
 } from 'react-icons/fi';
 
 const AddQuestion = () => {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [author, setAuthor] = useState("");
   // altualny uzywany element nawigacji
   const navigate = useNavigate();
   const [activeItem, setActiveItem] = useState('/addquestion');
@@ -64,13 +67,40 @@ const AddQuestion = () => {
 
   // sprawdza czy sa wypelnione pola formularza 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.title || !formData.caption || !tags.length || !formData.category) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-    console.log("Posting question:", { ...formData, tags, user });
+  e.preventDefault();
+
+  const newQuestion = {
+    id: Date.now(),
+    author: author || "Guest",
+    timeAgo: "przed chwilą",
+    highlight: formData.title, // tu lepiej użyć z formData
+    tags: tags.map(tag => tag.trim()),
+    content: formData.caption.slice(0, 100) + "...",
+    fullContent: formData.caption,
+    likes: 0,
+    views: 0,
+    responders: 0
   };
+
+  const stored = localStorage.getItem("questions");
+  const questions = stored ? JSON.parse(stored) : [];
+
+  questions.unshift(newQuestion);
+  localStorage.setItem("questions", JSON.stringify(questions));
+
+  // Reset formularza i tagów
+  setFormData({
+    title: '',
+    caption: '',
+    category: '',
+    type: 'Error in code',
+    urgent: false,
+    answerDate: ''
+  });
+  setTags([]);
+
+  alert("Pytanie zostało dodane!");
+};
 
   const availableTags = [
     'Python', 'Java', 'SQL', 'html', 'css', 'javascript', 'react',
