@@ -1,0 +1,522 @@
+/* Reset */
+.app * {
+  box-sizing: border-box;
+}
+
+.app {
+  font-family: system-ui, sans-serif;
+  background-color: #fafafa;
+  color: #272d33;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.Profall .header {
+  background-color: white;
+  border-bottom: 1px solid #e7e7e7;
+  padding: 8px 16px;
+  position: sticky;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.Profall .navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.Profall .left-section, 
+.Profall .right-nav {
+  display: flex;
+  align-items: center;
+}
+
+.Profall .right-nav {
+  gap: 12px;
+}
+
+/* Buttons */
+.Profall .back-btn, 
+.Profall .icon-btn {
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Profall .back-btn {
+  color: #5e5e5e;
+  width: 32px;
+  height: 32px;
+  margin-right: 16px;
+}
+
+.Profall .back-btn:hover, 
+.Profall .nav a:hover, 
+.Profall .user-profile:hover {
+  background-color: #f2f2f2;
+}
+
+.Profall .icon-btn {
+  width: 36px;
+  height: 36px;
+  background-color: #f2f2f2;
+}
+
+/* Logo */
+.Profall .logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.Profall .logo-icon {
+  background-color: #a9b18d;
+  border-radius: 50%;
+  padding: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.Profall .logo-text {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.Profall .highlight {
+  color: #91a160;
+}
+
+/* Navigation */
+.Profall .nav ul {
+  display: flex;
+  list-style: none;
+  gap: 24px;
+}
+
+.Profall .nav a {
+  text-decoration: none;
+  color: #5e5e5e;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.Profall .nav a:hover {
+  color: #272d33;
+}
+
+.Profall .nav li.active a {
+  background-color: #f2f2f2;
+  color: #272d33;
+}
+
+/* User Profile */
+.Profall .user-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.Profall .avatar {
+  width: 36px;
+  height: 36px;
+  background-color: #cacfb9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.Profall .user-info .name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.Profall .user-info .role {
+  font-size: 12px;
+  color: #9d9d9d;
+}
+
+/* Main */
+.Profall .main {
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  flex: 1;
+}
+
+/* Sidebar */
+.Profall .sidebar {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.Profall .profile-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e7e7e7;
+}
+
+.Profall .profile-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.Profall .profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #a9b18d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 32px;
+  margin: 0 auto 16px;
+}
+
+.Profall .profile-name {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.Profall .profile-username {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.Profall .profile-school {
+  color: #666;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.Profall .profile-bio {
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #333;
+  text-align: center;
+}
+
+.Profall .stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 16px 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.Profall .stat {
+  text-align: center;
+}
+
+.Profall .stat-num {
+  font-size: 18px;
+  font-weight: 600;
+  color: #272d33;
+}
+
+.Profall .stat-label {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.Profall .interests {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e7e7e7;
+}
+
+.Profall .interests h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.Profall .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.Profall .tag {
+  background: #f0f0f0;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  color: #666;
+}
+
+/* Content */
+.Profall .content {
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e7e7e7;
+  overflow: hidden;
+}
+
+.Profall .content-header {
+  background: #2d3748;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Profall .tabs {
+  display: flex;
+  gap: 24px;
+}
+
+.Profall .tab {
+  background: none;
+  border: none;
+  color: white;
+  padding: 8px 0;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.Profall .tab.active {
+  border-bottom-color: white;
+}
+
+.Profall .actions {
+  display: flex;
+  gap: 12px;
+}
+
+.Profall .btn-edit {
+  background: #B0B996;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.Profall .btn-settings {
+  background: #2d3748;
+  border: 1px solid #B0B996;
+  color: #B0B996;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.Profall .btn-edit:hover {
+  background: #2d3748;
+  color: #B0B996;
+  border: 1px solid #B0B996;
+}
+
+.Profall .btn-settings:hover {
+  background: #B0B996;
+  color: white;
+  border: 1px solid #2d3748;
+}
+
+/* Questions */
+.Profall .questions {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.Profall .question {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  background: white;
+}
+
+.Profall .question-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.Profall .user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.Profall .meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.Profall .menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #666;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.Profall .menu-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.Profall .question-content {
+  margin-bottom: 12px;
+}
+
+.Profall .highlight-box {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 4px;
+}
+
+.Profall .content-tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.Profall .content-tag {
+  width: 60px;
+  height: 20px;
+  background: #e0e0e0;
+  border-radius: 10px;
+}
+
+.Profall .question-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Profall .reactions {
+  display: flex;
+  gap: 4px;
+}
+
+.Profall .reaction {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.Profall .engagement {
+  display: flex;
+  gap: 16px;
+}
+
+.Profall .engagement-item {
+  font-size: 12px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Placeholders */
+.Profall .placeholder {
+  background: #e0e0e0;
+  border-radius: 4px;
+  height: 12px;
+}
+
+.Profall .placeholder.short { width: 80px; }
+.Profall .placeholder.medium { width: 120px; }
+.Profall .placeholder.long { width: 100%; margin-bottom: 8px; }
+.Profall .placeholder.extra-long { width: 100%; height: 40px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .Profall .navbar {
+    flex-direction: column;
+    gap: 16px;
+    height: auto;
+    padding: 16px 0;
+  }
+  
+  .Profall .nav ul {
+    justify-content: space-around;
+    width: 100%;
+  }
+  
+  .Profall .main {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .Profall .sidebar {
+    width: 100%;
+  }
+
+  .Profall .content-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+}

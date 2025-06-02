@@ -1,0 +1,322 @@
+/* === RESPONSYWNOŚĆ === */
+@media (max-width: 768px) {
+    .login-container {
+      flex-direction: column;
+    }
+  
+    .login-image-section {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .login-image-section img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .login-form-section {
+      padding: 20px;
+      margin: 0 auto;
+      max-width: 100%;
+    }
+  
+    .tab-switch {
+      width: 100%;
+      max-width: 100%;
+    }
+  
+    input, .submit-btn {
+      max-width: 100%;
+    }
+  }
+  
+  /* === Layout główny === */
+  .login-container {
+    display: flex;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+  }
+  
+  .login-form-section {
+    flex: 1;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 500px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+  }
+  
+  .login-form-section h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+  
+  .login-form-section p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 30px;
+  }
+  
+  /* === Formularz === */
+  .login-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  
+  label span {
+    color: red;
+    margin-left: 2px;
+  }
+  
+  input {
+    padding: 10px;
+    font-size: 13px;
+    border: 1px solid #CCC8C8;
+    border-radius: 20px;
+    border-color: #E8E5E5;
+    width: 100%;
+    max-width: 500px; 
+    box-sizing: border-box;
+    margin-top: 5px;
+  }
+
+  .forgot-password {
+    font-size: 12px;
+    color: #555;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    text-decoration: none;
+  }
+  
+  .submit-btn {
+    padding: 12px;
+    color: white;
+    background-color: #B0B996;
+    border: none;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    max-width: 500px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .error {
+    color: red;
+    margin-top: 10px;
+  }
+  
+  .or-divider {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 13px;
+    color: #C8C8C8;
+  }
+  
+  .social-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+  }
+  
+  .social-buttons button {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #aaa;
+    background-color: #fff;
+    border-radius: 20px;
+    cursor: pointer;
+    text-align: center;
+    width: 120px;
+  }
+  .social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid #aaa;
+    background-color: #fff;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .social-btn .icon {
+    display: flex;
+    align-items: center;
+  }
+  
+  
+  .legal {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 12.5px;
+    color: #999;
+    position: fixed;
+    bottom: 0;
+  }
+  
+  .legal a {
+    color: #3c3c3c;
+    text-decoration: underline;
+  }
+  
+  /* === Sekcja graficzna === */
+  .login-image-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .login-image-section {
+    position: relative;
+    width: 400px;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .slider-image {
+    width: 100%;
+    border-radius: 10px;
+    transition: opacity 0.4s ease-in-out;
+    position: relative;
+    z-index: 1;
+    opacity: 1;
+  }
+  
+  .fade-out {
+    opacity: 0;
+  }
+  
+  .fade-in {
+    opacity: 1;
+  }
+  
+  .slider-indicators {
+    position: absolute;
+    bottom: 12px; /* Nachodzą na dolną część obrazka */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    z-index: 10;
+    pointer-events: auto;
+  }
+  
+  .bar {
+    height: 6px;
+    width: 30px;
+    background-color: rgba(128, 128, 128, 0.5);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+    opacity: 0.5;
+  }
+  
+  .bar.active {
+    background-color: #B0B996;
+    opacity: 1;
+  }
+  
+  
+  
+  /* === Suwak zakładek (Log in / Sign Up) === */
+  .tab-switch {
+    position: relative;
+    display: flex;
+    background-color: #e9e6e6;
+    border-radius: 30px;
+    width: 100%;
+    max-width: 500px;
+    height: 45px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .tab-option {
+    flex: 1;
+    text-align: center;
+    line-height: 45px;
+    z-index: 2;
+    color: #999;
+    font-weight: 500;
+    font-size: 15px;
+    transition: color 0.3s ease;
+  }
+  
+  .tab-option.active {
+    color: rgb(255, 255, 255);
+    font-weight: 700;
+  }
+  
+  .slider {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    background-color: #2E373F;
+    border-radius: 30px;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    transition: transform 0.3s ease;
+  }
+  
+  .slider.right {
+    transform: translateX(100%);
+  }
+  
+  .slider.left {
+    transform: translateX(0%);
+  }
+  img[alt="apple"] {
+    width: 18px;
+    height: 18px;
+  }
+  img[alt="google"] {
+    width: 18px;
+    height: 18px;
+  }
+  img[alt="facebook"] {
+    width: 18px;
+    height: 18px;
+  }
+  img[alt="Login"] {
+    border-radius: round;
+  }
+  .logo-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .snapsolve-logo {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .logo-text {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  

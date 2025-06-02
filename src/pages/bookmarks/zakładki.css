@@ -1,0 +1,261 @@
+/* Reset */
+.bookall * { margin: 0; padding: 0; box-sizing: border-box; }
+
+.bookall body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #fafafa;
+  color: #272d33;
+  overflow: hidden;
+}
+
+.bookall a { text-decoration: none; color: inherit; }
+.bookall button { background: none; border: none; cursor: pointer; font-family: inherit; }
+
+/* Layout */
+.bookall .template-app { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+.bookall .template-header {
+  background: white;
+  border-bottom: 1px solid #e7e7e7;
+  padding: 8px 16px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.bookall .template-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.bookall .template-logo { display: flex; align-items: center; gap: 8px; }
+
+.bookall .template-logo-icon {
+  background: #a9b18d;
+  border-radius: 4px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.bookall .template-logo-text { font-weight: 600; color: #272d33;  font-size: 20px;}
+.bookall .template-logo-text-highlight { color: #91a160; }
+
+.bookall .template-header-title h1 { font-size: 18px; font-weight: 600; color: #272d33; }
+
+.bookall .template-main-container {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 80px);
+  overflow: hidden;
+}
+
+/* Sidebar */
+.bookall .template-sidebar {
+  width: 230px;
+  border-right: 1px solid #e7e7e7;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.bookall .template-sidebar-content { flex: 1; padding: 16px 0; overflow-y: auto; }
+
+.bookall .template-add-question-button-container { padding: 0 16px; margin-bottom: 16px; }
+
+.bookall .template-add-question-button {
+  width: 100%;
+  background: #272d33;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.2s;
+}
+
+.bookall .template-add-question-button:hover { background: #181e24; }
+
+.bookall .template-plus-icon-container {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  padding: 2px;
+  display: flex;
+}
+
+.bookall .template-sidebar-nav { margin-bottom: 24px; }
+
+.bookall .template-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  color: #5e5e5e;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.bookall .template-nav-item:hover { background: #f2f2f2; }
+
+.bookall .template-nav-item.active {
+  background: #e6ead9;
+  color: #272d33;
+  border-left: 2px solid #a9b18d;
+  font-weight: 500;
+}
+
+.bookall .template-sidebar-nav-secondary {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e7e7e7;
+}
+
+.bookall .template-sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid #e7e7e7;
+  flex-shrink: 0;
+}
+
+.bookall .template-sign-out-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  background: #272D33;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-weight: 500;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.bookall .template-sign-out-button:hover { background: #8d976c; }
+
+/* Main content */
+.bookall .template-main-content {
+  flex: 1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  background: #fafafa;
+}
+
+.bookall .bookmarks-main-content { width: 100%; max-width: 800px; margin: 0 auto; }
+
+/* Empty state */
+.bookall .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 20px;
+  color: #9d9d9d;
+}
+
+.bookall .empty-state-icon { margin-bottom: 16px; color: #cacfb9; }
+
+.bookall .empty-state p:first-of-type {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #5e5e5e;
+}
+
+.bookall .empty-state p:last-of-type { font-size: 14px; max-width: 400px; }
+
+/* Bookmarks */
+.bookall .bookmark-list { display: flex; flex-direction: column; gap: 16px; }
+
+.bookall .bookmark-item {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f0f0f0;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.bookall .bookmark-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.bookall .bookmark-content { display: flex; align-items: flex-start; gap: 16px; flex: 1; }
+
+.bookall .bookmark-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #cacfb9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.bookall .bookmark-text { flex: 1; }
+
+.bookall .bookmark-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #272d33;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.bookall .bookmark-description {
+  color: #5e5e5e;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.bookall .bookmark-separator { font-size: 12px; color: #9d9d9d; }
+
+.bookall .bookmark-actions { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+
+.bookall .bookmark-likes { display: flex; align-items: center; gap: 6px; color: #5e5e5e; font-size: 14px; }
+
+.bookall .heart-icon { color: #a9b18d; }
+.bookall .likes-count { font-size: 14px; font-weight: 600; color: #272d33; }
+
+.bookall .bookmark-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a9b18d;
+  transition: background-color 0.2s;
+}
+
+.bookall .bookmark-button:hover { background: #f2f2f2; }
+
+.bookall .bookmark-icon { fill: #a9b18d; transition: transform 0.2s; }
+.bookall .bookmark-button:hover .bookmark-icon { transform: scale(1.1); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .bookall .template-sidebar { width: 200px; }
+  .bookall .bookmark-item { padding: 16px; }
+  .bookall .bookmark-actions { margin-left: 12px; }
+}
