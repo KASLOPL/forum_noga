@@ -22,22 +22,26 @@ const AddQuestion = () => {
   // dodawnie tagow czy otwarte 
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
   // info o uzytkowniku
+  
   const [user, setUser] = useState({ name: 'Guest', role: 'Visitor' });
 
   // sprawdzanie lokalStorage czy uzytkownik jest zalogowany juz 
   useEffect(() => {
-    try {
-      const isLoggedIn = localStorage.getItem('isLoggedIn');
-      // jesli nie powrot na strone logowania 
-      if (isLoggedIn !== 'true') return navigate('/');
-      
-      // ladowanie danych uzytkownika z local storage 
-      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-      setUser({ name: storedUser.name || 'Guest', role: storedUser.role || 'Visitor' });
-    } catch {
-      navigate('/');
-    }
-  }, [navigate]);
+  try {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (isLoggedIn !== 'true') return navigate('/');
+
+const storedUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+const safeName = storedUser.name || 'Guest';
+const safeRole = storedUser.role || 'Visitor';
+
+setUser({ name: safeName, role: safeRole });
+setFormData(prev => ({ ...prev, author: safeName }));
+
+  } catch {
+    navigate('/');
+  }
+}, [navigate]);
 
   // nawigacja i wylogowywanie 
   const handleNavigation = (path) => {
@@ -68,20 +72,21 @@ const AddQuestion = () => {
   // sprawdza czy sa wypelnione pola formularza 
   const handleSubmit = (e) => {
   e.preventDefault();
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  console.log(currentUser.name)
 
   const newQuestion = {
-    id: Date.now(),
-    author: author || "Guest",
-    timeAgo: "przed chwilą",
-    highlight: formData.title, // tu lepiej użyć z formData
-    tags: tags.map(tag => tag.trim()),
-    content: formData.caption.slice(0, 100) + "...",
-    fullContent: formData.caption,
-    likes: 0,
-    views: 0,
-    responders: 0
-  };
-
+  id: Date.now(),
+  author: currentUser?.userName,
+  timeAgo: "przed chwilą",
+  highlight: formData.title,
+  tags: tags.map(tag => tag.trim()),
+  content: formData.caption.slice(0, 100) + "...",
+  fullContent: formData.caption,
+  likes: 0,
+  views: 0,
+  responders: 0
+};
   const stored = localStorage.getItem("questions");
   const questions = stored ? JSON.parse(stored) : [];
 

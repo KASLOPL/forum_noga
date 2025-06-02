@@ -4,29 +4,12 @@ import { useEffect, useState, useCallback } from "react";
 import "./main.css";
 import defaultQuestions from '../../data/questions';
 
-// Ikony z react-icons
 import {
-  FiBookmark,
-  FiChevronDown,
-  FiChevronUp,
-  FiEye,
-  FiHeart,
-  FiHelpCircle,
-  FiHome,
-  FiLogOut,
-  FiMail,
-  FiMessageSquare,
-  FiMoon,
-  FiMoreVertical,
-  FiPlus,
-  FiSearch,
-  FiSettings,
-  FiUser,
-  FiUsers,
-  FiZap,
+  FiBookmark, FiChevronDown, FiChevronUp, FiEye, FiHeart, FiHelpCircle,
+  FiHome, FiLogOut, FiMail, FiMessageSquare, FiMoon, FiMoreVertical,
+  FiPlus, FiSearch, FiSettings, FiUser, FiUsers, FiZap
 } from "react-icons/fi";
 
-// Custom hook do obsługi bookmarks - zarzadza zakladkami uzrytkownika 
 const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState(() => {
     const saved = localStorage.getItem("bookmarks");
@@ -34,11 +17,9 @@ const useBookmarks = () => {
   });
 
   useEffect(() => {
-    // przy kazdej aktualizacji zakladki zapisuje zmiany w localStorage 
     localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
   }, [bookmarks]);
 
-  // dodawnaie usuwanie zakladek , usecallback - optymalizacja i sprawdza czy istnieje juz taki element w zakladkach 
   const toggleBookmark = useCallback((item) => {
     setBookmarks(prev => {
       const isBookmarked = prev.some(b => b.id === item.id);
@@ -55,62 +36,51 @@ const useBookmarks = () => {
 function Main() {
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-
-  // id pytania ktore jest rozwijane aktualnie 
   const [expandedQuestion, setExpandedQuestion] = useState(null);
   const { toggleBookmark, isBookmarked } = useBookmarks();
   
-  // dane do pytan 
   const [questions, setQuestions] = useState(() => {
-  const saved = localStorage.getItem("questions");
-  return saved ? JSON.parse(saved) : defaultQuestions;
-});
+    const saved = localStorage.getItem("questions");
+    return saved ? JSON.parse(saved) : defaultQuestions;
+  });
 
-useEffect(() => {
-  localStorage.setItem("questions", JSON.stringify(questions));
-}, [questions]);
+  useEffect(() => {
+    localStorage.setItem("questions", JSON.stringify(questions));
+  }, [questions]);
 
-  // Funkcje nawigacji i logowania z useCallback dla lepszej wydajności
   const handleNavigation = useCallback((path) => navigate(path), [navigate]);
 
-  // Wylogowanie
   const handleLogout = useCallback(() => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('currentUser');
-    navigate('/');  // po wylogowaniu idziemy do logowania (strona główna teraz to logowanie)
+    navigate('/');
   }, [navigate]);
 
-  // Sprawdzenie, czy użytkownik jest zalogowany (czy isLoggedIn istnieje i czy jego wartość to true)
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
     if (!isLoggedIn || isLoggedIn !== 'true') {
-      navigate('/');  // jeśli nie jest zalogowany to przekieruj na stronę logowania
+      navigate('/');
     }
   }, [navigate]);
 
-  // Rozwijanie i zwijanie pytań (tylko jedno naraz - toggleQuestion)
   const handleToggleQuestion = useCallback((questionId, e) => {
     e.stopPropagation();
     setExpandedQuestion(prev => prev === questionId ? null : questionId);
   }, []);
 
-  // Obsługa bookmarks
   const handleBookmarkToggle = useCallback((question, e) => {
     e.stopPropagation();
     toggleBookmark(question);
   }, [toggleBookmark]);
 
-  // Obsługa kliknięcia w kartę pytania
   const handleCardClick = useCallback((question) => {
     navigate(`/answer_q/${question.id}`, { state: { question } });
   }, [navigate]);
 
-  // Funkcja do wyświetlania nazwy użytkownika
   const getUserDisplayName = () => {
     return currentUser?.userName || currentUser?.name || 'Guest';
   };
 
-  // Funkcja do wyświetlania inicjałów użytkownika
   const getUserInitials = () => {
     const displayName = getUserDisplayName();
     if (displayName === 'Guest') return 'GU';
@@ -120,11 +90,8 @@ useEffect(() => {
   return (
     <div className="caloscMain">
       <div className="app">
-
-        {/* HEADER */}
         <header className="header">
           <div className="header-container">
-            {/* logo apliakcji i jego ikona  */}
             <div className="logo-container">
               <div className="logo">
                 <div className="logo-icon"><FiZap /></div>
@@ -132,7 +99,6 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* pasek wyszukiwania  */}
             <div className="search-group">
               <div className="search-container">
                 <div className="search-input-wrapper">
@@ -140,7 +106,6 @@ useEffect(() => {
                   <input className="search-input" placeholder="Got a question? See if it's already asked!" type="text" />
                 </div>
               </div>
-              {/* przycisk do dodawnia pytan - add question */}
               <button className="add-button" onClick={() => handleNavigation('/addquestion')}>
                 <FiPlus />
               </button>
@@ -154,7 +119,6 @@ useEffect(() => {
               <div className="divider"></div>
               <button className="icon-button"><FiMoon /></button>
               <button className="icon-button"><FiMail /></button>
-              {/* scierzka do profilu + awatar i nazwa */}
               <div className="user-profile" onClick={() => handleNavigation('/profile')}>
                 <div className="avatar">
                   <span>{getUserInitials()}</span>
@@ -169,13 +133,9 @@ useEffect(() => {
           </div>
         </header>
 
-        {/* MAIN CONTAINER */}
         <div className="main-container">
-
-          {/* SIDEBAR */}
           <aside className="sidebar">
             <div className="sidebar-content">
-              {/* nawigacja + ikony  */}
               <div className="add-question-button-container">
                 <button className="add-question-button" onClick={() => handleNavigation('/addquestion')}>
                   <span>ADD QUESTION</span>
@@ -184,8 +144,6 @@ useEffect(() => {
               </div>
 
               <nav className="sidebar-nav">
-                {/* zmienione na navigate zamiast href, home do main.js */}
-                {/* active ma aktulanie wyswietlana strona (mozliwosc wyroznienia ) */}
                 <a href="#" className="nav-item active" onClick={(e) => { e.preventDefault(); handleNavigation('/main'); }}><FiHome /><span>Home</span></a>
                 <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/notifications'); }}><FiMessageSquare /><span>Notifications</span></a>
                 <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/specialists'); }}><FiUsers /><span>Specialists</span></a>
@@ -206,7 +164,6 @@ useEffect(() => {
             </div>
           </aside>
 
-          {/* MAIN CONTENT */}
           <main className="main-content">
             <div className="welcome-banner">
               <h1>Hi, {getUserDisplayName()}!</h1>
@@ -218,8 +175,6 @@ useEffect(() => {
             <div className="posts-count">{questions.length} posts</div>
             <div className="question-cards-container">
               <div className="question-cards">
-                {/* kazda karta jest mozliwa do klikniecia ( pytanie ) */}
-                {/* pzrez tablice nadaje im ich wypelnienie  */}
                 {questions.map((question) => (
                   <div 
                     key={question.id} 
@@ -227,48 +182,38 @@ useEffect(() => {
                     onClick={() => handleCardClick(question)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <div className="question-card-header"
-                    // naglowek pytania + autor  
-                    onClick={(e) => { e.stopPropagation(); }}> {/* zeby jak klikasz to nie przenosilo na podstrone */}
+                    <div className="question-card-header" onClick={(e) => { e.stopPropagation(); }}>
                       <div className="question-author">
-                        <div className="avatar"><span>{question.author.substring(0, 2)}</span></div>
+                        <div className="avatar">
+                          <span>{question.author?.substring(0, 2).toUpperCase() || '??'}</span>
+                        </div>
                         <div className="author-info">
-                          <div className="author-name">{question.author}</div>
+                          <div className="author-name">{question.author || 'Unknown Author'}</div>
                           <div className="author-time">{question.timeAgo}</div>
                         </div>
                       </div>
                       <div className="question-actions">
                         <button 
-                        // zmienia kolor icona zakladki po kliknieciu - zapisanie 
                           className={`icon-button ${isBookmarked(question.id) ? 'bookmarked' : ''}`}
                           onClick={(e) => handleBookmarkToggle(question, e)}
                         >
                           <FiBookmark style={{ fill: isBookmarked(question.id) ? '#4CAF50' : 'none' }} />
                         </button>
-                        <button className="icon-button"
-                        // header niemoze przenosic nas do strony pytania - zablokowane 
-                        onClick={(e) => { e.stopPropagation(); }}><FiMoreVertical /></button> 
+                        <button className="icon-button" onClick={(e) => { e.stopPropagation(); }}><FiMoreVertical /></button> 
                       </div>
                     </div>
 
                     <div className="question-highlight"><h3>{question.highlight}</h3></div>
 
                     <div className="question-content">
-                      {/* pytanie + rozwijanie ( nie dziala ) */}
                       <p>{expandedQuestion === question.id ? question.fullContent : question.content}</p>
-                      <button 
-                        className="expand-button" 
-                        onClick={(e) => handleToggleQuestion(question.id, e)}
-                      >
-                        {/* ikona i tekst zmienione w zaleznosci czy rozwiniete czy nie  */}
+                      <button className="expand-button" onClick={(e) => handleToggleQuestion(question.id, e)}>
                         {expandedQuestion === question.id ? <><span>Show less</span><FiChevronUp /></> : <><span>Read more</span><FiChevronDown /></>}
                       </button>
                     </div>
 
-                    {/* blokowanie zeby klikniecie w stopke nie przenosilo na strone pytania  */}
                     <div className="question-footer" onClick={(e) => { e.stopPropagation(); }}>
                       <div className="question-responders">
-                        {/* generownie jakis przykladowych awatarow - losowa ilosc  */}
                         {Array.from({ length: question.responders }, (_, i) => (
                           <div key={i} className="avatar avatar-small"><span>{String.fromCharCode(65 + i)}</span></div>
                         ))}
@@ -285,12 +230,10 @@ useEffect(() => {
             </div>
           </main>
 
-          {/* RIGHT SIDEBAR */}
           <aside className="right-sidebar">
             <div className="experts-section">
               <h3>Top Experts</h3>
               <div className="experts-list">
-                {/* sekcja z expertami */}
                 {[
                   { name: "Dr. Sarah Chen", specialty: "Machine Learning" },
                   { name: "Mike Johnson", specialty: "Web Development" },
@@ -300,7 +243,6 @@ useEffect(() => {
                   { name: "Alex Rodriguez", specialty: "DevOps" }
                 ].map((expert, index) => (
                   <div key={index} className="expert-item">
-                    {/* awatary generowane z inicjalow imienia i nazwiska */}
                     <div className="avatar avatar-small"><span>{expert.name.split(' ').map(n => n[0]).join('')}</span></div>
                     <div className="expert-details">
                       <div className="expert-name">{expert.name}</div>
@@ -314,7 +256,6 @@ useEffect(() => {
             <div className="tags-section">
               <h3>Popular Tags</h3>
               <div className="tags-list">
-                {/* dla kazdego tagu tablica tworzy div -  osobne pole  */}
                 {["Python", "GitHub", "Data Structures", "React.js", "Java", "JavaScript", "CSS", "Machine Learning", "SQL", "Node.js"].map(tag => (
                   <div key={tag} className="tag tag-clickable">{tag}</div>
                 ))}
@@ -326,4 +267,5 @@ useEffect(() => {
     </div>
   );
 }
+
 export default Main;
