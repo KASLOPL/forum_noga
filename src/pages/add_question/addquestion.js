@@ -27,21 +27,33 @@ const AddQuestion = () => {
 
   // sprawdzanie lokalStorage czy uzytkownik jest zalogowany juz 
   useEffect(() => {
-  try {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    if (isLoggedIn !== 'true') return navigate('/');
+    try {
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      if (isLoggedIn !== 'true') return navigate('/');
 
-const storedUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-const safeName = storedUser.name || 'Guest';
-const safeRole = storedUser.role || 'Visitor';
+      const storedUserData = localStorage.getItem('currentUser');
+      let storedUser = {};
+      
+      if (storedUserData && storedUserData !== 'undefined' && storedUserData !== 'null') {
+        try {
+          storedUser = JSON.parse(storedUserData);
+        } catch (parseError) {
+          console.error('Error parsing stored user data:', parseError);
+          storedUser = {};
+        }
+      }
 
-setUser({ name: safeName, role: safeRole });
-setFormData(prev => ({ ...prev, author: safeName }));
+      const safeName = storedUser.name || storedUser.userName || 'Guest';
+      const safeRole = storedUser.role || 'Visitor';
 
-  } catch {
-    navigate('/');
-  }
-}, [navigate]);
+      setUser({ name: safeName, role: safeRole });
+      setFormData(prev => ({ ...prev, author: safeName }));
+
+    } catch (error) {
+      console.error('useEffect error:', error);
+      navigate('/');
+    }
+  }, [navigate]);
 
   // nawigacja i wylogowywanie 
   const handleNavigation = (path) => {
@@ -71,41 +83,63 @@ setFormData(prev => ({ ...prev, author: safeName }));
 
   // sprawdza czy sa wypelnione pola formularza 
   const handleSubmit = (e) => {
-  e.preventDefault();
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-  console.log(currentUser.name)
+    e.preventDefault();
+    
+    // Bezpieczne pobieranie danych użytkownika
+    let currentUser = {};
+    try {
+      const storedUser = localStorage.getItem('currentUser');
+      if (storedUser && storedUser !== 'undefined' && storedUser !== 'null') {
+        currentUser = JSON.parse(storedUser);
+      }
+    } catch (error) {
+      console.error('Error parsing currentUser:', error);
+      currentUser = {};
+    }
 
-  const newQuestion = {
-  id: Date.now(),
-  author: currentUser?.userName,
-  timeAgo: "przed chwilą",
-  highlight: formData.title,
-  tags: tags.map(tag => tag.trim()),
-  content: formData.caption.slice(0, 100) + "...",
-  fullContent: formData.caption,
-  likes: 0,
-  views: 0,
-  responders: 0
-};
-  const stored = localStorage.getItem("questions");
-  const questions = stored ? JSON.parse(stored) : [];
+    console.log(currentUser.name);
 
-  questions.unshift(newQuestion);
-  localStorage.setItem("questions", JSON.stringify(questions));
+    const newQuestion = {
+      id: Date.now(),
+      author: currentUser?.userName || currentUser?.name || 'Anonymous',
+      timeAgo: "przed chwilą",
+      highlight: formData.title,
+      tags: tags.map(tag => tag.trim()),
+      content: formData.caption.slice(0, 100) + "...",
+      fullContent: formData.caption,
+      likes: 0,
+      views: 0,
+      responders: 0
+    };
 
-  // Reset formularza i tagów
-  setFormData({
-    title: '',
-    caption: '',
-    category: '',
-    type: 'Error in code',
-    urgent: false,
-    answerDate: ''
-  });
-  setTags([]);
+    // Bezpieczne pobieranie pytań
+    let questions = [];
+    try {
+      const stored = localStorage.getItem("questions");
+      if (stored && stored !== 'undefined' && stored !== 'null') {
+        questions = JSON.parse(stored);
+      }
+    } catch (error) {
+      console.error('Error parsing questions:', error);
+      questions = [];
+    }
 
-  alert("Pytanie zostało dodane!");
-};
+    questions.unshift(newQuestion);
+    localStorage.setItem("questions", JSON.stringify(questions));
+
+    // Reset formularza i tagów
+    setFormData({
+      title: '',
+      caption: '',
+      category: '',
+      type: 'Error in code',
+      urgent: false,
+      answerDate: ''
+    });
+    setTags([]);
+
+    alert("Pytanie zostało dodane!");
+  };
 
   const availableTags = [
     'Python', 'Java', 'SQL', 'html', 'css', 'javascript', 'react',
