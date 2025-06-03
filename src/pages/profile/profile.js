@@ -25,7 +25,7 @@ const Profile = () => {
     { icon: <FiHome size={16} />, text: 'Home', active: false, path: '/main' }, 
     { icon: <FiMessageSquare size={16} />, text: 'Notifications', active: false },
     { icon: <FiUsers size={16} />, text: 'Specialists', active: false },
-    { icon: <FiUser size={16} />, text: 'My Questions', active: false },
+    { icon: <FiUser size={16} />, text: 'My Questions', active: false, path: '/my_questions' },
     { icon: <FiBookmark size={16} />, text: 'Bookmarks', active: false, path: '/zakładki'}
   ];
 

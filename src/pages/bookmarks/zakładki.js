@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Bookmark } from 'lucide-react';
 import { FiBookmark, FiHome, FiLogOut, FiMessageSquare, FiPlus, FiSettings, FiUser, FiUsers, FiHelpCircle, FiZap } from 'react-icons/fi';
 import './zakładki.css';
 
 function useBookmarks() {
-  
+  // localStorage jesli jakies pytania byly na tym koncie zadane to je wyswietli
   const [bookmarks, setBookmarks] = useState(() => {
     try {
-      // zakladki w localStorage - pamiec przegladarki ladowe po starcie dopiero
       const saved = localStorage.getItem("bookmarks");
       return saved ? JSON.parse(saved) : [];
     } catch {
@@ -16,7 +15,7 @@ function useBookmarks() {
     }
   });
 
-  // zapisuje nowy stan zakladek do localStorage - po usunieciu np
+  // zapisuje wszystkie dodanie zakladki w localstorage + zmiane
   const saveBookmarks = useCallback((newBookmarks) => {
     try {
       localStorage.setItem("bookmarks", JSON.stringify(newBookmarks));
@@ -25,10 +24,9 @@ function useBookmarks() {
     }
   }, []);
 
-  // automatyczny zapis gdy cos sie zmiania w zakladkach 
   useEffect(() => saveBookmarks(bookmarks), [bookmarks, saveBookmarks]);
 
-  // usuwa albo dodaje zakladke w zaleznosci czy istnieje juz
+  // dodawanie i usuwanie zakladki
   const toggleBookmark = useCallback((item) => {
     setBookmarks(prev => {
       const exists = prev.some(b => b.id === item.id);
@@ -36,7 +34,7 @@ function useBookmarks() {
     });
   }, []);
 
-  // usuwa zakladki po ich id 
+  // usuwa po id zakladke 
   const removeBookmark = useCallback((id) => {
     setBookmarks(prev => prev.filter(b => b.id !== id));
   }, []);
@@ -44,26 +42,20 @@ function useBookmarks() {
   return { bookmarks, toggleBookmark, removeBookmark };
 }
 
+// zabezpiecza jak klikasz naglowek to onclick nie widzi i nie przenosi cie do answer
 const BookmarkItem = React.memo(({ bookmark, onRemove, onCardClick }) => {
-  // usuwa zakladke po kliknieciu przycisku
   const handleRemove = useCallback((e) => {
-    e.stopPropagation(); // zatrzymuje propagację, żeby nie kliknęło się w kartę
+    e.stopPropagation();
     onRemove(bookmark.id);
   }, [bookmark.id, onRemove]);
 
-  // obsługuje kliknięcie w całą kartę
   const handleCardClick = useCallback(() => {
     onCardClick(bookmark);
   }, [bookmark, onCardClick]);
 
-  // poprawione wyświetlanie tytułu i opisu
-  const getTitle = () => {
-    return bookmark.title || bookmark.highlight || bookmark.question || 'Untitled';
-  };
-
-  const getDescription = () => {
-    return bookmark.description || bookmark.content || bookmark.fullContent || 'No description';
-  };
+  // sprawdza pokoleji co zostalo dodane w formularzu i jak jest to dodaje to do wygladu zakladki - WYBOROWO
+  const getTitle = () => bookmark.title || bookmark.highlight || bookmark.question || 'Untitled';
+  const getDescription = () => bookmark.description || bookmark.content || bookmark.fullContent || 'No description';
 
   return (
     <div className="bookmark-item" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
@@ -72,12 +64,8 @@ const BookmarkItem = React.memo(({ bookmark, onRemove, onCardClick }) => {
           {(bookmark.author || 'U').charAt(0).toUpperCase()}
         </div>
         <div className="bookmark-text">
-          <div className="bookmark-title">
-            {getTitle()}
-          </div>
-          <div className="bookmark-description">
-            {getDescription()}
-          </div>
+          <div className="bookmark-title">{getTitle()}</div>
+          <div className="bookmark-description">{getDescription()}</div>
           <div className="bookmark-separator">
             by {bookmark.author || 'Anonymous'} • {bookmark.timeAgo || 'Recently'}
           </div>
@@ -96,7 +84,7 @@ const BookmarkItem = React.memo(({ bookmark, onRemove, onCardClick }) => {
   );
 });
 
-// strona kiedy niema zapisanych zadnych zakladek 
+// Ggdy nie ZADNYCH zakladek to ekran domyslny
 const EmptyState = React.memo(() => (
   <div className="empty-state">
     <div className="empty-state-icon">
@@ -108,21 +96,18 @@ const EmptyState = React.memo(() => (
 ));
 
 function Zakladki() {
-  // pzremieszczanie sie bez przeladowywania strony 
+  // uzywanie hooka bookmarks oraz obsluga nawigacji na stronie 
   const navigate = useNavigate();
-  // aktywna podstrona teraz
   const [activeItem, setActiveItem] = useState('/bookmarks');
-  // hook do zarzadzania zakladkami
   const { bookmarks, removeBookmark } = useBookmarks();
 
-  // przechodznie do innych stron
+  // zmiana aktywnego elementu na stronie w naiwgacji 
   const handleNavigation = useCallback((path) => {
     setActiveItem(path);
     navigate(path);
   }, [navigate]);
 
   const handleLogout = useCallback(() => {
-    // usuwa z localStorage informacje o zalogowanym urzytkowniku - przenosi do logowania
     try {
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('currentUser');
@@ -132,10 +117,9 @@ function Zakladki() {
     navigate('/');
   }, [navigate]);
 
-  // obsługa kliknięcia w zakładkę - przechodzi do strony z odpowiedzią
   const handleCardClick = useCallback((bookmark) => {
-     navigate(`/answer_q/${bookmark.id}`, { state: { question: bookmark } });
-    }, [navigate]);
+    navigate(`/answer_q/${bookmark.id}`, { state: { question: bookmark } });
+  }, [navigate]);
 
   useEffect(() => {
     try {
@@ -146,22 +130,20 @@ function Zakladki() {
     }
   }, [navigate]);
 
-  // NAWIGACJA 
   const navItems = [
     { path: '/main', icon: FiHome, label: 'Home' },
     { path: '/notifications', icon: FiMessageSquare, label: 'Notifications' },
     { path: '/specialists', icon: FiUsers, label: 'Specialists' },
-    { path: '/myquestions', icon: FiUser, label: 'My Questions' },
+    { path: '/my_questions', icon: FiUser, label: 'My Questions' },
     { path: '/bookmarks', icon: FiBookmark, label: 'Bookmarks' }
   ];
 
-  // POD NAWIGACJA
   const secondaryNavItems = [
     { path: '/settings', icon: FiSettings, label: 'Settings' },
     { path: '/help', icon: FiHelpCircle, label: 'Help & FAQ' }
   ];
 
-  // podswietlenie zaladowanej teraz strony np
+  // podswietalnie podstrony na ktorej jestes aktualnie oraz onclick
   const NavItem = ({ item }) => {
     const Icon = item.icon;
     return (
@@ -178,79 +160,70 @@ function Zakladki() {
 
   return (
     <div className='bookall'>
-    <div className="template-app">
-      <header className="template-header">
-        <div className="template-header-container">
-          <div className="template-logo">
-            <div className="template-logo-icon"><FiZap /></div>
-            <span className="template-logo-text">
-              Snap<span className="template-logo-text-highlight">solve</span>
-            </span>
+      <div className="template-app">
+        <header className="template-header">
+          <div className="template-header-container">
+            <div className="template-logo">
+              <div className="template-logo-icon"><FiZap /></div>
+              <span className="template-logo-text">
+                Snap<span className="template-logo-text-highlight">solve</span>
+              </span>
+            </div>
+            <div className="template-header-title">
+              <h1>TWOJE ZAKŁADKI</h1>
+            </div>
           </div>
-          <div className="template-header-title">
-            <h1>TWOJE ZAKŁADKI</h1>
-          </div>
-        </div>
-      </header>
+        </header>
 
-      <div className="template-main-container">
-        <aside className="template-sidebar">
-          <div className="template-sidebar-content">
-            <div className="template-add-question-button-container">
-              <button 
-                // przenosi do formularza
-                className="template-add-question-button" 
-                onClick={() => handleNavigation('/addquestion')}
-              >
-                <span>ADD QUESTION</span>
-                <div className="template-plus-icon-container"><FiPlus /></div>
+        <div className="template-main-container">
+          <aside className="template-sidebar">
+            <div className="template-sidebar-content">
+              <div className="template-add-question-button-container">
+                <button 
+                  className="template-add-question-button" 
+                  onClick={() => handleNavigation('/addquestion')}
+                >
+                  <span>ADD QUESTION</span>
+                  <div className="template-plus-icon-container"><FiPlus /></div>
+                </button>
+              </div>
+
+              <nav className="template-sidebar-nav">
+                {navItems.map(item => <NavItem key={item.path} item={item} />)}
+              </nav>
+
+              <div className="template-sidebar-nav-secondary">
+                {secondaryNavItems.map(item => <NavItem key={item.path} item={item} />)}
+              </div>
+            </div>
+
+            <div className="template-sidebar-footer">
+              <button className="template-sign-out-button" onClick={handleLogout}>
+                <FiLogOut /> Sign out
               </button>
             </div>
+          </aside>
 
-            {/* tablica opisujaca kazda czesc nawigacji, nacitem ikona i + nazwa */}
-            <nav className="template-sidebar-nav">
-              {navItems.map(item => <NavItem key={item.path} item={item} />)}
-            </nav>
-
-            {/* menu z settings i help */}
-            <div className="template-sidebar-nav-secondary">
-              {secondaryNavItems.map(item => <NavItem key={item.path} item={item} />)}
+          <main className="template-main-content">
+            <div className="bookmarks-main-content">
+              {bookmarks.length === 0 ? (
+                <EmptyState />
+              ) : (
+                <div className="bookmark-list">
+                  {bookmarks.map(bookmark => (
+                    <BookmarkItem
+                      key={bookmark.id}
+                      bookmark={bookmark}
+                      onRemove={removeBookmark}
+                      onCardClick={handleCardClick}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-
-          {/* wylogowywanie => do handleLogout */}
-          <div className="template-sidebar-footer">
-            <button className="template-sign-out-button" onClick={handleLogout}>
-              {/* ikona  */}
-              <FiLogOut /> Sign out
-            </button>
-          </div>
-        </aside>
-
-        <main className="template-main-content">
-          <div className="bookmarks-main-content">
-            {/* sprawdza czy jest jakas zakladka czy nie  */}
-            {bookmarks.length === 0 ? (
-              // jesli niema nic do funkcji EmptyState
-              <EmptyState />
-            ) : (
-              // jesli nie jest pusta kazda zakladka swoje osobne dane oraz 
-              // podlaczoan do funkcji ktora daje mozliwosc jej usuniecia 
-              <div className="bookmark-list">
-                {bookmarks.map(bookmark => (
-                  <BookmarkItem
-                    key={bookmark.id}
-                    bookmark={bookmark}
-                    onRemove={removeBookmark}
-                    onCardClick={handleCardClick}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
-    </div>
     </div>
   );
 }

@@ -40,9 +40,12 @@ function Main() {
   const { toggleBookmark, isBookmarked } = useBookmarks();
   
   const [questions, setQuestions] = useState(() => {
-    const saved = localStorage.getItem("questions");
+  const saved = localStorage.getItem("questions");
+  const localQuestions = saved ? JSON.parse(saved) : [];
     return saved ? JSON.parse(saved) : defaultQuestions;
   });
+
+  
 
   useEffect(() => {
     localStorage.setItem("questions", JSON.stringify(questions));
