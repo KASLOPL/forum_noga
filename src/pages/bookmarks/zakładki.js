@@ -5,6 +5,7 @@ import { FiBookmark, FiHome, FiLogOut, FiMessageSquare, FiPlus, FiSettings, FiUs
 import './zakładki.css';
 
 function useBookmarks() {
+  
   const [bookmarks, setBookmarks] = useState(() => {
     try {
       // zakladki w localStorage - pamiec przegladarki ladowe po starcie dopiero
@@ -43,30 +44,46 @@ function useBookmarks() {
   return { bookmarks, toggleBookmark, removeBookmark };
 }
 
-// rect.memo - zeby recat nie generowal od nowa tej samej zakladki w ktorej nic sie nie zmienilo
-const BookmarkItem = React.memo(({ bookmark, onRemove }) => {
+const BookmarkItem = React.memo(({ bookmark, onRemove, onCardClick }) => {
   // usuwa zakladke po kliknieciu przycisku
-  const handleRemove = useCallback(() => onRemove(bookmark.id), [bookmark.id, onRemove]);
+  const handleRemove = useCallback((e) => {
+    e.stopPropagation(); // zatrzymuje propagację, żeby nie kliknęło się w kartę
+    onRemove(bookmark.id);
+  }, [bookmark.id, onRemove]);
+
+  // obsługuje kliknięcie w całą kartę
+  const handleCardClick = useCallback(() => {
+    onCardClick(bookmark);
+  }, [bookmark, onCardClick]);
+
+  // poprawione wyświetlanie tytułu i opisu
+  const getTitle = () => {
+    return bookmark.title || bookmark.highlight || bookmark.question || 'Untitled';
+  };
+
+  const getDescription = () => {
+    return bookmark.description || bookmark.content || bookmark.fullContent || 'No description';
+  };
 
   return (
-    <div className="bookmark-item">
+    <div className="bookmark-item" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
       <div className="bookmark-content">
         <div className="bookmark-avatar">
           {(bookmark.author || 'U').charAt(0).toUpperCase()}
         </div>
         <div className="bookmark-text">
           <div className="bookmark-title">
-            {bookmark.title || bookmark.question || 'Untitled'}
+            {getTitle()}
           </div>
           <div className="bookmark-description">
-            {bookmark.description || bookmark.content || 'No description'}
+            {getDescription()}
           </div>
           <div className="bookmark-separator">
-            by {bookmark.author || 'Anonymous'}
+            by {bookmark.author || 'Anonymous'} • {bookmark.timeAgo || 'Recently'}
           </div>
         </div>
       </div>
-      <div className="bookmark-actions">
+      <div className="bookmark-actions" onClick={(e) => e.stopPropagation()}>
         <div className="bookmark-likes">
           <Heart size={16} className="heart-icon" />
           <span className="likes-count">{bookmark.likes || 0}</span>
@@ -114,6 +131,11 @@ function Zakladki() {
     }
     navigate('/');
   }, [navigate]);
+
+  // obsługa kliknięcia w zakładkę - przechodzi do strony z odpowiedzią
+  const handleCardClick = useCallback((bookmark) => {
+     navigate(`/answer_q/${bookmark.id}`, { state: { question: bookmark } });
+    }, [navigate]);
 
   useEffect(() => {
     try {
@@ -220,6 +242,7 @@ function Zakladki() {
                     key={bookmark.id}
                     bookmark={bookmark}
                     onRemove={removeBookmark}
+                    onCardClick={handleCardClick}
                   />
                 ))}
               </div>
