@@ -36,7 +36,7 @@ function Auth() {
       setFade(false); // zdjecie znika
       setTimeout(() => {
         setCurrentSlide(prev => (prev + 1) % sliderImages.length); // przelaczanie na nowe zdjecie 
-        // setFade(true); pojawianie sie nowego zdjecia
+        setFade(true); //pojawianie sie nowego zdjecia
       }, 400); // po 400 ms
     }, 5000); // co 5 sekund zmiana zdjecia !!
 
