@@ -1,11 +1,11 @@
 /* Reset and base styles */
-.caloscMain * {
+.app-main * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-.caloscMain body {
+.app-main body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
     "Helvetica Neue", sans-serif;
   background-color: #fafafa;
@@ -14,12 +14,12 @@
   overflow: hidden;
 }
 
-.caloscMain a {
+.app-main a {
   text-decoration: none;
   color: inherit;
 }
 
-.caloscMain button {
+.app-main button {
   background: none;
   border: none;
   cursor: pointer;
@@ -27,7 +27,7 @@
 }
 
 /* App container - ZMIENIONY: teraz zajmuje pełną wysokość ekranu */
-.caloscMain .app {
+.app-main .app {
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -35,7 +35,7 @@
 }
 
 /* Header styles - ZMODYFIKOWANY: fixed height */
-.caloscMain .header {
+.app-main .header {
   background-color: white;
   border-bottom: 1px solid #e7e7e7;
   padding: 8px 16px;
@@ -43,26 +43,26 @@
   z-index: 10;
 }
 
-.caloscMain .header-container {
+.app-main .header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 64px;
 }
 
-.caloscMain .logo-container {
+.app-main .logo-section {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.caloscMain .logo {
+.app-main .logo {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.caloscMain .logo-icon {
+.app-main .logo-icon {
   background-color: #a9b18d;
   border-radius: 4px;
   padding: 4px;
@@ -72,17 +72,17 @@
   color: white;
 }
 
-.caloscMain .logo-text {
+.app-main .logo-text {
   font-weight: 600;
   color: #272d33;
 }
 
-.caloscMain .logo-text-highlight {
+.app-main .logo-accent {
   color: #91a160;
 }
 
 /* Search group - bez zmian */
-.caloscMain .search-group {
+.app-main .search-section {
   display: flex;
   align-items: center;
   flex: 1;
@@ -91,16 +91,16 @@
   gap: 4px;
 }
 
-.caloscMain .search-container {
+.app-main .search-box {
   flex: 1;
   min-width: 300px;
 }
 
-.caloscMain .search-input-wrapper {
+.app-main .search-wrapper {
   position: relative;
 }
 
-.caloscMain .search-icon {
+.app-main .search-icon {
   position: absolute;
   left: 8px;
   top: 50%;
@@ -109,7 +109,7 @@
   font-size: 14px;
 }
 
-.caloscMain .search-input {
+.app-main .search-input {
   width: 100%;
   height: 36px;
   background-color: #f2f2f2;
@@ -119,46 +119,46 @@
   font-size: 14px;
 }
 
-.caloscMain .search-input::placeholder {
+.app-main .search-input::placeholder {
   color: #9d9d9d;
 }
 
 /* Search actions */
-.caloscMain .header-container {
+.app-main .header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   padding: 0 20px;
 }
-.caloscMain .search-actions {
+.app-main .search-actions {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.caloscMain .logo-container {
+.app-main .logo-section {
   flex: 0 0 auto;
 }
-.caloscMain .search-group {
+.app-main .search-section {
   flex: 1;
   display: flex;
   justify-content: center;
   max-width: 600px;
   margin: 0 20px;
 }
-.caloscMain .header-right-group {
+.app-main .header-right-group {
   display: flex;
   align-items: center;
   flex: 0 0 auto;
 }
 
-.caloscMain .header-actions-left {
+.app-main .header-actions-left {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.caloscMain .add-button {
+.app-main .add-btn {
   background-color: #cacfb9;
   color: white;
   border-radius: 50%;
@@ -171,11 +171,11 @@
   transition: background-color 0.2s ease;
 }
 
-.caloscMain .add-button:hover {
+.app-main .add-btn:hover {
   background-color: #a9b18d;
 }
 
-.caloscMain .sort-dropdown {
+.app-main .sort-btn {
   display: flex;
   align-items: center;
   background-color: #272d33;
@@ -188,28 +188,28 @@
   transition: background-color 0.2s ease;
 }
 
-.caloscMain .sort-dropdown:hover {
+.app-main .sort-btn:hover {
   background-color: #1a1f24;
 }
 
-.caloscMain .sort-dropdown svg {
+.app-main .sort-btn svg {
   margin-left: 4px;
 }
 
-.caloscMain .header-actions {
+.app-main .header-actions {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.caloscMain .divider {
+.app-main .divider {
   height: 24px;
   width: 1px;
   background-color: #e0e0e0;
   margin: 0 15px;
 }
 
-.caloscMain .icon-button {
+.app-main .icon-btn {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -220,11 +220,11 @@
   transition: background-color 0.2s ease;
 }
 
-.caloscMain .icon-button:hover {
+.app-main .icon-btn:hover {
   background-color: #f2f2f2;
 }
 
-.caloscMain .user-profile {
+.app-main .user-menu {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -234,11 +234,11 @@
   transition: background-color 0.2s ease;
 }
 
-.caloscMain .user-profile:hover {
+.app-main .user-menu:hover {
   background-color: #f2f2f2;
 }
 
-.caloscMain .avatar {
+.app-main .avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -251,38 +251,38 @@
   font-weight: 500;
 }
 
-.caloscMain .avatar-small {
+.app-main .avatar-small {
   width: 28px;
   height: 28px;
   font-size: 12px;
 }
 
-.caloscMain .avatar-placeholder {
+.app-main .avatar-placeholder {
   background-color: #f2f2f2;
 }
 
-.caloscMain .user-info {
+.app-main .user-info {
   display: flex;
   flex-direction: column;
 }
 
-.caloscMain .user-name {
+.app-main .user-name {
   font-size: 14px;
   font-weight: 500;
 }
 
-.caloscMain .user-role {
+.app-main .user-role {
   font-size: 12px;
   color: #9d9d9d;
 }
 
-.caloscMain .dropdown-icon {
+.app-main .dropdown-icon {
   color: #9d9d9d;
   font-size: 14px;
 }
 
 /* Main container - KLUCZOWA ZMIANA: teraz to flex container z fixed height */
-.caloscMain .main-container {
+.app-main .main-container {
   display: flex;
   flex: 1;
   height: calc(100vh - 80px); /* Odejmujemy wysokość header */
@@ -290,7 +290,7 @@
 }
 
 /* Sidebar styles - ZMODYFIKOWANY: fixed width i height */
-.caloscMain .sidebar {
+.app-main .sidebar {
   width: 230px;
   border-right: 1px solid #e7e7e7;
   background-color: white;
@@ -300,18 +300,18 @@
   height: 100%; /* Pełna wysokość dostępnego miejsca */
 }
 
-.caloscMain .sidebar-content {
+.app-main .sidebar-content {
   flex: 1;
   padding: 16px 0;
   overflow-y: auto; /* Pozwala przewijać sidebar jeśli potrzeba */
 }
 
-.caloscMain .add-question-button-container {
+.app-main .add-question-section {
   padding: 0 16px;
   margin-bottom: 16px;
 }
 
-.caloscMain .add-question-button {
+.app-main .add-question-btn {
   width: 100%;
   background-color: #272d33;
   color: white;
@@ -325,22 +325,22 @@
   transition: background-color 0.2s ease;
 }
 
-.caloscMain .add-question-button:hover {
+.app-main .add-question-btn:hover {
   background-color: #181e24;
 }
 
-.caloscMain .plus-icon-container {
+.app-main .plus-icon {
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 2px;
   padding: 2px;
   display: flex;
 }
 
-.caloscMain .sidebar-nav {
+.app-main .nav {
   margin-bottom: 24px;
 }
 
-.caloscMain .nav-item {
+.app-main .nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -350,30 +350,30 @@
   cursor: pointer;
 }
 
-.caloscMain .nav-item:hover {
+.app-main .nav-item:hover {
   background-color: #f2f2f2;
 }
 
-.caloscMain .nav-item.active {
+.app-main .nav-item.active {
   background-color: #e6ead9;
   color: #272d33;
   border-left: 2px solid #a9b18d;
   font-weight: 500;
 }
 
-.caloscMain .sidebar-nav-secondary {
+.app-main .nav-secondary {
   margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid #e7e7e7;
 }
 
-.caloscMain .sidebar-footer {
+.app-main .sidebar-footer {
   padding: 16px;
   border-top: 1px solid #e7e7e7;
   flex-shrink: 0; /* Footer pozostaje na dole */
 }
 
-.caloscMain .sign-out-button {
+.app-main .logout-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -388,16 +388,16 @@
   transition: background-color 0.2s ease;
 }
 
-.caloscMain .sign-out-button:hover {
+.app-main .logout-btn:hover {
   background-color: #8d976c;
 }
 
-.caloscMain .sign-out-button svg {
+.app-main .logout-btn svg {
   font-size: 16px;
 }
 
 /* Main content styles - ZMIENIONY: bez scroll, tylko kontener pytań ma scroll */
-.caloscMain .main-content {
+.app-main .content {
   flex: 1;
   padding: 16px;
   display: flex;
@@ -406,7 +406,7 @@
   overflow: hidden; /* Główna sekcja nie przewija */
 }
 
-.caloscMain .welcome-banner {
+.app-main .welcome-banner {
   background-color: #cacfb9;
   border-radius: 8px;
   padding: 24px;
@@ -414,17 +414,17 @@
   flex-shrink: 0; /* Banner zawsze widoczny */
 }
 
-.caloscMain .welcome-banner h1 {
+.app-main .welcome-banner h1 {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 8px;
 }
 
-.caloscMain .welcome-banner p {
+.app-main .welcome-banner p {
   color: #2e373f;
 }
 
-.caloscMain .posts-count {
+.app-main .posts-count {
   font-size: 14px;
   color: #5e5e5e;
   margin-bottom: 16px;
@@ -433,7 +433,7 @@
 }
 
 /* NOWY KONTENER - tylko on ma scroll */
-.caloscMain .question-cards-container {
+.app-main .questions-container {
   flex: 1;
   overflow-y: auto; /* TYLKO TUTAJ JEST SCROLL */
   padding-right: 4px; /* Miejsce na scrollbar */
@@ -443,32 +443,32 @@
   scrollbar-color: #cacfb9 #f2f2f2;
 }
 
-.caloscMain .question-cards-container::-webkit-scrollbar {
+.app-main .questions-container::-webkit-scrollbar {
   width: 6px;
 }
 
-.caloscMain .question-cards-container::-webkit-scrollbar-track {
+.app-main .questions-container::-webkit-scrollbar-track {
   background: #f8f8f8;
   border-radius: 3px;
 }
 
-.caloscMain .question-cards-container::-webkit-scrollbar-thumb {
+.app-main .questions-container::-webkit-scrollbar-thumb {
   background: #cacfb9;
   border-radius: 3px;
 }
 
-.caloscMain .question-cards-container::-webkit-scrollbar-thumb:hover {
+.app-main .questions-container::-webkit-scrollbar-thumb:hover {
   background: #a9b18d;
 }
 
-.caloscMain .question-cards {
+.app-main .questions-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding-bottom: 20px; /* Padding na dole żeby ostatnie pytanie nie było przycięte */
 }
 
-.caloscMain .question-card {
+.app-main .question-card {
   background-color: white;
   border-radius: 8px;
   padding: 16px;
@@ -477,13 +477,13 @@
   transition: box-shadow 0.2s ease, transform 0.1s ease;
 }
 
-.caloscMain .question-card:hover {
+.app-main .question-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
 }
 
 /* Right sidebar styles - ZMODYFIKOWANY: fixed width i height */
-.caloscMain .right-sidebar {
+.app-main .right-sidebar {
   width: 240px;
   border-left: 1px solid #e7e7e7;
   padding: 16px 12px;
@@ -493,24 +493,24 @@
   overflow-y: auto; /* Pozwala przewijać jeśli potrzeba */
 }
 
-.caloscMain .experts-section {
+.app-main .experts-section {
   margin-bottom: 24px;
 }
 
-.caloscMain .experts-section h3,
-.caloscMain .tags-section h3 {
+.app-main .experts-section h3,
+.app-main .tags-section h3 {
   font-size: 16px;
   margin-bottom: 12px;
   font-weight: 600;
 }
 
-.caloscMain .experts-list {
+.app-main .experts-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.caloscMain .expert-item {
+.app-main .expert-item {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -522,32 +522,32 @@
   transition: background-color 0.2s ease;
 }
 
-.caloscMain .expert-item:hover {
+.app-main .expert-item:hover {
   background-color: #f8f8f8;
 }
 
-.caloscMain .expert-details {
+.app-main .expert-info {
   display: flex;
   flex-direction: column;
 }
 
-.caloscMain .expert-name {
+.app-main .expert-name {
   font-weight: 500;
   color: #272d33;
 }
 
-.caloscMain .expert-specialty {
+.app-main .expert-specialty {
   font-size: 11px;
   color: #9d9d9d;
 }
 
-.caloscMain .tags-list {
+.app-main .tags-list {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.caloscMain .tag {
+.app-main .tag {
   background-color: #f2f2f2;
   color: #5e5e5e;
   padding: 4px 10px;
@@ -556,82 +556,82 @@
   font-weight: 500;
 }
 
-.caloscMain .tag-clickable {
+.app-main .tag-clickable {
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
-.caloscMain .tag-clickable:hover {
+.app-main .tag-clickable:hover {
   background-color: #e6ead9;
   color: #272d33;
 }
 
 /* Question card components - STYLE PYTAŃ */
-.caloscMain .question-card-header {
+.app-main .card-header {
   display: flex;
   justify-content: space-between;
   margin-bottom: 12px;
 }
 
-.caloscMain .question-author {
+.app-main .author {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.caloscMain .author-info {
+.app-main .author-info {
   display: flex;
   flex-direction: column;
 }
 
-.caloscMain .author-name {
+.app-main .author-name {
   font-size: 14px;
   font-weight: 500;
   color: #272d33;
 }
 
-.caloscMain .author-time {
+.app-main .author-time {
   font-size: 12px;
   color: #9d9d9d;
 }
 
-.caloscMain .question-actions {
+.app-main .card-actions {
   display: flex;
   gap: 8px;
 }
 
-.caloscMain .question-highlight {
+.app-main .question-title {
   border-left: 3px solid #a9b18d;
   padding-left: 12px;
   margin-bottom: 12px;
 }
 
-.caloscMain .question-highlight h3 {
+.app-main .question-title h3 {
   font-size: 16px;
   font-weight: 600;
   color: #272d33;
   line-height: 1.4;
 }
 
-.caloscMain .question-tags {
+.app-main .question-tags {
   display: flex;
   gap: 8px;
   margin-bottom: 12px;
   flex-wrap: wrap;
 }
 
-.caloscMain .question-content {
+.app-main .question-content {
   margin-bottom: 16px;
 }
 
-.caloscMain .question-content p {
+.app-main .question-content p {
   color: #5e5e5e;
   line-height: 1.6;
   margin-bottom: 12px;
 }
 
 /* Przycisk rozwijania pytania */
-.caloscMain .expand-button {
+.app-main .expand-btn {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -643,15 +643,15 @@
   padding: 4px 0;
 }
 
-.caloscMain .expand-button:hover {
+.app-main .expand-btn:hover {
   color: #91a160;
 }
 
-.caloscMain .expand-button svg {
+.app-main .expand-btn svg {
   font-size: 16px;
 }
 
-.caloscMain .question-footer {
+.app-main .card-footer {
   border-top: 1px solid #f0f0f0;
   padding-top: 12px;
   display: flex;
@@ -659,18 +659,18 @@
   align-items: center;
 }
 
-.caloscMain .question-responders {
+.app-main .responders {
   display: flex;
   gap: 8px;
 }
 
-.caloscMain .question-stats {
+.app-main .stats {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.caloscMain .stat {
+.app-main .stat {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -678,6 +678,15 @@
   font-size: 14px;
 }
 
-.caloscMain .heart-icon {
+.app-main .heart-icon {
   color: #a9b18d;
+}
+
+.like-btn {
+  cursor: pointer !important;
+  transition: transform 0.1s ease;
+}
+
+.like-btn:hover {
+  transform: scale(1.1);
 }
