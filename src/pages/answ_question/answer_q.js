@@ -59,12 +59,25 @@ function QuestionDetail() {
   };
 
   const handleSendAnswer = () => {
-    if (newAnswer.trim()) {
-      // tutaj byłoby dodawanie odpowiedzi do bazy
-      console.log("Nowa odpowiedź:", newAnswer);
-      setNewAnswer("");
-    }
-  };
+  if (newAnswer.trim()) {
+    const newAnswerObj = {
+      id: Date.now(), // unikalne ID
+      author: getUserDisplayName(),
+      authorTitle: "Student",
+      timeAgo: "just now",
+      content: newAnswer.trim(),
+      likes: 0,
+      isExpert: false,
+      helpful: false
+    };
+
+    const updatedAnswers = [newAnswerObj, ...answers];
+    setAnswers(updatedAnswers);
+    localStorage.setItem(`answers_${id}`, JSON.stringify(updatedAnswers));
+    setNewAnswer("");
+  }
+};
+
 
   return (
     <div className="caloscMain">
