@@ -11,7 +11,18 @@ import { useNavigate } from 'react-router-dom';
 const Profile = () => {
   // nawiagcja meidzy stronami
   const navigate = useNavigate();
-  
+
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  const getUserDisplayName = () => {
+    return currentUser?.userName || currentUser?.name || 'Guest';
+  };
+   // Funkcja do wyświetlania inicjałów użytkownika
+   const getUserInitials = () => {
+    const displayName = getUserDisplayName();
+    if (displayName === 'Guest') return 'GU';
+    return displayName.substring(0, 2).toUpperCase();
+  };
+
   const user = {
     // dane urzytkownika 
     name: 'Basjan Kojko',
@@ -25,7 +36,7 @@ const Profile = () => {
     { icon: <FiHome size={16} />, text: 'Home', active: false, path: '/main' }, 
     { icon: <FiMessageSquare size={16} />, text: 'Notifications', active: false },
     { icon: <FiUsers size={16} />, text: 'Specialists', active: false },
-    { icon: <FiUser size={16} />, text: 'My Questions', active: false },
+    { icon: <FiUser size={16} />, text: 'My Questions', active: false, path: '/my_questions' },
     { icon: <FiBookmark size={16} />, text: 'Bookmarks', active: false, path: '/zakładki'}
   ];
 
@@ -119,9 +130,9 @@ const Profile = () => {
           <div className="right-nav">
             <button className="icon-btn"><FiMail size={20} /></button>
             <div className="user-profile" onClick={() => navigate('/profile')}>
-              <div className="avatar"><span>BK</span></div>
+              <div className="avatar"><span>{getUserInitials()}</span></div>
               <div className="user-info">
-                <div className="name">Basjan Kojko</div>
+                <div className="name">{getUserDisplayName()}</div>
                 <div className="role">Student</div>
               </div>
               <FiChevronDown size={16} />
