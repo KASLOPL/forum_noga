@@ -40,38 +40,11 @@ function QuestionDetail() {
   });
 
   const [newAnswer, setNewAnswer] = useState("");
-  const [answers] = useState([
-    {
-      id: 1,
-      author: "Dr. Marcin Kowalski",
-      authorTitle: "Database Specialist",
-      timeAgo: "1 hour ago",
-      content: "Świetne pytanie! Oto kilka kluczowych strategii:\n\n1. **Partycjonowanie tabel** - Podziel dużą tabelę na mniejsze części na podstawie dat lub innych kryteriów\n2. **Indeksy kompozytowe** - Zamiast pojedynczych indeksów, używaj indeksów na kilku kolumnach jednocześnie\n3. **EXPLAIN PLAN** - Zawsze sprawdzaj plan wykonania zapytania, żeby zobaczyć gdzie są wąskie gardła\n\nJeśli chcesz, mogę przygotować konkretny przykład dla twojego przypadku.",
-      likes: 15,
-      isExpert: true,
-      helpful: true
-    },
-    {
-      id: 2,
-      author: "Tomasz S.",
-      authorTitle: "Full Stack Developer",
-      timeAgo: "45 minutes ago",
-      content: "Dodatkowo do tego co napisał Dr. Kowalski, polecam:\n\n• **Cachowanie** - Redis lub Memcached dla często używanych zapytań\n• **Lazy loading** - Ładuj dane tylko wtedy, gdy są potrzebne\n• **Paginacja** - Nigdy nie ładuj wszystkich rekordów naraz\n\nU mnie te techniki zmniejszyły czas zapytań z 8 sekund do 200ms!",
-      likes: 8,
-      isExpert: false,
-      helpful: false
-    },
-    {
-      id: 3,
-      author: "Sarah Chen",
-      authorTitle: "Senior Database Engineer",
-      timeAgo: "20 minutes ago",
-      content: "Bardzo dobre rady powyżej! Dodam jeszcze kilka technicznych szczegółów:\n\n**Query Optimization:**\n• Unikaj SELECT * - zawsze wybieraj konkretne kolumny\n• Używaj LIMIT do ograniczania wyników\n• Sprawdź czy używasz odpowiednich JOIN-ów\n\n**Monitoring:**\n• Włącz slow query log w MySQL\n• Używaj EXPLAIN ANALYZE dla detali wykonania\n• Monitoruj I/O i CPU usage\n\n**Architektura:**\n• Rozważ read replicas dla zapytań SELECT\n• Database sharding dla bardzo dużych tabel\n• Connection pooling żeby nie otwierać za dużo połączeń\n\nJeśli potrzebujesz pomocy z konkretnym zapytaniem, chętnie pomogę!",
-      likes: 12,
-      isExpert: true,
-      helpful: true
-    }
-  ]);
+  const [answers, setAnswers] = useState(() => {
+  const storedAnswers = localStorage.getItem(`answers_${id}`);
+  if (storedAnswers) return JSON.parse(storedAnswers);
+  return []; // domyślnie pusto lub możesz dodać przykładowe odpowiedzi
+});
 
   // Funkcja do wyświetlania nazwy użytkownika
   const getUserDisplayName = () => {
@@ -86,12 +59,25 @@ function QuestionDetail() {
   };
 
   const handleSendAnswer = () => {
-    if (newAnswer.trim()) {
-      // tutaj byłoby dodawanie odpowiedzi do bazy
-      console.log("Nowa odpowiedź:", newAnswer);
-      setNewAnswer("");
-    }
-  };
+  if (newAnswer.trim()) {
+    const newAnswerObj = {
+      id: Date.now(), // unikalne ID
+      author: getUserDisplayName(),
+      authorTitle: "Student",
+      timeAgo: "just now",
+      content: newAnswer.trim(),
+      likes: 0,
+      isExpert: false,
+      helpful: false
+    };
+
+    const updatedAnswers = [newAnswerObj, ...answers];
+    setAnswers(updatedAnswers);
+    localStorage.setItem(`answers_${id}`, JSON.stringify(updatedAnswers));
+    setNewAnswer("");
+  }
+};
+
 
   return (
     <div className="caloscMain">

@@ -39,45 +39,64 @@ function useBookmarks() {
     setBookmarks(prev => prev.filter(b => b.id !== id));
   }, []);
 
-  return { bookmarks, toggleBookmark, removeBookmark };
+  // aktualizuje likes w bookmarkach
+  const updateBookmarkLikes = useCallback((id, newLikes) => {
+    setBookmarks(prev => prev.map(b => 
+      b.id === id ? { ...b, likes: newLikes } : b
+    ));
+  }, []);
+
+  return { bookmarks, toggleBookmark, removeBookmark, updateBookmarkLikes };
 }
 
 // zabezpiecza jak klikasz naglowek to onclick nie widzi i nie przenosi cie do answer
-const BookmarkItem = React.memo(({ bookmark, onRemove, onCardClick }) => {
+const BookmarkItem = React.memo(({ bookmark, onRemove, onCardClick, onLike, isLiked }) => {
   const handleRemove = useCallback((e) => {
     e.stopPropagation();
     onRemove(bookmark.id);
   }, [bookmark.id, onRemove]);
 
-  const handleCardClick = useCallback(() => {
+  const handleClick = useCallback(() => {
     onCardClick(bookmark);
   }, [bookmark, onCardClick]);
 
+  const handleLike = useCallback((e) => {
+    e.stopPropagation();
+    onLike(bookmark.id, e);
+  }, [bookmark.id, onLike]);
+
   // sprawdza pokoleji co zostalo dodane w formularzu i jak jest to dodaje to do wygladu zakladki - WYBOROWO
   const getTitle = () => bookmark.title || bookmark.highlight || bookmark.question || 'Untitled';
-  const getDescription = () => bookmark.description || bookmark.content || bookmark.fullContent || 'No description';
+  const getDesc = () => bookmark.description || bookmark.content || bookmark.fullContent || 'No description';
 
   return (
-    <div className="bookmark-item" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
-      <div className="bookmark-content">
-        <div className="bookmark-avatar">
+    <div className="item" onClick={handleClick} style={{ cursor: 'pointer' }}>
+      <div className="content">
+        <div className="avatar">
           {(bookmark.author || 'U').charAt(0).toUpperCase()}
         </div>
-        <div className="bookmark-text">
-          <div className="bookmark-title">{getTitle()}</div>
-          <div className="bookmark-description">{getDescription()}</div>
-          <div className="bookmark-separator">
+        <div className="text">
+          <div className="title">{getTitle()}</div>
+          <div className="desc">{getDesc()}</div>
+          <div className="meta">
             by {bookmark.author || 'Anonymous'} • {bookmark.timeAgo || 'Recently'}
           </div>
         </div>
       </div>
-      <div className="bookmark-actions" onClick={(e) => e.stopPropagation()}>
-        <div className="bookmark-likes">
-          <Heart size={16} className="heart-icon" />
-          <span className="likes-count">{bookmark.likes || 0}</span>
+      <div className="actions" onClick={(e) => e.stopPropagation()}>
+        <div className="likes" onClick={handleLike} style={{ cursor: 'pointer' }}>
+          <Heart 
+            size={16} 
+            className="heart" 
+            style={{ 
+              fill: isLiked ? '#ff4757' : 'none',
+              color: isLiked ? '#ff4757' : '#666'
+            }}
+          />
+          <span className="count">{bookmark.likes || 0}</span>
         </div>
-        <button className="bookmark-button" onClick={handleRemove} title="Remove bookmark">
-          <Bookmark size={20} className="bookmark-icon" />
+        <button className="btn" onClick={handleRemove} title="Remove bookmark">
+          <Bookmark size={20} className="icon" />
         </button>
       </div>
     </div>
@@ -86,8 +105,8 @@ const BookmarkItem = React.memo(({ bookmark, onRemove, onCardClick }) => {
 
 // Ggdy nie ZADNYCH zakladek to ekran domyslny
 const EmptyState = React.memo(() => (
-  <div className="empty-state">
-    <div className="empty-state-icon">
+  <div className="empty">
+    <div className="empty-icon">
       <Bookmark size={48} />
     </div>
     <p>No bookmarks yet</p>
@@ -97,38 +116,81 @@ const EmptyState = React.memo(() => (
 
 function Zakladki() {
   // uzywanie hooka bookmarks oraz obsluga nawigacji na stronie 
-  const navigate = useNavigate();
-  const [activeItem, setActiveItem] = useState('/bookmarks');
-  const { bookmarks, removeBookmark } = useBookmarks();
+  const nav = useNavigate();
+  const [active, setActive] = useState('/bookmarks');
+  const { bookmarks, removeBookmark, updateBookmarkLikes } = useBookmarks();
+  
+  const [liked, setLiked] = useState(() => {
+    const saved = localStorage.getItem("likedQuestions");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("likedQuestions", JSON.stringify(liked));
+  }, [liked]);
 
   // zmiana aktywnego elementu na stronie w naiwgacji 
-  const handleNavigation = useCallback((path) => {
-    setActiveItem(path);
-    navigate(path);
-  }, [navigate]);
+  const handleNav = useCallback((path) => {
+    setActive(path);
+    nav(path);
+  }, [nav]);
 
   const handleLogout = useCallback(() => {
     try {
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('currentUser');
+      localStorage.removeItem('');
     } catch (error) {
       console.error('Logout error:', error);
     }
-    navigate('/');
-  }, [navigate]);
+    nav('/');
+  }, [nav]);
 
-  const handleCardClick = useCallback((bookmark) => {
-    navigate(`/answer_q/${bookmark.id}`, { state: { question: bookmark } });
-  }, [navigate]);
+  const handleClick = useCallback((bookmark) => {
+    nav(`/answer_q/${bookmark.id}`, { state: { question: bookmark } });
+  }, [nav]);
 
   useEffect(() => {
     try {
       const isLoggedIn = localStorage.getItem('isLoggedIn');
-      if (isLoggedIn !== 'true') navigate('/');
+      if (isLoggedIn !== 'true') nav('/');
     } catch {
-      navigate('/');
+      nav('/');
     }
-  }, [navigate]);
+  }, [nav]);
+  
+  const handleLike = useCallback((questionId, e) => {
+    e.stopPropagation();
+    
+    const isLiked = liked.includes(questionId);
+    const inc = isLiked ? -1 : 1;
+    
+    // Toggle polubienie
+    setLiked(prev => 
+      isLiked ? prev.filter(id => id !== questionId) : [...prev, questionId]
+    );
+    
+    // Aktualizuj likes w bookmarkach
+    const bookmark = bookmarks.find(b => b.id === questionId);
+    if (bookmark) {
+      const newLikes = (bookmark.likes || 0) + inc;
+      updateBookmarkLikes(questionId, newLikes);
+      
+      // Aktualizuj również w głównej liście pytań w localStorage
+      try {
+        const questions = localStorage.getItem("questions");
+        if (questions) {
+          const parsedQuestions = JSON.parse(questions);
+          const updatedQuestions = parsedQuestions.map(q => 
+            q.id === questionId ? { ...q, likes: q.likes + inc } : q
+          );
+          localStorage.setItem("questions", JSON.stringify(updatedQuestions));
+        }
+      } catch (error) {
+        console.error('Error updating questions:', error);
+      }
+    }
+  }, [liked, bookmarks, updateBookmarkLikes]);
 
   const navItems = [
     { path: '/main', icon: FiHome, label: 'Home' },
@@ -138,7 +200,7 @@ function Zakladki() {
     { path: '/bookmarks', icon: FiBookmark, label: 'Bookmarks' }
   ];
 
-  const secondaryNavItems = [
+  const secItems = [
     { path: '/settings', icon: FiSettings, label: 'Settings' },
     { path: '/help', icon: FiHelpCircle, label: 'Help & FAQ' }
   ];
@@ -149,8 +211,8 @@ function Zakladki() {
     return (
       <a
         href="#"
-        className={`template-nav-item ${activeItem === item.path ? 'active' : ''}`}
-        onClick={(e) => { e.preventDefault(); handleNavigation(item.path); }}
+        className={`nav-item ${active === item.path ? 'active' : ''}`}
+        onClick={(e) => { e.preventDefault(); handleNav(item.path); }}
       >
         <Icon />
         <span>{item.label}</span>
@@ -160,62 +222,64 @@ function Zakladki() {
 
   return (
     <div className='bookall'>
-      <div className="template-app">
-        <header className="template-header">
-          <div className="template-header-container">
-            <div className="template-logo">
-              <div className="template-logo-icon"><FiZap /></div>
-              <span className="template-logo-text">
-                Snap<span className="template-logo-text-highlight">solve</span>
+      <div className="app">
+        <header className="header">
+          <div className="header-container">
+            <div className="logo">
+              <div className="logo-icon"><FiZap /></div>
+              <span className="logo-text">
+                Snap<span className="logo-highlight">solve</span>
               </span>
             </div>
-            <div className="template-header-title">
+            <div className="header-title">
               <h1>TWOJE ZAKŁADKI</h1>
             </div>
           </div>
         </header>
 
-        <div className="template-main-container">
-          <aside className="template-sidebar">
-            <div className="template-sidebar-content">
-              <div className="template-add-question-button-container">
+        <div className="main-container">
+          <aside className="sidebar">
+            <div className="sidebar-content">
+              <div className="add-btn-container">
                 <button 
-                  className="template-add-question-button" 
-                  onClick={() => handleNavigation('/addquestion')}
+                  className="add-btn" 
+                  onClick={() => handleNav('/addquestion')}
                 >
                   <span>ADD QUESTION</span>
-                  <div className="template-plus-icon-container"><FiPlus /></div>
+                  <div className="plus-icon"><FiPlus /></div>
                 </button>
               </div>
 
-              <nav className="template-sidebar-nav">
+              <nav className="nav">
                 {navItems.map(item => <NavItem key={item.path} item={item} />)}
               </nav>
 
-              <div className="template-sidebar-nav-secondary">
-                {secondaryNavItems.map(item => <NavItem key={item.path} item={item} />)}
+              <div className="nav-sec">
+                {secItems.map(item => <NavItem key={item.path} item={item} />)}
               </div>
             </div>
 
-            <div className="template-sidebar-footer">
-              <button className="template-sign-out-button" onClick={handleLogout}>
+            <div className="sidebar-footer">
+              <button className="logout-btn" onClick={handleLogout}>
                 <FiLogOut /> Sign out
               </button>
             </div>
           </aside>
 
-          <main className="template-main-content">
-            <div className="bookmarks-main-content">
+          <main className="main">
+            <div className="main-content">
               {bookmarks.length === 0 ? (
                 <EmptyState />
               ) : (
-                <div className="bookmark-list">
+                <div className="list">
                   {bookmarks.map(bookmark => (
                     <BookmarkItem
                       key={bookmark.id}
                       bookmark={bookmark}
                       onRemove={removeBookmark}
-                      onCardClick={handleCardClick}
+                      onCardClick={handleClick}
+                      onLike={handleLike}
+                      isLiked={liked.includes(bookmark.id)}
                     />
                   ))}
                 </div>
