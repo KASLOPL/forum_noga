@@ -35,27 +35,35 @@ const useBookmarks = () => {
 
 function Main() {
   const navigate = useNavigate();
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
   const [expandedQuestion, setExpandedQuestion] = useState(null);
   const { toggleBookmark, isBookmarked } = useBookmarks();
-  
+  const [likedQuestions, setLikedQuestions] = useState(() => {
+  const saved = localStorage.getItem("likedQuestions");
+  return saved ? JSON.parse(saved) : [];
+  });  
+
   const [questions, setQuestions] = useState(() => {
   const saved = localStorage.getItem("questions");
   const localQuestions = saved ? JSON.parse(saved) : [];
     return saved ? JSON.parse(saved) : defaultQuestions;
   });
 
-  
+  useEffect(() => {
+  localStorage.setItem("likedQuestions", JSON.stringify(likedQuestions));
+}, [likedQuestions]);
+
 
   useEffect(() => {
     localStorage.setItem("questions", JSON.stringify(questions));
   }, [questions]);
 
-  const handleNavigation = useCallback((path) => navigate(path), [navigate]);
+  const goTo = useCallback((path) => navigate(path), [navigate]);
 
-  const handleLogout = useCallback(() => {
+  const logout = useCallback(() => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('likedQuestions');
     navigate('/');
   }, [navigate]);
 
@@ -66,53 +74,76 @@ function Main() {
     }
   }, [navigate]);
 
-  const handleToggleQuestion = useCallback((questionId, e) => {
+  const toggleQuestion = useCallback((questionId, e) => {
     e.stopPropagation();
     setExpandedQuestion(prev => prev === questionId ? null : questionId);
   }, []);
 
-  const handleBookmarkToggle = useCallback((question, e) => {
+  const bookmarkClick = useCallback((question, e) => {
     e.stopPropagation();
     toggleBookmark(question);
   }, [toggleBookmark]);
 
-  const handleCardClick = useCallback((question) => {
+  const cardClick = useCallback((question) => {
     navigate(`/answer_q/${question.id}`, { state: { question } });
   }, [navigate]);
 
-  const getUserDisplayName = () => {
-    return currentUser?.userName || currentUser?.name || 'Guest';
+  const getUserName = () => {
+    return user?.userName || user?.name || 'Guest';
   };
 
   const getUserInitials = () => {
-    const displayName = getUserDisplayName();
-    if (displayName === 'Guest') return 'GU';
-    return displayName.substring(0, 2).toUpperCase();
+    const name = getUserName();
+    if (name === 'Guest') return 'GU';
+    return name.substring(0, 2).toUpperCase();
   };
 console.log('questions:', questions, 'isArray:', Array.isArray(questions));
+
+const likeClick = (questionId, e) => {
+  e.stopPropagation();
+  
+  const isAlreadyLiked = likedQuestions.includes(questionId);
+  
+  if (isAlreadyLiked) {
+    const newLiked = likedQuestions.filter(id => id !== questionId);
+    setLikedQuestions(newLiked);
+    
+    setQuestions(prev => prev.map(q => 
+      q.id === questionId ? { ...q, likes: q.likes - 1 } : q
+    ));
+    
+  } else {
+    const newLiked = [...likedQuestions, questionId];
+    setLikedQuestions(newLiked);
+    
+    setQuestions(prev => prev.map(q => 
+      q.id === questionId ? { ...q, likes: q.likes + 1 } : q
+    ));
+  }
+};
   return (
-    <div className="caloscMain">
+    <div className="app-main">
       <div className="app">
         <header className="header">
-          <div className="header-container">
-            <div className="logo-container">
+          <div className="header-content">
+            <div className="logo-section">
               <div className="logo">
                 <div className="logo-icon"><FiZap /></div>
-                <span className="logo-text">Snap<span className="logo-text-highlight">solve</span></span>
+                <span className="logo-text">Snap<span className="logo-accent">solve</span></span>
               </div>
             </div>
 
-            <div className="search-group">
-              <div className="search-container">
-                <div className="search-input-wrapper">
+            <div className="search-section">
+              <div className="search-box">
+                <div className="search-wrapper">
                   <FiSearch className="search-icon" />
                   <input className="search-input" placeholder="Got a question? See if it's already asked!" type="text" />
                 </div>
               </div>
-              <button className="add-button" onClick={() => handleNavigation('/addquestion')}>
+              <button className="add-btn" onClick={() => goTo('/addquestion')}>
                 <FiPlus />
               </button>
-              <div className="sort-dropdown">
+              <div className="sort-btn">
                 <span>Sort by</span>
                 <FiChevronDown />
               </div>
@@ -120,14 +151,14 @@ console.log('questions:', questions, 'isArray:', Array.isArray(questions));
 
             <div className="header-actions">
               <div className="divider"></div>
-              <button className="icon-button"><FiMoon /></button>
-              <button className="icon-button"><FiMail /></button>
-              <div className="user-profile" onClick={() => handleNavigation('/profile')}>
+              <button className="icon-btn"><FiMoon /></button>
+              <button className="icon-btn"><FiMail /></button>
+              <div className="user-menu" onClick={() => goTo('/profile')}>
                 <div className="avatar">
                   <span>{getUserInitials()}</span>
                 </div>
                 <div className="user-info">
-                  <span className="user-name">{getUserDisplayName()}</span>
+                  <span className="user-name">{getUserName()}</span>
                   <span className="user-role">Student</span>
                 </div>
                 <FiChevronDown className="dropdown-icon" />
@@ -139,54 +170,54 @@ console.log('questions:', questions, 'isArray:', Array.isArray(questions));
         <div className="main-container">
           <aside className="sidebar">
             <div className="sidebar-content">
-              <div className="add-question-button-container">
-                <button className="add-question-button" onClick={() => handleNavigation('/addquestion')}>
+              <div className="add-question-section">
+                <button className="add-question-btn" onClick={() => goTo('/addquestion')}>
                   <span>ADD QUESTION</span>
-                  <div className="plus-icon-container"><FiPlus /></div>
+                  <div className="plus-icon"><FiPlus /></div>
                 </button>
               </div>
 
-              <nav className="sidebar-nav">
-                <a href="#" className="nav-item active" onClick={(e) => { e.preventDefault(); handleNavigation('/main'); }}><FiHome /><span>Home</span></a>
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/notifications'); }}><FiMessageSquare /><span>Notifications</span></a>
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/specialists'); }}><FiUsers /><span>Specialists</span></a>
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/my_questions'); }}><FiUser /><span>My Questions</span></a>
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/zakładki'); }}><FiBookmark /><span>Bookmarks</span></a>
+              <nav className="nav">
+                <a href="#" className="nav-item active" onClick={(e) => { e.preventDefault(); goTo('/main'); }}><FiHome /><span>Home</span></a>
+                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/notifications'); }}><FiMessageSquare /><span>Notifications</span></a>
+                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/specialists'); }}><FiUsers /><span>Specialists</span></a>
+                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/my_questions'); }}><FiUser /><span>My Questions</span></a>
+                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/zakładki'); }}><FiBookmark /><span>Bookmarks</span></a>
               </nav>
 
-              <div className="sidebar-nav-secondary">
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/settings'); }}><FiSettings /><span>Settings</span></a>
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); handleNavigation('/help'); }}><FiHelpCircle /><span>Help & FAQ</span></a>
+              <div className="nav-secondary">
+                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/settings'); }}><FiSettings /><span>Settings</span></a>
+                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/help'); }}><FiHelpCircle /><span>Help & FAQ</span></a>
               </div>
             </div>
 
             <div className="sidebar-footer">
-              <button className="sign-out-button" onClick={handleLogout}>
+              <button className="logout-btn" onClick={logout}>
                 <FiLogOut /> Sign out
               </button>
             </div>
           </aside>
 
-          <main className="main-content">
+          <main className="content">
             <div className="welcome-banner">
-              <h1>Hi, {getUserDisplayName()}!</h1>
+              <h1>Hi, {getUserName()}!</h1>
               <p>
                 Stuck on a question? SnapSolve connects you with experts for fast, accurate answers—no stress, just solutions!
               </p>
             </div>
 
             <div className="posts-count">{questions.length} posts</div>
-            <div className="question-cards-container">
-              <div className="question-cards">
+            <div className="questions-container">
+              <div className="questions-list">
                 {Array.isArray(questions) && questions.map((question) => (
                   <div 
                     key={question.id} 
                     className="question-card"
-                    onClick={() => handleCardClick(question)}
+                    onClick={() => cardClick(question)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <div className="question-card-header" onClick={(e) => { e.stopPropagation(); }}>
-                      <div className="question-author">
+                    <div className="card-header" onClick={(e) => { e.stopPropagation(); }}>
+                      <div className="author">
                         <div className="avatar">
                           <span>{question.author?.substring(0, 2).toUpperCase() || '??'}</span>
                         </div>
@@ -195,35 +226,47 @@ console.log('questions:', questions, 'isArray:', Array.isArray(questions));
                           <div className="author-time">{question.timeAgo}</div>
                         </div>
                       </div>
-                      <div className="question-actions">
+                      <div className="card-actions">
                         <button 
-                          className={`icon-button ${isBookmarked(question.id) ? 'bookmarked' : ''}`}
-                          onClick={(e) => handleBookmarkToggle(question, e)}
+                          className={`icon-btn ${isBookmarked(question.id) ? 'bookmarked' : ''}`}
+                          onClick={(e) => bookmarkClick(question, e)}
                         >
                           <FiBookmark style={{ fill: isBookmarked(question.id) ? '#4CAF50' : 'none' }} />
                         </button>
-                        <button className="icon-button" onClick={(e) => { e.stopPropagation(); }}><FiMoreVertical /></button> 
+                        <button className="icon-btn" onClick={(e) => { e.stopPropagation(); }}><FiMoreVertical /></button> 
                       </div>
                     </div>
 
-                    <div className="question-highlight"><h3>{question.highlight}</h3></div>
+                    <div className="question-title"><h3>{question.highlight}</h3></div>
 
                     <div className="question-content">
                       <p>{expandedQuestion === question.id ? question.fullContent : question.content}</p>
-                      <button className="expand-button" onClick={(e) => handleToggleQuestion(question.id, e)}>
+                      <button className="expand-btn" onClick={(e) => toggleQuestion(question.id, e)}>
                         {expandedQuestion === question.id ? <><span>Show less</span><FiChevronUp /></> : <><span>Read more</span><FiChevronDown /></>}
                       </button>
                     </div>
 
-                    <div className="question-footer" onClick={(e) => { e.stopPropagation(); }}>
-                      <div className="question-responders">
+                    <div className="card-footer" onClick={(e) => { e.stopPropagation(); }}>
+                      <div className="responders">
                         {Array.from({ length: question.responders }, (_, i) => (
                           <div key={i} className="avatar avatar-small"><span>{String.fromCharCode(65 + i)}</span></div>
                         ))}
                       </div>
 
-                      <div className="question-stats">
-                        <div className="stat"><FiHeart className="heart-icon" /><span>{question.likes}</span></div>
+                      <div className="stats">
+                        <div 
+                          className="stat like-btn" 
+                          onClick={(e) => likeClick(question.id, e)}
+                        >
+                          <FiHeart 
+                          className="heart-icon" 
+                        style={{ 
+                          fill: likedQuestions.includes(question.id) ? '#ff4757' : 'none',
+                          color: likedQuestions.includes(question.id) ? '#ff4757' : '#666'
+                        }} 
+                      />
+                        <span>{question.likes}</span>
+                      </div>
                         <div className="stat"><FiEye /><span>{question.views}</span></div>
                       </div>
                     </div>
@@ -247,7 +290,7 @@ console.log('questions:', questions, 'isArray:', Array.isArray(questions));
                 ].map((expert, index) => (
                   <div key={index} className="expert-item">
                     <div className="avatar avatar-small"><span>{expert.name.split(' ').map(n => n[0]).join('')}</span></div>
-                    <div className="expert-details">
+                    <div className="expert-info">
                       <div className="expert-name">{expert.name}</div>
                       <div className="expert-specialty">{expert.specialty}</div>
                     </div>
