@@ -3,7 +3,6 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  width: 100%;
 }
 
 .app {
@@ -11,7 +10,6 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  width: 100%;
 }
 
 .header-fixed {
@@ -21,7 +19,6 @@
   right: 0;
   z-index: 1000;
   background: white;
-  border-bottom: 1px solid #e2e8f0;
   height: 64px;
 }
 

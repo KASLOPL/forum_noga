@@ -29,15 +29,18 @@ const Profile = () => {
   const [tags, setTags] = useState([
     'Python', 'Java', 'SQL', 'html', 'css', 'javascript', 'react',
     'node.js', 'flask', 'arduino', 'linux', 'database', 'networking',
-    'school_project', 'teamwork', 'presentation', 'figma', 'ux/ui', 'pitch_deck'
+    'school_project', 'teamwork', 'presentation', 'figma', 'ux/ui', 'pitch_deck', 'other', 'none'
   ]);
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState(() => {
+  const storedUser = JSON.parse(localStorage.getItem('currentUser'));
+  return storedUser?.selectedTags || [];
+});
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Dane użytkownika
   const user = {
-    name: 'Basjan Kojko',
-    username: '@basjan.kojko',
+    name: getUserDisplayName(),
+    username: '-',
     school: 'Zespół Szkół Energetycznych Technikum nr 13',
     bio: 'Klepię kod jak combo w ulubionych grze, bo nie ma lepszego uczucia niż zobaczyć jak wszystko w końcu działa 😎'
   };
@@ -48,15 +51,23 @@ const Profile = () => {
   };
 
   const handleTagSelect = (tag) => {
-    if (!selectedTags.includes(tag)) {
-      setSelectedTags([...selectedTags, tag]);
-    }
-    setIsDropdownOpen(false);
-  };
+  if (!selectedTags.includes(tag)) {
+    const updatedTags = [...selectedTags, tag];
+    setSelectedTags(updatedTags);
+
+    const updatedUser = { ...currentUser, selectedTags: updatedTags };
+    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+  }
+  setIsDropdownOpen(false);
+};
 
   const handleRemoveTag = (tagToRemove) => {
-    setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
-  };
+  const updatedTags = selectedTags.filter(tag => tag !== tagToRemove);
+  setSelectedTags(updatedTags);
+
+  const updatedUser = { ...currentUser, selectedTags: updatedTags };
+  localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+};
 
   // Nawigacja
   const navLinks = [
@@ -168,7 +179,17 @@ const Profile = () => {
           <aside className="sidebar">
             <div className="profile-card">
               <div className="profile-header">
-                <div className="profile-avatar">BK</div>
+                <div className="profile-avatar">
+                  {(() => {
+                    const parts = (user.name || 'Guest').trim().split(' ');
+                    if (parts.length >= 2) {
+                      return (parts[0][0] + parts[1][0]).toUpperCase();
+                    } else {
+                      const name = parts[0];
+                      return (name.substring(0, 2)).toUpperCase();
+                    }
+                  })()}
+                </div>
                 <h2 className="profile-name">{user.name}</h2>
                 <p className="profile-username">{user.username}</p>
                 <p className="profile-school">{user.school}</p>

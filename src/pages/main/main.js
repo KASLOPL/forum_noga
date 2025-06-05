@@ -33,9 +33,11 @@ const useBookmarks = () => {
   return { toggleBookmark, isBookmarked };
 };
 
+
 function Main() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const userTags = user.selectedTags || [];
   const [expandedQuestion, setExpandedQuestion] = useState(null);
   const { toggleBookmark, isBookmarked } = useBookmarks();
   const [likedQuestions, setLikedQuestions] = useState(() => {
@@ -48,6 +50,16 @@ function Main() {
   const localQuestions = saved ? JSON.parse(saved) : [];
     return saved ? JSON.parse(saved) : defaultQuestions;
   });
+
+const filteredQuestions = questions.filter(q =>
+  q.tags?.some(tag => userTags.includes(tag))
+);
+
+const remainingQuestions = questions.filter(q =>
+  !filteredQuestions.includes(q)
+);
+
+const orderedQuestions = [...filteredQuestions, ...remainingQuestions];
 
   useEffect(() => {
   localStorage.setItem("likedQuestions", JSON.stringify(likedQuestions));
@@ -209,7 +221,7 @@ const likeClick = (questionId, e) => {
             <div className="posts-count">{questions.length} posts</div>
             <div className="questions-container">
               <div className="questions-list">
-                {Array.isArray(questions) && questions.map((question) => (
+                {Array.isArray(orderedQuestions) && orderedQuestions.map((question) => (
                   <div 
                     key={question.id} 
                     className="question-card"
