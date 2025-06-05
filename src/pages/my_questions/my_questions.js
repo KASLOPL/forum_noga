@@ -9,6 +9,7 @@ import {
   FiUser, FiUsers, FiZap, FiCheck
 } from "react-icons/fi";
 
+// jaki kolor do jakiego statusu pytania 
 const statusColors = {
   complete: '#4CAF50',
   in_progress: '#FF9800'
@@ -18,6 +19,7 @@ const statusNames = {
   in_progress: 'In Progress'
 };
 
+// elemnty menu
 const navItems = [
   { icon: FiHome, text: "Home", path: "/main" },
   { icon: FiMessageSquare, text: "Notifications", path: "/notifications" },
@@ -37,15 +39,20 @@ const settingsItems = [
 const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState([]);
 
+  // dodane i niedodane zakladki
   const toggleBookmark = useCallback((item) => {
     setBookmarks(prev => {
+      // czy jest dodany juz w zakladkach jak : 
       const isBookmarked = prev.some(b => b.id === item.id);
       return isBookmarked 
+      // jest to usuwa no i na odwrot 
         ? prev.filter(b => b.id !== item.id) 
+        // niema dodaje 
         : [...prev, { ...item, isBookmarked: true }];
     });
   }, []);
 
+  // czy jest w zakladkach 
   const isBookmarked = useCallback((id) => bookmarks.some(b => b.id === id), [bookmarks]);
   
   return { toggleBookmark, isBookmarked };
@@ -55,6 +62,7 @@ const useBookmarks = () => {
 const useAuth = (navigate) => {
   const [user, setUser] = useState({});
 
+  // czy urzytkownik zalogowany jak nie wraca na logowanie 
   useEffect(() => {
     const isLoggedIn = true;
     if (!isLoggedIn) {
@@ -70,8 +78,9 @@ const useAuth = (navigate) => {
   return { user, logout };
 };
 
-// Funkcje pomocnicze
+// Zlicza ile pytan z jakiego rodzaju np
 const getStats = (questions) => {
+  // ile wedlug ich rodzaju wlasnie ( reduce do zliczania )
   return questions.reduce((acc, q) => {
     acc[q.status] = (acc[q.status] || 0) + 1;
     acc.total = questions.length;
@@ -82,6 +91,7 @@ const getStats = (questions) => {
 // Komponenty
 const NavItem = ({ icon: Icon, text, path, active, onClick }) => (
   <a 
+  // wyroznienie i podpiecie css pod aktualna strone
     href="#" 
     className={`nav-item ${active ? 'active' : ''}`} 
     onClick={(e) => { e.preventDefault(); onClick(path); }}
@@ -102,10 +112,12 @@ const Sidebar = ({ onNavigate, onLogout }) => (
       
       <nav className="sidebar-nav">
         {navItems.map((item) => (
+          // przycisk wywoluje onNawigate ktora ma scierzke do add question
           <NavItem key={item.path} {...item} onClick={onNavigate} />
         ))}
       </nav>
       
+      {/* to samo dla ustawien i hrlp  */}
       <div className="sidebar-nav-secondary">
         {settingsItems.map((item) => (
           <NavItem key={item.path} {...item} onClick={onNavigate} />
@@ -113,6 +125,7 @@ const Sidebar = ({ onNavigate, onLogout }) => (
       </div>
     </div>
     
+    {/* funkcja wylogowania po kliknieciu przycisku  */}
     <div className="sidebar-footer">
       <button className="sign-out-button" onClick={onLogout}>
         <FiLogOut /> Sign out
@@ -121,8 +134,10 @@ const Sidebar = ({ onNavigate, onLogout }) => (
   </aside>
 );
 
+// dany kolor = status podany pod niego
 const StatusBadge = ({ status }) => (
   <div className="status-badge" style={{ backgroundColor: statusColors[status] }}>
+    {/* tylko dla complete icona check */}
     {status === 'complete' && <FiCheck />}
     <span>{statusNames[status]}</span>
   </div>
@@ -130,8 +145,10 @@ const StatusBadge = ({ status }) => (
 
 const QuestionResponders = ({ count }) => (
   <div className="question-responders">
+    {/* awatary ludzi odpowiadajacyh  */}
     {Array.from({ length: count }, (_, i) => (
       <div key={i} className="avatar avatar-small">
+        {/* A,B,C itp kodem ASCII dlatego 65 pierwsze  */}
         <span>{String.fromCharCode(65 + i)}</span>
       </div>
     ))}
@@ -139,6 +156,7 @@ const QuestionResponders = ({ count }) => (
   </div>
 );
 
+// GLOWNY KOMPONENT pytania ktory laczy wszytskie funkcje w jednym miejscu 
 const QuestionCard = ({ 
   question, 
   isExpanded, 
@@ -148,6 +166,7 @@ const QuestionCard = ({
   onCardClick 
 }) => (
   <div 
+  // DODAJE kalse complete do pytania o statusie complete 
     className={`question-card ${question.status === 'complete' ? 'complete' : ''}`} 
     onClick={onCardClick}
   >
@@ -165,6 +184,7 @@ const QuestionCard = ({
       <div className="question-actions">
         <StatusBadge status={question.status} />
         <button 
+        // PRZYCISK ZAKLADEK - kolor wypelnia sie po kliknieciu itp
           className={`icon-button ${isBookmarked ? 'bookmarked' : ''}`} 
           onClick={onToggleBookmark}
         >
@@ -223,7 +243,7 @@ const StatItem = ({ number, label, className }) => (
 // Główny komponent
 function MyQuestions() {
 
-  // Przykładowe pytania
+  // Pytania z localStorage automatycznie ktore przypisane do konta 
 const [questions, setQuestions] = useState(() => {
   const saved = localStorage.getItem("questions");
   return saved ? JSON.parse(saved) : defaultQuestions;
@@ -237,11 +257,13 @@ const [questions, setQuestions] = useState(() => {
 
   const goTo = useCallback((path) => navigate(path), [navigate]);
 
+  // przelaczanie rozwijania pytania 
   const toggleQuestion = useCallback((questionId, e) => {
     e.stopPropagation();
     setExpandedQuestion(prev => prev === questionId ? null : questionId);
   }, []);
 
+  
   const handleBookmark = useCallback((question, e) => {
     e.stopPropagation();
     toggleBookmark(question);

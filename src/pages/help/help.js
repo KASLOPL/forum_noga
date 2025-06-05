@@ -22,6 +22,7 @@ const Pomoc = () => {
 // KTORE PYTANIE JEST ROZWINIETE, tekst w polu wyszukiwania
   const [openQuestion, setOpenQuestion] = useState(2);
   const [searchText, setSearchText] = useState('');
+  // dane urzytkownika bierze z localStorage 
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
   const helpTopics = [
