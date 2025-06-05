@@ -39,6 +39,7 @@ function QuestionDetail() {
     responders: 3
   });
 
+  // Stan do przechowywania odpowiedzi i nowej odpowiedzi
   const [newAnswer, setNewAnswer] = useState("");
   const [answers, setAnswers] = useState(() => {
     const storedAnswers = localStorage.getItem(`answers_${id}`);
@@ -80,48 +81,48 @@ function QuestionDetail() {
         questionTitle: question.highlight // Dodajemy tytuł pytania dla zakładek
       };
 
-      const updatedAnswers = [newAnswerObj, ...answers];
+      const updatedAnswers = [newAnswerObj, ...answers]; // Dodajemy nową odpowiedź na początek listy
       setAnswers(updatedAnswers);
-      localStorage.setItem(`answers_${id}`, JSON.stringify(updatedAnswers));
+      localStorage.setItem(`answers_${id}`, JSON.stringify(updatedAnswers)); // Zapisujemy odpowiedzi w localStorage
       setNewAnswer("");
     }
   };
 
   // Funkcja do obsługi polubień odpowiedzi
-  const handleLikeAnswer = (answerId) => {
-    const updatedAnswers = answers.map(answer => {
-      if (answer.id === answerId) {
+  const handleLikeAnswer = (answerId) => { //
+    const updatedAnswers = answers.map(answer => { 
+      if (answer.id === answerId) { 
         const isLiked = answer.likedBy?.includes(currentUser?.id);
         return {
-          ...answer,
-          likes: isLiked ? answer.likes - 1 : answer.likes + 1,
+          ...answer, 
+          likes: isLiked ? answer.likes - 1 : answer.likes + 1, // zmiana liczby polubień
           likedBy: isLiked 
             ? answer.likedBy?.filter(id => id !== currentUser?.id)
-            : [...(answer.likedBy || []), currentUser?.id]
+            : [...(answer.likedBy || []), currentUser?.id] // dodanie lub usunięcie ID użytkownika
         };
       }
-      return answer;
+      return answer; // zwrócenie niezmienionej odpowiedzi
     });
 
-    setAnswers(updatedAnswers);
-    localStorage.setItem(`answers_${id}`, JSON.stringify(updatedAnswers));
+    setAnswers(updatedAnswers); // aktualizacja stanu odpowiedzi
+    localStorage.setItem(`answers_${id}`, JSON.stringify(updatedAnswers)); // zapisanie zaktualizowanych odpowiedzi w localStorage
   };
 
   // Funkcja do obsługi zakładek
   const handleBookmarkAnswer = (answer) => {
     const isBookmarked = bookmarks.some(
-      bookmark => bookmark.id === answer.id && bookmark.userId === currentUser?.id
+      bookmark => bookmark.id === answer.id && bookmark.userId === currentUser?.id // sprawdzenie czy odpowiedź jest już w zakładkach
     );
 
     let updatedBookmarks;
     
     if (isBookmarked) {
       updatedBookmarks = bookmarks.filter(
-        bookmark => !(bookmark.id === answer.id && bookmark.userId === currentUser?.id)
+        bookmark => !(bookmark.id === answer.id && bookmark.userId === currentUser?.id) // usunięcie odpowiedzi z zakładek
       );
     } else {
       updatedBookmarks = [
-        ...bookmarks,
+        ...bookmarks, // zachowanie istniejących zakładek
         {
           id: answer.id,
           userId: currentUser?.id,
@@ -151,7 +152,7 @@ function QuestionDetail() {
   };
 
   return (
-    <div className="answall">
+    <div className="answall"> 
       <div className="app">
         
         {/* HEADER */}
@@ -214,7 +215,7 @@ function QuestionDetail() {
               <div className="question-content-detail">
                 <h1 className="question-title">{question.highlight}</h1>
                 <div className="question-tags">
-                  {question.tags?.map(tag => (
+                  {question.tags?.map(tag => ( // sprawdzenie czy tagi istnieją
                     <span key={tag} className="tag">{tag}</span>
                   ))}
                 </div>
@@ -272,7 +273,7 @@ function QuestionDetail() {
                           <div className="answer-time">{answer.timeAgo}</div>
                         </div>
                       </div>
-                      {answer.helpful && (
+                      {answer.helpful && ( // sprawdzenie czy odpowiedź jest oznaczona jako pomocna
                         <div className="helpful-badge">
                           <FiThumbsUp />
                           <span>Helpful</span>
