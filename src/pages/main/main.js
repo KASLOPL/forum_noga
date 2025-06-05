@@ -11,24 +11,33 @@ import {
 } from "react-icons/fi";
 
 const useBookmarks = () => {
+  // zmienna i funckja do zmiany jej 
   const [bookmarks, setBookmarks] = useState(() => {
+    // wyjmuje bookarki jak sa takie z localstorage 
     const saved = localStorage.getItem("bookmarks");
-    return saved ? JSON.parse(saved) : [];
+    // jak nie pusta tablica 
+    return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
   });
 
+  // kiedy cos sie zmieni w zakladkach odrazu zapisuje sie w localStorage 
   useEffect(() => {
     localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
   }, [bookmarks]);
 
+  // dodawanie zakladek 
   const toggleBookmark = useCallback((item) => {
     setBookmarks(prev => {
+      // czy juz jest zapisana 
       const isBookmarked = prev.some(b => b.id === item.id);
       return isBookmarked 
+      // jak jest usuwa ja 
         ? prev.filter(b => b.id !== item.id) 
+        // jak niema dodaje ja 
         : [...prev, { ...item, isBookmarked: true }];
     });
   }, []);
 
+  // sprawdza czy zakladka o takim id jest juz dodana 
   const isBookmarked = useCallback((id) => bookmarks.some(b => b.id === id), [bookmarks]);
   return { toggleBookmark, isBookmarked };
 };
@@ -37,18 +46,21 @@ const useBookmarks = () => {
 function Main() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-  const userTags = user.selectedTags || [];
   const [expandedQuestion, setExpandedQuestion] = useState(null);
+  // pobiera funkcje z bookmarks 
   const { toggleBookmark, isBookmarked } = useBookmarks();
+
+  // lista polubionych pytan albo zadne 
   const [likedQuestions, setLikedQuestions] = useState(() => {
   const saved = localStorage.getItem("likedQuestions");
-  return saved ? JSON.parse(saved) : [];
+  return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
   });  
 
+  // wyswietla pytania dodane jesli niema zadnych to domyslne zawsze 
   const [questions, setQuestions] = useState(() => {
   const saved = localStorage.getItem("questions");
-  const localQuestions = saved ? JSON.parse(saved) : [];
-    return saved ? JSON.parse(saved) : defaultQuestions;
+  const localQuestions = saved && saved !== 'undefined' ? JSON.parse(saved) : [];
+    return saved && saved !== 'undefined' ? JSON.parse(saved) : defaultQuestions;
   });
 
 const filteredQuestions = questions.filter(q =>
@@ -61,6 +73,7 @@ const remainingQuestions = questions.filter(q =>
 
 const orderedQuestions = [...filteredQuestions, ...remainingQuestions];
 
+  // jak cos sie zmienia zapisuje sie to odrazu w localstorage
   useEffect(() => {
   localStorage.setItem("likedQuestions", JSON.stringify(likedQuestions));
 }, [likedQuestions]);
@@ -72,6 +85,7 @@ const orderedQuestions = [...filteredQuestions, ...remainingQuestions];
 
   const goTo = useCallback((path) => navigate(path), [navigate]);
 
+  // wylogowywanie i zerowanie zmian
   const logout = useCallback(() => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('currentUser');
@@ -86,16 +100,21 @@ const orderedQuestions = [...filteredQuestions, ...remainingQuestions];
     }
   }, [navigate]);
 
+  // rozwijanie pytan
   const toggleQuestion = useCallback((questionId, e) => {
     e.stopPropagation();
-    setExpandedQuestion(prev => prev === questionId ? null : questionId);
+    setExpandedQuestion(prev => prev === questionId ? null // zwija je 
+    : questionId); // rozwija 
   }, []);
 
+  // dodawanie i usuwanie zakladek 
   const bookmarkClick = useCallback((question, e) => {
     e.stopPropagation();
+    // uzywa togglequestion ( dodawanie i usuwanie )
     toggleBookmark(question);
   }, [toggleBookmark]);
 
+  // klikniecie na pytanie przenosi do odpowiedzi 
   const cardClick = useCallback((question) => {
     navigate(`/answer_q/${question.id}`, { state: { question } });
   }, [navigate]);
@@ -111,20 +130,24 @@ const orderedQuestions = [...filteredQuestions, ...remainingQuestions];
   };
 console.log('questions:', questions, 'isArray:', Array.isArray(questions));
 
+// polubienia 
 const likeClick = (questionId, e) => {
   e.stopPropagation();
   
   const isAlreadyLiked = likedQuestions.includes(questionId);
   
+  // sprawdza czy polubiona z listy filter
   if (isAlreadyLiked) {
     const newLiked = likedQuestions.filter(id => id !== questionId);
     setLikedQuestions(newLiked);
     
+    // jesli polubione -1
     setQuestions(prev => prev.map(q => 
       q.id === questionId ? { ...q, likes: q.likes - 1 } : q
     ));
     
   } else {
+    // jesli nie polubione +1
     const newLiked = [...likedQuestions, questionId];
     setLikedQuestions(newLiked);
     
@@ -136,8 +159,10 @@ const likeClick = (questionId, e) => {
   return (
     <div className="app-main">
       <div className="app">
+        {/* HEADER */}
         <header className="header">
           <div className="header-content">
+            {/* LOGO */}
             <div className="logo-section">
               <div className="logo">
                 <div className="logo-icon"><FiZap /></div>
@@ -180,6 +205,7 @@ const likeClick = (questionId, e) => {
         </header>
 
         <div className="main-container">
+          {/* NAWIGACJA  */}
           <aside className="sidebar">
             <div className="sidebar-content">
               <div className="add-question-section">
@@ -210,6 +236,7 @@ const likeClick = (questionId, e) => {
             </div>
           </aside>
 
+          {/* BANER MAIN */}
           <main className="content">
             <div className="welcome-banner">
               <h1>Hi, {getUserName()}!</h1>
@@ -218,11 +245,13 @@ const likeClick = (questionId, e) => {
               </p>
             </div>
 
+            {/* PYTANIA  */}
             <div className="posts-count">{questions.length} posts</div>
             <div className="questions-container">
               <div className="questions-list">
                 {Array.isArray(orderedQuestions) && orderedQuestions.map((question) => (
                   <div 
+                  // klikanie na pytanie i zmiana kursora
                     key={question.id} 
                     className="question-card"
                     onClick={() => cardClick(question)}
@@ -250,6 +279,11 @@ const likeClick = (questionId, e) => {
                     </div>
 
                     <div className="question-title"><h3>{question.highlight}</h3></div>
+                    <div className="question-tags">
+                      {question.tags && question.tags.map(tag => (
+                         <span key={tag} className="tag">{tag}</span>
+                        ))}
+                        </div>
 
                     <div className="question-content">
                       <p>{expandedQuestion === question.id ? question.fullContent : question.content}</p>
@@ -260,7 +294,9 @@ const likeClick = (questionId, e) => {
 
                     <div className="card-footer" onClick={(e) => { e.stopPropagation(); }}>
                       <div className="responders">
+                        {/* lista ludzi odpowiadajacych */}
                         {Array.from({ length: question.responders }, (_, i) => (
+                          // niby ludzie ktorzy odpowiedzieli
                           <div key={i} className="avatar avatar-small"><span>{String.fromCharCode(65 + i)}</span></div>
                         ))}
                       </div>
@@ -288,6 +324,7 @@ const likeClick = (questionId, e) => {
             </div>
           </main>
 
+          {/* EKSPERCI */}
           <aside className="right-sidebar">
             <div className="experts-section">
               <h3>Top Experts</h3>
@@ -300,6 +337,7 @@ const likeClick = (questionId, e) => {
                   { name: "Emma Wilson", specialty: "UI/UX Design" },
                   { name: "Alex Rodriguez", specialty: "DevOps" }
                 ].map((expert, index) => (
+                  // kazdy ma imie i specjalizacje 
                   <div key={index} className="expert-item">
                     <div className="avatar avatar-small"><span>{expert.name.split(' ').map(n => n[0]).join('')}</span></div>
                     <div className="expert-info">
@@ -310,11 +348,12 @@ const likeClick = (questionId, e) => {
                 ))}
               </div>
             </div>
-
+                {/* TAGI */}
             <div className="tags-section">
               <h3>Popular Tags</h3>
               <div className="tags-list">
                 {["Python", "GitHub", "Data Structures", "React.js", "Java", "JavaScript", "CSS", "Machine Learning", "SQL", "Node.js"].map(tag => (
+                  // kazdy mozna klikac 
                   <div key={tag} className="tag tag-clickable">{tag}</div>
                 ))}
               </div>

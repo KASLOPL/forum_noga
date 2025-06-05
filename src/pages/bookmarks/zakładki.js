@@ -5,19 +5,22 @@ import { FiBookmark, FiHome, FiLogOut, FiMessageSquare, FiPlus, FiSettings, FiUs
 import './zakładki.css';
 
 function useBookmarks() {
-  // localStorage jesli jakies pytania byly na tym koncie zadane to je wyswietli
+  // funckja zeby wyjac istniejace funkcje z localStorage albo jak niema zadnych wyswietlic ze niema zadnych
   const [bookmarks, setBookmarks] = useState(() => {
     try {
+      // wyciaganie wlasnie z localStorage z bookmarks
       const saved = localStorage.getItem("bookmarks");
+      // jesli niema pusta strona 
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
     }
   });
 
-  // zapisuje wszystkie dodanie zakladki w localstorage + zmiane
+  // zapisuje wszystkie dodane zakladki w localstorage 
   const saveBookmarks = useCallback((newBookmarks) => {
     try {
+      // zamiana calej zakladki na tekst zeby mozna je dodac do do localstorage
       localStorage.setItem("bookmarks", JSON.stringify(newBookmarks));
     } catch (error) {
       console.error('Save error:', error);
@@ -29,7 +32,9 @@ function useBookmarks() {
   // dodawanie i usuwanie zakladki
   const toggleBookmark = useCallback((item) => {
     setBookmarks(prev => {
+      // jesli istnieje - usuwamy ja 
       const exists = prev.some(b => b.id === item.id);
+      // jak niema dodajemy ( wszytskie stare i ta nowa )
       return exists ? prev.filter(b => b.id !== item.id) : [...prev, { ...item, isBookmarked: true }];
     });
   }, []);
@@ -42,17 +47,19 @@ function useBookmarks() {
   // aktualizuje likes w bookmarkach
   const updateBookmarkLikes = useCallback((id, newLikes) => {
     setBookmarks(prev => prev.map(b => 
-      b.id === id ? { ...b, likes: newLikes } : b
+      b.id === id ? { ...b, likes: newLikes } // zmiania like i wsyztsko tak samo inne z zakladki 
+      : b
     ));
   }, []);
 
   return { bookmarks, toggleBookmark, removeBookmark, updateBookmarkLikes };
 }
 
-// zabezpiecza jak klikasz naglowek to onclick nie widzi i nie przenosi cie do answer
+// sprawdza czy nic z tych rzeczy sie nie zmienilo zeby nie renderowac od nowa ( wydajnosc )
 const BookmarkItem = React.memo(({ bookmark, onRemove, onCardClick, onLike, isLiked }) => {
   const handleRemove = useCallback((e) => {
     e.stopPropagation();
+    // funckja do usuniecia zakladki z tym id
     onRemove(bookmark.id);
   }, [bookmark.id, onRemove]);
 
@@ -126,6 +133,7 @@ function Zakladki() {
   });
 
   useEffect(() => {
+    // jak zmienia sie liked zapisuje sie w localstorage 
     localStorage.setItem("likedQuestions", JSON.stringify(liked));
   }, [liked]);
 
@@ -150,6 +158,7 @@ function Zakladki() {
     nav(`/answer_q/${bookmark.id}`, { state: { question: bookmark } });
   }, [nav]);
 
+  // sprawdza czy jest sie zalogowanym jak nie przenosi na strone logowania 
   useEffect(() => {
     try {
       const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -159,20 +168,23 @@ function Zakladki() {
     }
   }, [nav]);
   
+  // e - event klikniecia i id pytania ktore polubiamy 
   const handleLike = useCallback((questionId, e) => {
     e.stopPropagation();
     
+    // czy pytanie jest polubione i w zaleznosci zmienic o jedno w gore albo w dol
     const isLiked = liked.includes(questionId);
     const inc = isLiked ? -1 : 1;
     
-    // Toggle polubienie
     setLiked(prev => 
-      isLiked ? prev.filter(id => id !== questionId) : [...prev, questionId]
+      isLiked ? prev.filter(id => id !== questionId) // usuwa polubienie
+      : [...prev, questionId] // dodaje do polubionych 
     );
     
     // Aktualizuj likes w bookmarkach
     const bookmark = bookmarks.find(b => b.id === questionId);
     if (bookmark) {
+      // jesli istnieje 
       const newLikes = (bookmark.likes || 0) + inc;
       updateBookmarkLikes(questionId, newLikes);
       
@@ -181,6 +193,7 @@ function Zakladki() {
         const questions = localStorage.getItem("questions");
         if (questions) {
           const parsedQuestions = JSON.parse(questions);
+          // aktuazlizuje z tym samym id 
           const updatedQuestions = parsedQuestions.map(q => 
             q.id === questionId ? { ...q, likes: q.likes + inc } : q
           );
@@ -190,6 +203,7 @@ function Zakladki() {
         console.error('Error updating questions:', error);
       }
     }
+    // gdy zmienis ie jakas z tych wartosci aktualizacja 
   }, [liked, bookmarks, updateBookmarkLikes]);
 
   const navItems = [
@@ -268,17 +282,21 @@ function Zakladki() {
 
           <main className="main">
             <div className="main-content">
+              {/* jesli niema zakladek pokazuje ekran ze nic neima  */}
               {bookmarks.length === 0 ? (
                 <EmptyState />
               ) : (
                 <div className="list">
                   {bookmarks.map(bookmark => (
                     <BookmarkItem
+                    // jesli sa pokazuje liste i wszystkie wyswietla ( co sie zmienilo )
                       key={bookmark.id}
+                      // wsyztskie dane zakladki (prop)
                       bookmark={bookmark}
                       onRemove={removeBookmark}
                       onCardClick={handleClick}
                       onLike={handleLike}
+                      // czy jest polubiona 
                       isLiked={liked.includes(bookmark.id)}
                     />
                   ))}

@@ -8,12 +8,13 @@ import {
 import { ThumbsUp, Eye, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+// glowa funkcja 
 const Profile = () => {
-  // Nawigacja i stan użytkownika
+  // Nawigacja i pobieranie danych o urzytkowniku z localStorage
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-  // Funkcje pomocnicze
+  // Funkcja wyswietlania inicjalow i nazwy urzytkownika 
   const getUserDisplayName = () => {
     return currentUser?.userName || currentUser?.name || 'Guest';
   };
@@ -26,21 +27,19 @@ const Profile = () => {
 
   // Stany komponentu
   const [activeTab, setActiveTab] = useState('Questions & Replies');
+  // dostepne tagi w tablicy
   const [tags, setTags] = useState([
     'Python', 'Java', 'SQL', 'html', 'css', 'javascript', 'react',
     'node.js', 'flask', 'arduino', 'linux', 'database', 'networking',
     'school_project', 'teamwork', 'presentation', 'figma', 'ux/ui', 'pitch_deck', 'other', 'none'
   ]);
-  const [selectedTags, setSelectedTags] = useState(() => {
-  const storedUser = JSON.parse(localStorage.getItem('currentUser'));
-  return storedUser?.selectedTags || [];
-});
+  const [selectedTags, setSelectedTags] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Dane użytkownika
   const user = {
-    name: getUserDisplayName(),
-    username: '-',
+    name: 'Basjan Kojko',
+    username: '@basjan.kojko',
     school: 'Zespół Szkół Energetycznych Technikum nr 13',
     bio: 'Klepię kod jak combo w ulubionych grze, bo nie ma lepszego uczucia niż zobaczyć jak wszystko w końcu działa 😎'
   };
@@ -50,6 +49,7 @@ const Profile = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  // dodaje wybrany tag do zainteresowan 
   const handleTagSelect = (tag) => {
   if (!selectedTags.includes(tag)) {
     const updatedTags = [...selectedTags, tag];
@@ -61,6 +61,7 @@ const Profile = () => {
   setIsDropdownOpen(false);
 };
 
+  // usuwa tag z zainteresowan
   const handleRemoveTag = (tagToRemove) => {
   const updatedTags = selectedTags.filter(tag => tag !== tagToRemove);
   setSelectedTags(updatedTags);
@@ -69,7 +70,7 @@ const Profile = () => {
   localStorage.setItem('currentUser', JSON.stringify(updatedUser));
 };
 
-  // Nawigacja
+  // Nawigacja ( linki )
   const navLinks = [
     { icon: <FiHome size={16} />, text: 'Home', active: false, path: '/main' }, 
     { icon: <FiMessageSquare size={16} />, text: 'Notifications', active: false },
@@ -137,6 +138,7 @@ const Profile = () => {
         <header className="header">
           <div className="navbar">
             <div className="left-section">
+              {/* cofanie do poprzedniej strony */}
               <button className="back-btn" onClick={() => navigate(-1)}>
                 <FiArrowLeft size={20} />
               </button>
@@ -148,6 +150,7 @@ const Profile = () => {
 
             <nav className="nav">
               <ul>
+                {/* wyroznia ta strpne na ktorej jestes i podlacza css ( zmusza do korzystania z nawigacji z funkcji ) */}
                 {navLinks.map((item, i) => (
                   <li key={i} className={item.active ? 'active' : ''}>
                     <a href="#" onClick={(e) => {
@@ -179,23 +182,13 @@ const Profile = () => {
           <aside className="sidebar">
             <div className="profile-card">
               <div className="profile-header">
-                <div className="profile-avatar">
-                  {(() => {
-                    const parts = (user.name || 'Guest').trim().split(' ');
-                    if (parts.length >= 2) {
-                      return (parts[0][0] + parts[1][0]).toUpperCase();
-                    } else {
-                      const name = parts[0];
-                      return (name.substring(0, 2)).toUpperCase();
-                    }
-                  })()}
-                </div>
+                <div className="profile-avatar">BK</div>
                 <h2 className="profile-name">{user.name}</h2>
                 <p className="profile-username">{user.username}</p>
                 <p className="profile-school">{user.school}</p>
               </div>
               <div className="profile-bio">
-                <p>{user.bio}</p>
+                <p>Klepię kod jak combo w ulubionych grze, bo nie ma lepszego uczucia niż zobaczyć jak wszystko w końcu działa </p>
               </div>
               <div className="stats">
                 <div className="stat">
@@ -264,6 +257,7 @@ const Profile = () => {
             <div className="content-header">
               <div className="tabs">
                 <button 
+                // przelacza na ta strone
                   className={`tab ${activeTab === 'Questions & Replies' ? 'active' : ''}`}
                   onClick={() => setActiveTab('Questions & Replies')}
                 >
@@ -283,6 +277,7 @@ const Profile = () => {
             </div>
 
             <div className="questions">
+              {/* dane brane z tabeli i inportowane do pytan wedul wzoru */}
               {questions.map((question) => (
                 <div className="question" key={question.id}>
                   <div className="question-header">
