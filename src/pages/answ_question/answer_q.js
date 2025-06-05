@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import "./answer_q.css"; // style dla tej strony
+import "./answer_q.css";
 
 // Ikony z react-icons
 import {
@@ -41,10 +41,16 @@ function QuestionDetail() {
 
   const [newAnswer, setNewAnswer] = useState("");
   const [answers, setAnswers] = useState(() => {
-  const storedAnswers = localStorage.getItem(`answers_${id}`);
-  if (storedAnswers) return JSON.parse(storedAnswers);
-  return []; // domyślnie pusto lub możesz dodać przykładowe odpowiedzi
-});
+    const storedAnswers = localStorage.getItem(`answers_${id}`);
+    if (storedAnswers) return JSON.parse(storedAnswers);
+    return [];
+  });
+
+  // Pobieramy zakładki z localStorage
+  const [bookmarks, setBookmarks] = useState(() => {
+    const storedBookmarks = localStorage.getItem('bookmarks');
+    return storedBookmarks ? JSON.parse(storedBookmarks) : [];
+  });
 
   // Funkcja do wyświetlania nazwy użytkownika
   const getUserDisplayName = () => {
@@ -59,37 +65,102 @@ function QuestionDetail() {
   };
 
   const handleSendAnswer = () => {
-  if (newAnswer.trim()) {
-    const newAnswerObj = {
-      id: Date.now(), // unikalne ID
-      author: getUserDisplayName(),
-      authorTitle: "Student",
-      timeAgo: "just now",
-      content: newAnswer.trim(),
-      likes: 0,
-      isExpert: false,
-      helpful: false
-    };
+    if (newAnswer.trim()) {
+      const newAnswerObj = {
+        id: Date.now(),
+        author: getUserDisplayName(),
+        authorTitle: "Student",
+        timeAgo: "just now",
+        content: newAnswer.trim(),
+        likes: 0,
+        isExpert: false,
+        helpful: false,
+        likedBy: [],
+        questionId: id, // Dodajemy ID pytania, do którego należy odpowiedź
+        questionTitle: question.highlight // Dodajemy tytuł pytania dla zakładek
+      };
 
-    const updatedAnswers = [newAnswerObj, ...answers];
+      const updatedAnswers = [newAnswerObj, ...answers];
+      setAnswers(updatedAnswers);
+      localStorage.setItem(`answers_${id}`, JSON.stringify(updatedAnswers));
+      setNewAnswer("");
+    }
+  };
+
+  // Funkcja do obsługi polubień odpowiedzi
+  const handleLikeAnswer = (answerId) => {
+    const updatedAnswers = answers.map(answer => {
+      if (answer.id === answerId) {
+        const isLiked = answer.likedBy?.includes(currentUser?.id);
+        return {
+          ...answer,
+          likes: isLiked ? answer.likes - 1 : answer.likes + 1,
+          likedBy: isLiked 
+            ? answer.likedBy?.filter(id => id !== currentUser?.id)
+            : [...(answer.likedBy || []), currentUser?.id]
+        };
+      }
+      return answer;
+    });
+
     setAnswers(updatedAnswers);
     localStorage.setItem(`answers_${id}`, JSON.stringify(updatedAnswers));
-    setNewAnswer("");
-  }
-};
+  };
 
+  // Funkcja do obsługi zakładek
+  const handleBookmarkAnswer = (answer) => {
+    const isBookmarked = bookmarks.some(
+      bookmark => bookmark.id === answer.id && bookmark.userId === currentUser?.id
+    );
+
+    let updatedBookmarks;
+    
+    if (isBookmarked) {
+      updatedBookmarks = bookmarks.filter(
+        bookmark => !(bookmark.id === answer.id && bookmark.userId === currentUser?.id)
+      );
+    } else {
+      updatedBookmarks = [
+        ...bookmarks,
+        {
+          id: answer.id,
+          userId: currentUser?.id,
+          content: answer.content,
+          author: answer.author,
+          timeAgo: answer.timeAgo,
+          questionId: answer.questionId || id,
+          questionTitle: answer.questionTitle || question.highlight
+        }
+      ];
+    }
+
+    setBookmarks(updatedBookmarks);
+    localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
+  };
+
+  // Sprawdza czy odpowiedź jest polubiona przez bieżącego użytkownika
+  const isAnswerLiked = (answer) => {
+    return answer.likedBy?.includes(currentUser?.id);
+  };
+
+  // Sprawdza czy odpowiedź jest w zakładkach bieżącego użytkownika
+  const isAnswerBookmarked = (answer) => {
+    return bookmarks.some(
+      bookmark => bookmark.id === answer.id && bookmark.userId === currentUser?.id
+    );
+  };
 
   return (
-    <div className="caloscMain">
+    <div className="answall">
       <div className="app">
         
-        {/* HEADER - statyczny */}
-        <header className="header header-fixed">
-          <div className="header-container">
-            <div className="logo-container">
+        {/* HEADER */}
+        <header className="header-main">
+          <div className="header-content">
+            <div className="logo-section">
               <div className="logo">
                 <div className="logo-icon"><FiZap /></div>
-                <span className="logo-text">Snap<span className="logo-text-highlight">solve</span></span>
+                <span className="logo-text">Snap<span className="logo-accent">solve</span></span>
               </div>
             </div>
 
@@ -101,14 +172,15 @@ function QuestionDetail() {
             </div>
 
             <div className="header-actions">
-              <button className="icon-button"><FiMoon /></button>
-              <button className="icon-button"><FiMail /></button>
-              <div className="user-profile" onClick={() => navigate('/profile')}>
-              <div className="avatar">
+              <div className="divider"></div>
+              <button className="icon-btn"><FiMoon /></button>
+              <button className="icon-btn"><FiMail /></button>
+              <div className="user-menu" onClick={() => navigate('/profile')}>
+                <div className="avatar">
                   <span>{getUserInitials()}</span>
                 </div>
                 <div className="user-info">
-                <span className="user-name">{getUserDisplayName()}</span>
+                  <span className="user-name">{getUserDisplayName()}</span>
                   <span className="user-role">Student</span>
                 </div>
                 <FiChevronDown className="dropdown-icon" />
@@ -117,7 +189,7 @@ function QuestionDetail() {
           </div>
         </header>
 
-        {/* MAIN CONTENT - przewijalna cała strona */}
+        {/* MAIN CONTENT */}
         <div className="question-detail-container">
           <main className="question-detail-main">
             
@@ -134,8 +206,8 @@ function QuestionDetail() {
                   </div>
                 </div>
                 <div className="question-actions">
-                  <button className="icon-button"><FiBookmark /></button>
-                  <button className="icon-button"><FiMoreVertical /></button>
+                  <button className="icon-btn"><FiBookmark /></button>
+                  <button className="icon-btn"><FiMoreVertical /></button>
                 </div>
               </div>
 
@@ -213,16 +285,22 @@ function QuestionDetail() {
                     </div>
 
                     <div className="answer-actions">
-                      <button className="answer-action-btn">
-                        <FiThumbsUp />
+                      <button 
+                        className={`answer-action-btn ${isAnswerLiked(answer) ? 'liked' : ''}`}
+                        onClick={() => handleLikeAnswer(answer.id)}
+                      >
+                        <FiThumbsUp className={isAnswerLiked(answer) ? 'liked-icon' : ''} />
                         <span>{answer.likes}</span>
                       </button>
                       <button className="answer-action-btn">
                         <FiMessageSquare />
                         <span>Reply</span>
                       </button>
-                      <button className="answer-action-btn">
-                        <FiBookmark />
+                      <button 
+                        className={`answer-action-btn ${isAnswerBookmarked(answer) ? 'bookmarked' : ''}`}
+                        onClick={() => handleBookmarkAnswer(answer)}
+                      >
+                        <FiBookmark className={isAnswerBookmarked(answer) ? 'bookmarked-icon' : ''} />
                       </button>
                     </div>
                   </div>
@@ -234,7 +312,7 @@ function QuestionDetail() {
             <div className="add-answer-section">
               <h3>Your Answer</h3>
               <div className="answer-input-container">
-              <div className="user-avatar">
+                <div className="user-avatar">
                   <span>{getUserInitials()}</span>
                 </div>
                 <div className="answer-input-wrapper">
@@ -266,7 +344,7 @@ function QuestionDetail() {
 
           {/* RIGHT SIDEBAR */}
           <aside className="right-sidebar">
-            <div className="related-questions">
+            <div className="sidebar-card">
               <h3>Related Questions</h3>
               <div className="related-list">
                 <div className="related-item">
@@ -285,10 +363,18 @@ function QuestionDetail() {
                     <span>156 views</span>
                   </div>
                 </div>
+                <div className="related-item">
+                  <div className="related-title">How to optimize JOIN queries</div>
+                  <div className="related-stats">
+                    <span>7 answers</span>
+                    <span>•</span>
+                    <span>189 views</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="question-stats-sidebar">
+            <div className="sidebar-card">
               <h3>Question Stats</h3>
               <div className="stats-list">
                 <div className="stat-item">
