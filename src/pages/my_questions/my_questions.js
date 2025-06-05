@@ -33,31 +33,6 @@ const settingsItems = [
   { icon: FiHelpCircle, text: "Help & FAQ", path: "/help" }
 ];
 
-
-
-// Hook do zarządzania zakładkami
-const useBookmarks = () => {
-  const [bookmarks, setBookmarks] = useState([]);
-
-  // dodane i niedodane zakladki
-  const toggleBookmark = useCallback((item) => {
-    setBookmarks(prev => {
-      // czy jest dodany juz w zakladkach jak : 
-      const isBookmarked = prev.some(b => b.id === item.id);
-      return isBookmarked 
-      // jest to usuwa no i na odwrot 
-        ? prev.filter(b => b.id !== item.id) 
-        // niema dodaje 
-        : [...prev, { ...item, isBookmarked: true }];
-    });
-  }, []);
-
-  // czy jest w zakladkach 
-  const isBookmarked = useCallback((id) => bookmarks.some(b => b.id === id), [bookmarks]);
-  
-  return { toggleBookmark, isBookmarked };
-};
-
 // Hook do uwierzytelniania
 const useAuth = (navigate) => {
   const [user, setUser] = useState({});
@@ -160,9 +135,7 @@ const QuestionResponders = ({ count }) => (
 const QuestionCard = ({ 
   question, 
   isExpanded, 
-  isBookmarked, 
   onToggleExpand, 
-  onToggleBookmark, 
   onCardClick 
 }) => (
   <div 
@@ -183,13 +156,6 @@ const QuestionCard = ({
       
       <div className="question-actions">
         <StatusBadge status={question.status} />
-        <button 
-        // PRZYCISK ZAKLADEK - kolor wypelnia sie po kliknieciu itp
-          className={`icon-button ${isBookmarked ? 'bookmarked' : ''}`} 
-          onClick={onToggleBookmark}
-        >
-          <FiBookmark style={{ fill: isBookmarked ? '#4CAF50' : 'none' }} />
-        </button>
         <button className="icon-button" onClick={(e) => e.stopPropagation()}>
           <FiMoreVertical />
         </button>
@@ -253,7 +219,6 @@ const [questions, setQuestions] = useState(() => {
   const [expandedQuestion, setExpandedQuestion] = useState(null);
   
   const { user, logout } = useAuth(navigate);
-  const { toggleBookmark, isBookmarked } = useBookmarks();
 
   const goTo = useCallback((path) => navigate(path), [navigate]);
 
@@ -262,12 +227,6 @@ const [questions, setQuestions] = useState(() => {
     e.stopPropagation();
     setExpandedQuestion(prev => prev === questionId ? null : questionId);
   }, []);
-
-  
-  const handleBookmark = useCallback((question, e) => {
-    e.stopPropagation();
-    toggleBookmark(question);
-  }, [toggleBookmark]);
 
   const openQuestion = useCallback((question) => {
     navigate(`/answer_q/${question.id}`, { state: { question } });
@@ -318,9 +277,7 @@ console.log(userName)
                     key={question.id}
                     question={question}
                     isExpanded={expandedQuestion === question.id}
-                    isBookmarked={isBookmarked(question.id)}
                     onToggleExpand={(e) => toggleQuestion(question.id, e)}
-                    onToggleBookmark={(e) => handleBookmark(question, e)}
                     onCardClick={() => openQuestion(question)}
                   />
                 ))}

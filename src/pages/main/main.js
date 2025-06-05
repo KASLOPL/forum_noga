@@ -269,6 +269,11 @@ const likeClick = (questionId, e) => {
                     </div>
 
                     <div className="question-title"><h3>{question.highlight}</h3></div>
+                    <div className="question-tags">
+                      {question.tags && question.tags.map(tag => (
+                         <span key={tag} className="tag">{tag}</span>
+                        ))}
+                        </div>
 
                     <div className="question-content">
                       <p>{expandedQuestion === question.id ? question.fullContent : question.content}</p>
