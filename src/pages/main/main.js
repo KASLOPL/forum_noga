@@ -16,7 +16,7 @@ const useBookmarks = () => {
     // wyjmuje bookarki jak sa takie z localstorage 
     const saved = localStorage.getItem("bookmarks");
     // jak nie pusta tablica 
-    return saved ? JSON.parse(saved) : [];
+    return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
   });
 
   // kiedy cos sie zmieni w zakladkach odrazu zapisuje sie w localStorage 
@@ -53,14 +53,14 @@ function Main() {
   // lista polubionych pytan albo zadne 
   const [likedQuestions, setLikedQuestions] = useState(() => {
   const saved = localStorage.getItem("likedQuestions");
-  return saved ? JSON.parse(saved) : [];
+  return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
   });  
 
   // wyswietla pytania dodane jesli niema zadnych to domyslne zawsze 
   const [questions, setQuestions] = useState(() => {
   const saved = localStorage.getItem("questions");
-  const localQuestions = saved ? JSON.parse(saved) : [];
-    return saved ? JSON.parse(saved) : defaultQuestions;
+  const localQuestions = saved && saved !== 'undefined' ? JSON.parse(saved) : [];
+    return saved && saved !== 'undefined' ? JSON.parse(saved) : defaultQuestions;
   });
 
   // jak cos sie zmienia zapisuje sie to odrazu w localstorage
@@ -281,7 +281,7 @@ const likeClick = (questionId, e) => {
                       <div className="responders">
                         {/* lista ludzi odpowiadajacych */}
                         {Array.from({ length: question.responders }, (_, i) => (
-                          // niby ludzie ktorzy odpowiedzili
+                          // niby ludzie ktorzy odpowiedzieli
                           <div key={i} className="avatar avatar-small"><span>{String.fromCharCode(65 + i)}</span></div>
                         ))}
                       </div>
