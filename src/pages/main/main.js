@@ -50,34 +50,40 @@ function Main() {
   // pobiera funkcje z bookmarks 
   const { toggleBookmark, isBookmarked } = useBookmarks();
 
+  // DODANE: Definiowanie userTags na podstawie danych użytkownika
+  const [userTags] = useState(() => {
+    // Możesz dostosować logikę w zależności od tego, jak przechowujesz tagi użytkownika
+    return user?.tags || user?.interests || [];
+  });
+
   // lista polubionych pytan albo zadne 
   const [likedQuestions, setLikedQuestions] = useState(() => {
-  const saved = localStorage.getItem("likedQuestions");
-  return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
+    const saved = localStorage.getItem("likedQuestions");
+    return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
   });  
 
   // wyswietla pytania dodane jesli niema zadnych to domyslne zawsze 
   const [questions, setQuestions] = useState(() => {
-  const saved = localStorage.getItem("questions");
-  const localQuestions = saved && saved !== 'undefined' ? JSON.parse(saved) : [];
+    const saved = localStorage.getItem("questions");
+    const localQuestions = saved && saved !== 'undefined' ? JSON.parse(saved) : [];
     return saved && saved !== 'undefined' ? JSON.parse(saved) : defaultQuestions;
   });
 
-const filteredQuestions = questions.filter(q =>
-  q.tags?.some(tag => userTags.includes(tag))
-);
+  // POPRAWIONE: Przeniesienie filtrowania do useMemo lub wewnątrz komponentu
+  const filteredQuestions = questions.filter(q =>
+    q.tags?.some(tag => userTags.includes(tag))
+  );
 
-const remainingQuestions = questions.filter(q =>
-  !filteredQuestions.includes(q)
-);
+  const remainingQuestions = questions.filter(q =>
+    !filteredQuestions.includes(q)
+  );
 
-const orderedQuestions = [...filteredQuestions, ...remainingQuestions];
+  const orderedQuestions = [...filteredQuestions, ...remainingQuestions];
 
   // jak cos sie zmienia zapisuje sie to odrazu w localstorage
   useEffect(() => {
-  localStorage.setItem("likedQuestions", JSON.stringify(likedQuestions));
-}, [likedQuestions]);
-
+    localStorage.setItem("likedQuestions", JSON.stringify(likedQuestions));
+  }, [likedQuestions]);
 
   useEffect(() => {
     localStorage.setItem("questions", JSON.stringify(questions));
@@ -128,34 +134,36 @@ const orderedQuestions = [...filteredQuestions, ...remainingQuestions];
     if (name === 'Guest') return 'GU';
     return name.substring(0, 2).toUpperCase();
   };
-console.log('questions:', questions, 'isArray:', Array.isArray(questions));
 
-// polubienia 
-const likeClick = (questionId, e) => {
-  e.stopPropagation();
-  
-  const isAlreadyLiked = likedQuestions.includes(questionId);
-  
-  // sprawdza czy polubiona z listy filter
-  if (isAlreadyLiked) {
-    const newLiked = likedQuestions.filter(id => id !== questionId);
-    setLikedQuestions(newLiked);
+  console.log('questions:', questions, 'isArray:', Array.isArray(questions));
+
+  // polubienia 
+  const likeClick = (questionId, e) => {
+    e.stopPropagation();
     
-    // jesli polubione -1
-    setQuestions(prev => prev.map(q => 
-      q.id === questionId ? { ...q, likes: q.likes - 1 } : q
-    ));
+    const isAlreadyLiked = likedQuestions.includes(questionId);
     
-  } else {
-    // jesli nie polubione +1
-    const newLiked = [...likedQuestions, questionId];
-    setLikedQuestions(newLiked);
-    
-    setQuestions(prev => prev.map(q => 
-      q.id === questionId ? { ...q, likes: q.likes + 1 } : q
-    ));
-  }
-};
+    // sprawdza czy polubiona z listy filter
+    if (isAlreadyLiked) {
+      const newLiked = likedQuestions.filter(id => id !== questionId);
+      setLikedQuestions(newLiked);
+      
+      // jesli polubione -1
+      setQuestions(prev => prev.map(q => 
+        q.id === questionId ? { ...q, likes: q.likes - 1 } : q
+      ));
+      
+    } else {
+      // jesli nie polubione +1
+      const newLiked = [...likedQuestions, questionId];
+      setLikedQuestions(newLiked);
+      
+      setQuestions(prev => prev.map(q => 
+        q.id === questionId ? { ...q, likes: q.likes + 1 } : q
+      ));
+    }
+  };
+
   return (
     <div className="app-main">
       <div className="app">
