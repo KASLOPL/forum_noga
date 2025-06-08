@@ -19,18 +19,27 @@ const sliderImages = [
 function Auth() {
   // ktore dzialanie aktywne login czy sign up
   const [activeTab, setActiveTab] = useState('login');
-  // przechowuje dane wpisane przez urzytkownika w formularzu
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [userName, setUserName] = useState('');
-  // bledy wpisania 
-  const [error, setError] = useState('');
+  // przechowuje dane wpisane przez urzytkownika w formularzu 
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    userName: ''
+  });
+  // bledy walidacji dla poszczegolnych pol
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+    userName: ''
+  });
+  // ogolny blad formularza (np. zle dane logowania)
+  const [formError, setFormError] = useState('');
   // aktualne zdjecie pokazujace sie na stronie 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [fade, setFade] = useState(true);
   // przenoszenie po zalogowaniu sie na main
   const navigate = useNavigate();
 
+  // efekt do zmiany zdjec co 5 sekund
   useEffect(() => {
     const interval = setInterval(() => {
       setFade(false); // zdjecie znika
@@ -53,35 +62,98 @@ function Auth() {
     }, 400);
   };
 
+  // obsluga zmian w polach formularza
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // czyszczenie bledu gdy uzytkownik zaczyna pisac
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  // funkcja walidujaca formularz
+  const validate = () => {
+    let isValid = true;
+    const newErrors = {
+      email: '',
+      password: '',
+      userName: ''
+    };
+
+    // walidacja emaila
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is incorrect';
+      isValid = false;
+    }
+
+    // walidacja hasla (minimum 6 znakow)
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+      isValid = false;
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+      isValid = false;
+    }
+
+    // walidacja nazwy uzytkownika tylko przy rejestracji
+    if (activeTab === 'signup' && !formData.userName.trim()) {
+      newErrors.userName = 'Username is required';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // najpierw walidacja
+    if (!validate()) {
+      return;
+    }
+
     // POBIERA uzytkownikow z LocalStorage
     const users = JSON.parse(localStorage.getItem('users')) || [];
 
     if (activeTab === 'login') {
+      // szuka uzytkownika o podanym emailu i hasle
       const foundUser = users.find(
-        (user) => user.email === email && user.password === password
+        (user) => user.email === formData.email && user.password === formData.password
       );
       if (foundUser) {
         // udane logowanie czyli zgodne dane
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('currentUser', JSON.stringify(foundUser));
-        setError('');
+        setFormError('');
         navigate('/main'); // przekierowanie na main
       } else {
-        setError('Zły login lub hasło');
+        setFormError('Zły login lub hasło');
       }
     } else {
-      const existingUser = users.find((user) => user.email === email);
+      // sprawdza czy uzytkownik juz istnieje
+      const existingUser = users.find((user) => user.email === formData.email);
       if (existingUser) {
-        setError('Użytkownik już istnieje');
+        setFormError('Użytkownik już istnieje');
       } else {
-        const newUser = { email, password, userName };
+        // tworzy nowego uzytkownika
+        const newUser = { ...formData };
         users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('currentUser', JSON.stringify(newUser));
-        setError('');
+        setFormError('');
         navigate('/main');
       }
     }
@@ -95,7 +167,7 @@ function Auth() {
           <p>Connect with experts, ask questions, and get reliable answers in no time.</p>
         </div>
 
-        {/* Zakładki */}
+        {/* slider */}
         <div className="tab-switch">
           <div className={`slider ${activeTab === 'login' ? 'right' : 'left'}`} />
           <div
@@ -113,33 +185,42 @@ function Auth() {
         </div>
 
         {/* Formularz wspólny */}
-        <form onSubmit={handleSubmit} className="login-form">
-          {/* pokazywne tylko kiedy klikniety sign up */}
+
+        <form onSubmit={handleSubmit} className="login-form" noValidate>
+          {/* POKAZUJE SOE tylko kiedy klikniety SING UP */}
           {activeTab === 'signup' && (
             <label>
               Name <span>*</span>
               <br />
               <input
                 type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
+                name="userName"
+                value={formData.userName}
+                onChange={handleChange}
                 required
                 placeholder="Enter your Name"
+                className={errors.userName ? 'error-input' : ''}
               />
+              {/* komunikat bledu dla nazwy uzytkownika */}
+              {errors.userName && <span className="error-message">{errors.userName}</span>}
             </label>
           )}
 
           <label>
             E-mail <span>*</span>
             <br />
-            {/* zawsze w kazdym formularzu - obsluga przez OnChange */}
+            {/* zawsze w kazdym formularzu obsluga przez handleChange */}
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               required
               placeholder="Enter your E-mail"
+              className={errors.email ? 'error-input' : ''}
             />
+            {/* komunikat bledu dla emaila */}
+            {errors.email && <span className="error-message">{errors.email}</span>}
           </label>
 
           <label>
@@ -147,14 +228,21 @@ function Auth() {
             <br />
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               required
               placeholder="Enter your Password"
+              className={errors.password ? 'error-input' : ''}
             />
+            {/* komunikat bledu dla hasla */}
+            {errors.password && <span className="error-message">{errors.password}</span>}
           </label>
 
-          {/* pokazuje sie tylko przy logowaniu */}
+
+
+
+          {/* POKAZUJE sie tylko przy LOGOWANIU */}
           {activeTab === 'login' && (
             <a href="#" className="forgot-password">Forgot password?</a>
           )}
@@ -164,7 +252,8 @@ function Auth() {
             {activeTab === 'login' ? 'Log in' : 'Sign Up'}
           </button>
 
-          {error && <p className="error">{error}</p>}
+          {/* ogolny blad formularza */}
+          {formError && <p className="form-error">{formError}</p>}
 
           {/* zmiana tekstu w zaleznosci co klikniete */}
           <div className="or-divider">
@@ -173,21 +262,20 @@ function Auth() {
 
           {/* tylko wygladaja nie dzialaja  */}
           <div className="social-buttons">
-            <button className="social-btn">
+            <button type="button" className="social-btn">
               <span className="icon">
                 <img src={google} alt="google" />
               </span> Google</button>
 
-            <button className="social-btn">
+            <button type="button" className="social-btn">
               <span className="icon">
                 <img src={apple} alt="apple" />
               </span> Apple</button>
 
-            <button className="social-btn">
+            <button type="button" className="social-btn">
               <span className="icon">
                 <img src={facebook} alt="facebook" />
               </span> Facebook</button>
-
           </div>
 
           <div className="legal">
