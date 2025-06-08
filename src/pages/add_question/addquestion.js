@@ -1,87 +1,112 @@
+// Importujemy potrzebne rzeczy z Reacta i bibliotek
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './addquestion.css';
-import { Upload, ChevronDown, ChevronLeft } from 'lucide-react';
-import { 
-  FiBookmark, FiHome, FiLogOut, FiMessageSquare, FiPlus, 
-  FiSettings, FiUser, FiUsers, FiHelpCircle, FiZap 
-} from 'react-icons/fi';
-import { addQuestion } from '../../utils/firebaseUtils';
+import './addquestion.css'; // Stylowanie CSS komponentu
+import { Upload, ChevronDown, ChevronLeft } from 'lucide-react'; // Ikony z biblioteki lucide-react
+import {
+  FiBookmark, FiHome, FiLogOut, FiMessageSquare, FiPlus,
+  FiSettings, FiUser, FiUsers, FiHelpCircle, FiZap
+} from 'react-icons/fi'; // Więcej ikon z react-icons
 
+import { addQuestion } from '../../utils/firebaseUtils'; // Funkcja dodająca pytanie do bazy danych (Firebase)
+
+// Główna funkcja komponentu AddQuestion
 const AddQuestion = () => {
-  const navigate = useNavigate();
-  const [activeItem, setActiveItem] = useState('/addquestion');
-  const [formData, setFormData] = useState({
-    title: '', caption: '', category: '', type: 'Error in code', urgent: false, answerDate: ''
-  });
-  const [tags, setTags] = useState([]);
-  const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
-  const [user, setUser] = useState({ name: 'Guest', role: 'Visitor' });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate(); // Hook do przechodzenia między stronami
 
+  // Śledzenie aktualnie aktywnego linku nawigacyjnego
+  const [activeItem, setActiveItem] = useState('/addquestion');
+
+  // Formularz danych pytania
+  const [formData, setFormData] = useState({
+    title: '', // Tytuł pytania
+    caption: '', // Opis pytania
+    category: '', // Kategoria pytania
+    type: 'Error in code', // Typ pytania
+    urgent: false, // Czy pytanie jest pilne
+    answerDate: '' // Data oczekiwanej odpowiedzi
+  });
+
+  const [tags, setTags] = useState([]); // Lista wybranych tagów
+  const [tagDropdownOpen, setTagDropdownOpen] = useState(false); // Czy rozwijane menu tagów jest otwarte
+  const [user, setUser] = useState({ name: 'Guest', role: 'Visitor' }); // Informacje o użytkowniku
+  const [isSubmitting, setIsSubmitting] = useState(false); // Czy formularz jest aktualnie wysyłany
+
+  // Hook, który uruchamia się po załadowaniu komponentu
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    if (isLoggedIn !== 'true') return navigate('/');
+    const isLoggedIn = localStorage.getItem('isLoggedIn'); // Sprawdzenie czy użytkownik jest zalogowany
+    if (isLoggedIn !== 'true') return navigate('/'); // Jeśli nie – przekieruj na stronę główną
 
     const userData = localStorage.getItem('currentUser');
     let currentUser = {};
-    
+
     if (userData && userData !== 'undefined' && userData !== 'null') {
       try {
-        currentUser = JSON.parse(userData);
+        currentUser = JSON.parse(userData); // Spróbuj sparsować dane użytkownika z localStorage
       } catch (e) {
         console.error('Error parsing user data:', e);
       }
     }
 
+    // Ustawienie imienia i roli użytkownika
     const name = currentUser.name || currentUser.userName || 'Guest';
     const role = currentUser.role || 'Visitor';
-    
+
     setUser({ name, role });
     setFormData(prev => ({ ...prev, author: name }));
   }, [navigate]);
 
+  // Funkcja do zmiany strony w menu bocznym
   const handleNavigation = (path) => {
     setActiveItem(path);
     navigate(path);
   };
 
+  // Wylogowanie użytkownika
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('currentUser');
     navigate('/');
   };
 
+  // Funkcja do aktualizacji danych formularza
   const updateForm = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
+
+  // Usunięcie tagu z listy
   const removeTag = (tagToRemove) => setTags(tags.filter(tag => tag !== tagToRemove));
+
+  // Dodanie nowego tagu (jeśli jeszcze go nie ma)
   const addTag = (newTag) => {
     if (!tags.includes(newTag)) setTags([...tags, newTag]);
-    setTagDropdownOpen(false);
+    setTagDropdownOpen(false); // Zamykanie dropdowna
   };
 
+  // Obsługa kliknięcia przycisku Post
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
+    // Sprawdzenie czy wszystkie wymagane pola są wypełnione
     if (!formData.title.trim() || !formData.caption.trim() || !formData.category) {
       alert('Wypełnij wszystkie wymagane pola!');
       return;
     }
-    
+
     if (tags.length === 0) {
       alert('Dodaj przynajmniej jeden tag!');
       return;
     }
 
-    setIsSubmitting(true);
-    
+    setIsSubmitting(true); // Zablokowanie formularza
+
     try {
       const userData = localStorage.getItem('currentUser');
       let currentUser = {};
-      
+
       if (userData && userData !== 'undefined' && userData !== 'null') {
         currentUser = JSON.parse(userData);
       }
 
+      // Przygotowanie danych do wysłania
       const questionData = {
         author: currentUser?.userName || currentUser?.name || 'Anonymous',
         title: formData.title,
@@ -94,9 +119,11 @@ const AddQuestion = () => {
         tags: tags.map(tag => tag.trim())
       };
 
+      // Wysłanie pytania do Firebase
       const result = await addQuestion(questionData);
-      
+
       if (result.success) {
+        // Wyczyszczenie formularza
         setFormData({
           title: '', caption: '', category: '', type: 'Error in code', urgent: false, answerDate: ''
         });
@@ -110,16 +137,18 @@ const AddQuestion = () => {
       console.error('Error in handleSubmit:', error);
       alert('Błąd podczas dodawania pytania. Spróbuj ponownie.');
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); // Odblokowanie formularza
     }
   };
 
+  // Lista dostępnych tagów do wyboru
   const availableTags = [
     'Python', 'Java', 'SQL', 'html', 'css', 'javascript', 'react',
     'node.js', 'flask', 'arduino', 'linux', 'database', 'networking',
     'school_project', 'teamwork', 'presentation', 'figma', 'ux/ui', 'pitch_deck'
   ];
 
+  // Lista głównych elementów menu
   const navItems = [
     { path: '/main', icon: FiHome, label: 'Home' },
     { path: '/notifications', icon: FiMessageSquare, label: 'Notifications' },
@@ -128,11 +157,13 @@ const AddQuestion = () => {
     { path: '/bookmarks', icon: FiBookmark, label: 'Bookmarks' }
   ];
 
+  // Lista drugorzędnych opcji w menu
   const secondaryNavItems = [
     { path: '/settings', icon: FiSettings, label: 'Settings' },
     { path: '/help', icon: FiHelpCircle, label: 'Help & FAQ' }
   ];
 
+  // Komponent reprezentujący jeden przycisk nawigacji
   const NavItem = ({ item }) => {
     const Icon = item.icon;
     return (
@@ -144,8 +175,10 @@ const AddQuestion = () => {
     );
   };
 
+  // JSX – kod HTML tej strony (formularz i nawigacja)
   return (
     <div className="caloscAdd">
+      {/* Nagłówek z nazwą strony */}
       <header className="template-header">
         <div className="template-header-container">
           <div className="header-left">
@@ -169,8 +202,10 @@ const AddQuestion = () => {
         </div>
       </header>
 
+      {/* Główna zawartość aplikacji */}
       <div className="app-container">
         <aside className="template-sidebar">
+          {/* Menu boczne */}
           <div className="template-sidebar-content">
             <div className="template-add-question-button-container">
               <button className="template-add-question-button active-add-question">
@@ -197,6 +232,7 @@ const AddQuestion = () => {
 
         <div className="main-content">
           <div className="content-wrapper">
+            {/* Formularz dodawania pytania */}
             <div className="form-container">
               <div className="form-header">
                 <h1>Ask a Specialist</h1>
@@ -358,11 +394,12 @@ const AddQuestion = () => {
                     <Upload size={16} />
                     Select File
                   </button>
+                  </div>
+                  </div>
                 </div>
-              </div>
-            </div>
           </div>
 
+          {/* Przycisk wysyłania pytania */}
           <div className="submit-section">
             <button type="submit" className="submit-btn" onClick={handleSubmit} disabled={isSubmitting}>
               {isSubmitting ? 'Posting...' : 'Post'}
