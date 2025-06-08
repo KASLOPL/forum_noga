@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  onAuthStateChanged,
+  updateProfile 
+} from "firebase/auth";
+import { auth } from "../../firebase.js";
 import './logowanie.css';
 import noprosze from '../../images/noprosze.jpg';
 import noprosze1 from '../../images/noprosze1.jpg';
@@ -17,44 +24,74 @@ const sliderImages = [
 ];
 
 function Auth() {
-  // ktore dzialanie aktywne login czy sign up
   const [activeTab, setActiveTab] = useState('login');
-  // przechowuje dane wpisane przez urzytkownika w formularzu 
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     userName: ''
   });
-  // bledy walidacji dla poszczegolnych pol
   const [errors, setErrors] = useState({
     email: '',
     password: '',
     userName: ''
   });
-  // ogolny blad formularza (np. zle dane logowania)
   const [formError, setFormError] = useState('');
-  // aktualne zdjecie pokazujace sie na stronie 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [fade, setFade] = useState(true);
-  // przenoszenie po zalogowaniu sie na main
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // efekt do zmiany zdjec co 5 sekund
+  // 🔥 DEBUGGING FIREBASE - sprawdź czy działa
+  useEffect(() => {
+    console.log('🔥 === DEBUGGING FIREBASE ===');
+    console.log('Auth object:', auth);
+    console.log('Auth app:', auth?.app);
+    console.log('Auth app name:', auth?.app?.name);
+    
+    if (!auth) {
+      console.error('❌ BŁĄD: Auth jest undefined!');
+      setFormError('Błąd: Firebase nie został zainicjalizowany. Sprawdź plik firebase.js');
+      return;
+    }
+    
+    if (!auth.app) {
+      console.error('❌ BŁĄD: Firebase app nie został zainicjalizowany!');
+      setFormError('Błąd: Firebase app nie działa. Sprawdź konfigurację w firebase.js');
+      return;
+    }
+    
+    console.log('✅ Firebase działa prawidłowo!');
+  }, []);
+
+  // Sprawdzenie czy użytkownik jest już zalogowany
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log('✅ User logged in:', user.email);
+        navigate('/main');
+      } else {
+        console.log('👤 User not logged in');
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
+
+  // Efekt do zmiany zdjęć co 5 sekund
   useEffect(() => {
     const interval = setInterval(() => {
-      setFade(false); // zdjecie znika
+      setFade(false);
       setTimeout(() => {
-        setCurrentSlide(prev => (prev + 1) % sliderImages.length); // przelaczanie na nowe zdjecie 
-        setFade(true); //pojawianie sie nowego zdjecia
-      }, 400); // po 400 ms
-    }, 5000); // co 5 sekund zmiana zdjecia !!
+        setCurrentSlide(prev => (prev + 1) % sliderImages.length);
+        setFade(true);
+      }, 400);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
   
-  // klikniecie w jeden z paskow pod zdjeciami zmienia je
   const goToSlide = (index) => {
-    if(index === currentSlide) return; // ten sam obraz nic sie nie dzieje
+    if(index === currentSlide) return;
     setFade(false);
     setTimeout(() => {
       setCurrentSlide(index);
@@ -62,7 +99,6 @@ function Auth() {
     }, 400);
   };
 
-  // obsluga zmian w polach formularza
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -70,16 +106,20 @@ function Auth() {
       [name]: value
     }));
     
-    // czyszczenie bledu gdy uzytkownik zaczyna pisac
+    // Czyszczenie błędu gdy użytkownik zaczyna pisać
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
         [name]: ''
       }));
     }
+    
+    // Czyszczenie ogólnego błędu formularza
+    if (formError) {
+      setFormError('');
+    }
   };
 
-  // funkcja walidujaca formularz
   const validate = () => {
     let isValid = true;
     const newErrors = {
@@ -88,27 +128,27 @@ function Auth() {
       userName: ''
     };
 
-    // walidacja emaila
+    // Walidacja emaila
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Email jest wymagany';
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is incorrect';
+      newErrors.email = 'Nieprawidłowy format emaila';
       isValid = false;
     }
 
-    // walidacja hasla (minimum 6 znakow)
+    // Walidacja hasła
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Hasło jest wymagane';
       isValid = false;
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+      newErrors.password = 'Hasło musi mieć co najmniej 6 znaków';
       isValid = false;
     }
 
-    // walidacja nazwy uzytkownika tylko przy rejestracji
+    // Walidacja nazwy użytkownika tylko przy rejestracji
     if (activeTab === 'signup' && !formData.userName.trim()) {
-      newErrors.userName = 'Username is required';
+      newErrors.userName = 'Nazwa użytkownika jest wymagana';
       isValid = false;
     }
 
@@ -116,47 +156,106 @@ function Auth() {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // najpierw walidacja
-    if (!validate()) {
+    console.log('🚀 === PRÓBA LOGOWANIA ===');
+    console.log('Email:', formData.email);
+    console.log('Password length:', formData.password.length);
+    console.log('Active tab:', activeTab);
+
+    // Sprawdź czy Firebase działa
+    if (!auth || !auth.app) {
+      console.error('❌ Firebase nie jest skonfigurowany!');
+      setFormError('Błąd konfiguracji Firebase. Sprawdź plik firebase.js');
       return;
     }
 
-    // POBIERA uzytkownikow z LocalStorage
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-
-    if (activeTab === 'login') {
-      // szuka uzytkownika o podanym emailu i hasle
-      const foundUser = users.find(
-        (user) => user.email === formData.email && user.password === formData.password
-      );
-      if (foundUser) {
-        // udane logowanie czyli zgodne dane
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('currentUser', JSON.stringify(foundUser));
-        setFormError('');
-        navigate('/main'); // przekierowanie na main
-      } else {
-        setFormError('Zły login lub hasło');
-      }
-    } else {
-      // sprawdza czy uzytkownik juz istnieje
-      const existingUser = users.find((user) => user.email === formData.email);
-      if (existingUser) {
-        setFormError('Użytkownik już istnieje');
-      } else {
-        // tworzy nowego uzytkownika
-        const newUser = { ...formData };
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('currentUser', JSON.stringify(newUser));
-        setFormError('');
-        navigate('/main');
-      }
+    if (!validate()) {
+      console.log('❌ Validation failed');
+      return;
     }
+
+    setIsLoading(true);
+    setFormError('');
+
+    try {
+      if (activeTab === 'login') {
+        console.log('🔐 Attempting login...');
+        const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+        console.log('✅ Login successful:', userCredential.user.email);
+      } else {
+        console.log('📝 Attempting signup...');
+        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+        console.log('✅ Signup successful:', userCredential.user.email);
+        
+        // Dodaj nazwę użytkownika do profilu
+        if (formData.userName.trim()) {
+          try {
+            await updateProfile(userCredential.user, { 
+              displayName: formData.userName.trim() 
+            });
+            console.log('✅ Profile updated with displayName:', formData.userName);
+          } catch (profileError) {
+            console.warn('⚠️ Failed to update profile:', profileError);
+          }
+        }
+      }
+      
+      // onAuthStateChanged automatycznie przekieruje użytkownika
+    } catch (error) {
+      console.error('❌ Authentication error:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      
+      // Szczegółowa obsługa błędów
+      switch (error.code) {
+        case 'auth/user-not-found':
+          setFormError('❌ Nie znaleziono użytkownika z tym adresem email');
+          break;
+        case 'auth/wrong-password':
+          setFormError('❌ Nieprawidłowe hasło');
+          break;
+        case 'auth/invalid-credential':
+          setFormError('❌ Nieprawidłowe dane logowania');
+          break;
+        case 'auth/email-already-in-use':
+          setFormError('❌ Użytkownik z tym emailem już istnieje');
+          break;
+        case 'auth/weak-password':
+          setFormError('❌ Hasło jest za słabe - użyj co najmniej 6 znaków');
+          break;
+        case 'auth/invalid-email':
+          setFormError('❌ Nieprawidłowy format emaila');
+          break;
+        case 'auth/too-many-requests':
+          setFormError('❌ Za dużo prób logowania. Spróbuj ponownie później');
+          break;
+        case 'auth/network-request-failed':
+          setFormError('❌ Błąd połączenia. Sprawdź internet');
+          break;
+        case 'auth/configuration-not-found':
+          setFormError('❌ BŁĄD KONFIGURACJI: Sprawdź firebase.js i Firebase Console');
+          break;
+        case 'auth/api-key-not-valid':
+          setFormError('❌ Nieprawidłowy API Key w konfiguracji Firebase');
+          break;
+        case 'auth/project-not-found':
+          setFormError('❌ Projekt Firebase nie istnieje');
+          break;
+        default:
+          setFormError(`❌ Nieznany błąd: ${error.message}`);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Funkcja do zmiany taba z czyszczeniem formularza
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setFormError('');
+    setErrors({ email: '', password: '', userName: '' });
   };
 
   return (
@@ -167,27 +266,24 @@ function Auth() {
           <p>Connect with experts, ask questions, and get reliable answers in no time.</p>
         </div>
 
-        {/* slider */}
+        {/* Slider */}
         <div className="tab-switch">
           <div className={`slider ${activeTab === 'login' ? 'right' : 'left'}`} />
           <div
             className={`tab-option ${activeTab === 'signup' ? 'active' : ''}`}
-            onClick={() => setActiveTab('signup')}
+            onClick={() => handleTabChange('signup')}
           >
             Sign Up
           </div>
           <div
             className={`tab-option ${activeTab === 'login' ? 'active' : ''}`}
-            onClick={() => setActiveTab('login')}
+            onClick={() => handleTabChange('login')}
           >
             Log in
           </div>
         </div>
 
-        {/* Formularz wspólny */}
-
         <form onSubmit={handleSubmit} className="login-form" noValidate>
-          {/* POKAZUJE SOE tylko kiedy klikniety SING UP */}
           {activeTab === 'signup' && (
             <label>
               Name <span>*</span>
@@ -200,8 +296,8 @@ function Auth() {
                 required
                 placeholder="Enter your Name"
                 className={errors.userName ? 'error-input' : ''}
+                disabled={isLoading}
               />
-              {/* komunikat bledu dla nazwy uzytkownika */}
               {errors.userName && <span className="error-message">{errors.userName}</span>}
             </label>
           )}
@@ -209,7 +305,6 @@ function Auth() {
           <label>
             E-mail <span>*</span>
             <br />
-            {/* zawsze w kazdym formularzu obsluga przez handleChange */}
             <input
               type="email"
               name="email"
@@ -218,8 +313,9 @@ function Auth() {
               required
               placeholder="Enter your E-mail"
               className={errors.email ? 'error-input' : ''}
+              disabled={isLoading}
+              autoComplete="email"
             />
-            {/* komunikat bledu dla emaila */}
             {errors.email && <span className="error-message">{errors.email}</span>}
           </label>
 
@@ -234,48 +330,44 @@ function Auth() {
               required
               placeholder="Enter your Password"
               className={errors.password ? 'error-input' : ''}
+              disabled={isLoading}
+              autoComplete={activeTab === 'login' ? 'current-password' : 'new-password'}
             />
-            {/* komunikat bledu dla hasla */}
             {errors.password && <span className="error-message">{errors.password}</span>}
           </label>
 
-
-
-
-          {/* POKAZUJE sie tylko przy LOGOWANIU */}
           {activeTab === 'login' && (
             <a href="#" className="forgot-password">Forgot password?</a>
           )}
 
-          {/* przycisk logowania i rejestracji -  zalezy co klikniete zmienia tresc buttona */}
-          <button type="submit" className="submit-btn">
-            {activeTab === 'login' ? 'Log in' : 'Sign Up'}
+          <button type="submit" className="submit-btn" disabled={isLoading}>
+            {isLoading ? '⏳ Ładowanie...' : (activeTab === 'login' ? '🔐 Zaloguj się' : '📝 Zarejestruj się')}
           </button>
 
-          {/* ogolny blad formularza */}
-          {formError && <p className="form-error">{formError}</p>}
+          {formError && <p className="form-error" style={{color: 'red', fontWeight: 'bold'}}>{formError}</p>}
 
-          {/* zmiana tekstu w zaleznosci co klikniete */}
           <div className="or-divider">
             ————— Or {activeTab === 'login' ? 'Sign Up' : 'Log in'} with —————
           </div>
 
-          {/* tylko wygladaja nie dzialaja  */}
           <div className="social-buttons">
-            <button type="button" className="social-btn">
+            <button type="button" className="social-btn" disabled={isLoading}>
               <span className="icon">
                 <img src={google} alt="google" />
-              </span> Google</button>
+              </span> Google
+            </button>
 
-            <button type="button" className="social-btn">
+            <button type="button" className="social-btn" disabled={isLoading}>
               <span className="icon">
                 <img src={apple} alt="apple" />
-              </span> Apple</button>
+              </span> Apple
+            </button>
 
-            <button type="button" className="social-btn">
+            <button type="button" className="social-btn" disabled={isLoading}>
               <span className="icon">
                 <img src={facebook} alt="facebook" />
-              </span> Facebook</button>
+              </span> Facebook
+            </button>
           </div>
 
           <div className="legal">
@@ -286,15 +378,12 @@ function Auth() {
         </form>
       </div>
 
-      {/* Sekcja ze sliderem zdjęć i paskami */}
       <div className="login-image-section">
         <img
           src={sliderImages[currentSlide]}
           alt={`slide-${currentSlide}`}
-          // fade to animacja css 
           className={`slider-image ${fade ? 'fade-in' : 'fade-out'}`}
         />
-        {/* paski pod zdjeciami zmiana jesli klikniety nie jest active -  goToSlide(i) */}
         <div className="slider-indicators">
           {sliderImages.map((_, i) => (
             <span
