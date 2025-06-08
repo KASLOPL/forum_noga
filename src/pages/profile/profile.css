@@ -8,24 +8,21 @@
 .Profall .app { min-height: 100vh; display: flex; flex-direction: column; background: #fafafa; }
 
 /* Header */
-.Profall .header { background: white; border-bottom: 1px solid #e7e7e7; padding: 0 20px; position: sticky; top: 0; z-index: 100; }
-.Profall .navbar { display: flex; align-items: center; justify-content: space-between; height: 70px; max-width: 1200px; margin: 0 auto; }
-
-.Profall .left-section { display: flex; align-items: center; gap: 20px; }
-.Profall .back-btn { padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #5e5e5e; transition: background-color 0.2s; }
-.Profall .back-btn:hover { background: #f2f2f2; }
+.Profall .header { background-color: white; border-bottom: 1px solid #e7e7e7; padding: 8px 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+.Profall .navbar { display: flex; align-items: center; justify-content: space-between; height: 64px; max-width: 1200px; margin: 0 auto; }
+.Profall .left-section, .Profall .right-nav { display: flex; align-items: center; }
+.Profall .right-nav { gap: 12px; }
 
 /* Logo */
 .Profall .logo { display: flex; align-items: center; gap: 8px; }
-.Profall .logo-icon { background: #a9b18d; border-radius: 4px; padding: 4px; display: flex; align-items: center; justify-content: center; color: white; }
-.Profall .logo-text { font-weight: 600; color: #272d33; font-size: 18px; }
+.Profall .logo-icon { background-color: #a9b18d; border-radius: 4px; padding: 4px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: 500; }
+.Profall .logo-text { font-weight: 600; font-size: 18px; }
 .Profall .highlight { color: #91a160; }
 
 /* Navigation */
-.Profall .nav ul { display: flex; list-style: none; gap: 30px; }
-.Profall .nav a { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; color: #5e5e5e; font-weight: 500; transition: all 0.2s; }
-.Profall .nav a:hover { background: #f2f2f2; color: #272d33; }
-.Profall .nav .active a { background: #e6ead9; color: #272d33; }
+.Profall .nav ul { display: flex; list-style: none; gap: 24px; }
+.Profall .nav a { font-size: 14px; font-weight: 500; color: #5e5e5e; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; }
+.Profall .nav a:hover { color: #272d33; }
 
 /* Right Navigation */
 .Profall .right-nav { display: flex; align-items: center; gap: 15px; }
@@ -146,11 +143,7 @@
 .Profall .no-questions { text-align: center; padding: 40px 20px; color: #5e5e5e; }
 .Profall .no-questions p { font-size: 16px; }
 
-/* Responsive */
 @media (max-width: 768px) {
-  .Profall .main { flex-direction: column; padding: 10px; }
-  .Profall .sidebar { width: 100%; }
-  .Profall .navbar { padding: 0 15px; }
-  .Profall .nav ul { gap: 15px; }
-  .Profall .nav a { font-size: 14px; }
-}
+  .Profall .navbar { flex-direction: column; gap: 16px; height: auto; padding: 16px 0; }
+  .Profall .nav ul { justify-content: space-around; width: 100%; gap: 12px; }
+} 

@@ -1,203 +1,220 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react' //react i hooki
+import { useNavigate } from 'react-router-dom' // nawigacje z react routera
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile
-} from 'firebase/auth';
-import { auth } from '../../firebase';
-import './logowanie.css';
-import noprosze from '../../images/noprosze.jpg';
-import noprosze1 from '../../images/noprosze1.jpg';
-import noprosze2 from '../../images/noprosze2.jpg';
-import noprosze3 from '../../images/noprosze3.jpg';
-import google from '../../icons/google.png';
-import apple from '../../icons/apple.png'; 
-import facebook from '../../icons/facebook.png'; 
+} from 'firebase/auth' // funkcje do logowania i rejestracji z firebase
+import { auth } from '../../firebase' // nasza konfiguracje firebase
+import './logowanie.css' 
+import noprosze from '../../images/noprosze.jpg' // obrazki do slidera
+import noprosze1 from '../../images/noprosze1.jpg'
+import noprosze2 from '../../images/noprosze2.jpg'
+import noprosze3 from '../../images/noprosze3.jpg'
+import google from '../../icons/google.png' // import ikon social media
+import apple from '../../icons/apple.png'
+import facebook from '../../icons/facebook.png'
 
+// tu wszystkie obrazki do slidera
 const sliderImages = [
   noprosze,
   noprosze1,
   noprosze2,
   noprosze3
-];
+]
 
 function Auth() {
-  const [activeTab, setActiveTab] = useState('login');
+  // info czy jest aktywna zakladka logowania czy rejestracji
+  const [activeTab, setActiveTab] = useState('login')
+
+  // dane wpisane w formularzu
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     userName: ''
-  });
+  })
+
+  // ledy do walidacji formularza
   const [errors, setErrors] = useState({
     email: '',
     password: '',
     userName: ''
-  });
-  const [formError, setFormError] = useState('');
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [fade, setFade] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false); // Dodane: zapobieganie wielokrotnym kliknięciom
-  const navigate = useNavigate();
+  })
 
-  // Sprawdzenie czy użytkownik już jest zalogowany
+  const [formError, setFormError] = useState('') // ogolny blad z formularza
+  const [currentSlide, setCurrentSlide] = useState(0) // numer aktualnego slajdu
+  const [fade, setFade] = useState(true) // stan do animacji slajdów
+  const [isSubmitting, setIsSubmitting] = useState(false) // sprawdza czy formularz juz sie wysyla
+  const navigate = useNavigate() // hook do przekierowywania uzytkownika
+
+  // kiedy komponent sie zaladuje to sprawdzamy czy user juz zalogowany
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const isLoggedIn = localStorage.getItem('isLoggedIn') // bierzemy dane z localStorage
     if (isLoggedIn === 'true') {
-      navigate('/main', { replace: true }); // replace: true zapobiega powrotowi
+      navigate('/main', { replace: true }) // jesli tak to przekierowujemy na strone glowna
     }
-  }, [navigate]);
+  }, [navigate])
 
-  // Efekt do zmiany zdjęć
+  // automatyczna zmiana slajdow co 5 sekund
   useEffect(() => {
     const interval = setInterval(() => {
-      setFade(false);
+      setFade(false) // efekt znikania
       setTimeout(() => {
-        setCurrentSlide(prev => (prev + 1) % sliderImages.length);
-        setFade(true);
-      }, 400);
-    }, 5000);
+        setCurrentSlide(prev => (prev + 1) % sliderImages.length) // zmieniamy na kolejny slajd
+        setFade(true) //efekt pojawiania
+      }, 400)
+    }, 5000)
 
-    return () => clearInterval(interval);
-  }, []);
-  
+    return () => clearInterval(interval) // czysc interwal jak komponent sie zamknie
+  }, [])
+
+  // reczna zmiana slajdu przez klikniecie
   const goToSlide = (index) => {
-    if(index === currentSlide) return;
-    setFade(false);
+    if(index === currentSlide) return // jesli klikniemy na ten sam slajd to nic nie robimy
+    setFade(false) // efekt znikania
     setTimeout(() => {
-      setCurrentSlide(index);
-      setFade(true);
-    }, 400);
-  };
+      setCurrentSlide(index) // ustawiamy wybrany slajd
+      setFade(true) // efekt pojawiania
+    }, 400)
+  }
 
+  // obsluga zmian w polach formularza
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target // bierzemy nazwe i wartosc z inputa
     setFormData(prev => ({
       ...prev,
-      [name]: value
-    }));
-    
+      [name]: value // ustawienie nowej wartosci
+    }))
+
+    // jak byl blad to go usuwamy
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
         [name]: ''
-      }));
+      }))
     }
-    // Czyszczenie ogólnego błędu formularza
-    if (formError) {
-      setFormError('');
-    }
-  };
 
+    // czyscimy ogolny blad
+    if (formError) {
+      setFormError('')
+    }
+  }
+
+  // walidacja danych w formularzu
   const validate = () => {
-    let isValid = true;
+    let isValid = true
     const newErrors = {
       email: '',
       password: '',
       userName: ''
-    };
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is incorrect';
-      isValid = false;
     }
 
+    // sprawdzamy email
+    if (!formData.email.trim()) { // sprawdzamy czy email nie jest pusty
+      newErrors.email = 'Email is required'
+      isValid = false
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) { // sprawdzenie formatu emaila
+      newErrors.email = 'Email is incorrect'
+      isValid = false
+    }
+
+    // sprawdzamy haslo
     if (!formData.password) {
-      newErrors.password = 'Password is required';
-      isValid = false;
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-      isValid = false;
+      newErrors.password = 'Password is required'
+      isValid = false // jesli haslo puste to blad
+    } else if (formData.password.length < 6) { // sprawdzamy czy ma min 6 znakow
+      newErrors.password = 'Password must be at least 6 characters'
+      isValid = false
     }
 
-    if (activeTab === 'signup' && !formData.userName.trim()) {
-      newErrors.userName = 'Username is required';
-      isValid = false;
+    // sprawdzamy nazwe uzytkownika przy rejestracji
+    if (activeTab === 'signup' && !formData.userName.trim()) { // jesli rejestracja i nazwa pusta
+      newErrors.userName = 'Username is required'
+      isValid = false
     }
 
-    setErrors(newErrors);
-    return isValid;
-  };
+    setErrors(newErrors)
+    return isValid // zwracamy czy wszystko ok
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (isSubmitting) return; // Zapobieganie wielokrotnym kliknięciom
-    
+  // co sie dzieje po kliknieciu przycisku formularza
+  const handleSubmit = async (e) => { // obsluga submitu formularza
+    e.preventDefault() // zatrzymujemy domyslne wysylanie formularza
+
+    if (isSubmitting) return // jesli juz sie wysyla to nie rob nic
+
     if (!validate()) {
-      return;
+      return // jesli walidacja zla to nie wysylamy
     }
 
-    setIsSubmitting(true);
-    setFormError('');
+    setIsSubmitting(true) // blokujemy ponowne wyslanie
+    setFormError('') // czyscimy blad
 
     try {
       if (activeTab === 'login') {
-        const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
-        const user = userCredential.user;
-        
+        // logowanie uzytkownika
+        const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password) // logowanie przez firebase
+        const user = userCredential.user // pobieramy dane uzytkownika
+
         const userData = {
-          uid: user.uid,
-          email: user.email,
-          userName: user.displayName || user.email.split('@')[0]
-        };
-        
-        // WAŻNE: Ustawianie obu wartości w localStorage
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('currentUser', JSON.stringify(userData));
-        
-        // Przekierowanie z replace: true
-        navigate('/main', { replace: true });
-        
-      } else {
-        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-        const user = userCredential.user;
-        
-        if (formData.userName.trim()) {
-          await updateProfile(user, { displayName: formData.userName.trim() });
+          uid: user.uid, // unikalny identyfikator uzytkownika
+          email: user.email, // email uzytkownika
+          userName: user.displayName || user.email.split('@')[0] // domyslna nazwa jak nie ma displayName
         }
-        
+
+        localStorage.setItem('isLoggedIn', 'true') // zapisujemy info o logowaniu
+        localStorage.setItem('currentUser', JSON.stringify(userData)) // zapisujemy dane uzytkownika
+
+        navigate('/main', { replace: true }) // przekierowanie
+      } else {
+        // rejestracja nowego uzytkownika
+        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password) // rejestracja przez firebase
+        const user = userCredential.user // pobieramy dane uzytkownika
+
+        // ustawiamy nazwe uzytkownika
+        if (formData.userName.trim()) {
+          await updateProfile(user, { displayName: formData.userName.trim() }) // aktualizacja profilu uzytkownika
+        }
+
         const userData = {
-          uid: user.uid,
-          email: user.email,
-          userName: formData.userName.trim() || user.email.split('@')[0]
-        };
-        
-        // WAŻNE: Ustawianie obu wartości w localStorage
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('currentUser', JSON.stringify(userData));
-        
-        // Przekierowanie z replace: true
-        navigate('/main', { replace: true });
+          uid: user.uid, // unikalny identyfikator uzytkownika
+          email: user.email, // email uzytkownika
+          userName: formData.userName.trim() || user.email.split('@')[0] // domyslna nazwa jak nie ma displayName
+        }
+
+        localStorage.setItem('isLoggedIn', 'true') // zapisujemy logowanie
+        localStorage.setItem('currentUser', JSON.stringify(userData)) // zapisujemy dane uzytkownika
+
+        navigate('/main', { replace: true }) // przekierowanie
       }
     } catch (error) {
-      console.error('Auth error:', error);
-      
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        setFormError('Zły login lub hasło');
-      } else if (error.code === 'auth/email-already-in-use') {
-        setFormError('Użytkownik już istnieje');
-      } else if (error.code === 'auth/weak-password') {
-        setFormError('Hasło jest za słabe');
+      console.error('Auth error:', error) // logujemy blad
+
+      // rozne komunikaty zalezne od bledu
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') { // bledne dane logowania
+        setFormError('Zly login lub haslo')
+      } else if (error.code === 'auth/email-already-in-use') { // email juz istnieje
+        setFormError('Uzytkownik juz istnieje')
+      } else if (error.code === 'auth/weak-password') { // haslo za slabe
+        setFormError('Haslo jest za slabe')
       } else {
-        setFormError('Wystąpił błąd. Spróbuj ponownie.');
+        setFormError('Wystapil blad sprobuj ponownie')
       }
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false) // odblokowujemy formularz
     }
-  };
+  }
 
   return (
     <div className="login-container">
+      {/* Sekcja formularza */}
       <div className="login-form-section">
         <h1>Welcome to Snapsolve!</h1>
         <div className="colorrr">
           <p>Connect with experts, ask questions, and get reliable answers in no time.</p>
         </div>
 
+        {/* Przełącznik między logowaniem a rejestracją */}
         <div className="tab-switch">
           <div className={`slider ${activeTab === 'login' ? 'right' : 'left'}`} />
           <div
@@ -214,7 +231,9 @@ function Auth() {
           </div>
         </div>
 
+        {/* Formularz */}
         <form onSubmit={handleSubmit} className="login-form" noValidate>
+          {/* Pole nazwy użytkownika (tylko przy rejestracji) */}
           {activeTab === 'signup' && (
             <label>
               Name <span>*</span>
@@ -229,10 +248,11 @@ function Auth() {
                 className={errors.userName ? 'error-input' : ''}
                 disabled={isSubmitting}
               />
-              {errors.userName && <span className="error-message">{errors.userName}</span>}
+              {errors.userName && <span className="error-message">{errors.userName}</span>} {/* wyswietlanie bledu dla nazwy użytkownika*/}
             </label>
           )}
 
+          {/* Pole email */}
           <label>
             E-mail <span>*</span>
             <br />
@@ -249,6 +269,7 @@ function Auth() {
             {errors.email && <span className="error-message">{errors.email}</span>}
           </label>
 
+          {/* Pole hasła */}
           <label>
             Password <span>*</span>
             <br />
@@ -265,20 +286,25 @@ function Auth() {
             {errors.password && <span className="error-message">{errors.password}</span>}
           </label>
 
+          {/* Link do resetu hasla (tylko przy logowaniu) */}
           {activeTab === 'login' && (
             <a href="#" className="forgot-password">Forgot password?</a>
           )}
 
+          {/* Przycisk submit */}
           <button type="submit" className="submit-btn" disabled={isSubmitting}>
             {isSubmitting ? 'Loading...' : (activeTab === 'login' ? 'Log in' : 'Sign Up')}
           </button>
 
+          {/* Wyswietlanie ogolnego bledu formularza */}
           {formError && <p className="form-error">{formError}</p>}
 
+          {/* Separator dla logowania przez social media */}
           <div className="or-divider">
             ————— Or {activeTab === 'login' ? 'Sign Up' : 'Log in'} with —————
           </div>
 
+          {/* Przyciski social media */}
           <div className="social-buttons">
             <button type="button" className="social-btn" disabled={isSubmitting}>
               <span className="icon">
@@ -299,6 +325,7 @@ function Auth() {
             </button>
           </div>
 
+          {/* Informacje prawne */}
           <div className="legal">
             By continuing, you agree to SnapSolve{' '}
             <a href="#"><b>Terms of Service</b></a><br />
@@ -307,18 +334,20 @@ function Auth() {
         </form>
       </div>
 
+      {/* Sekcja ze sliderem zdjec */}
       <div className="login-image-section">
         <img
           src={sliderImages[currentSlide]}
           alt={`slide-${currentSlide}`}
-          className={`slider-image ${fade ? 'fade-in' : 'fade-out'}`}
+          className={`slider-image ${fade ? 'fade-in' : 'fade-out'}`} // animacja slajdu
         />
+        {/* Wskazniki slajdow */}
         <div className="slider-indicators">
-          {sliderImages.map((_, i) => (
+          {sliderImages.map((_, i) => ( // iteracja po wszystkich obrazkach w sliderze
             <span
-              key={i}
-              className={`bar ${currentSlide === i ? 'active' : ''}`}
-              onClick={() => goToSlide(i)}
+              key={i} // unikalny klucz dla kazdego wskaznika
+              className={`bar ${currentSlide === i ? 'active' : ''}`} // aktywna klasa dla aktualnego slajdu
+              onClick={() => goToSlide(i)} // zmiana slajdu po kliknieciu
             />
           ))}
         </div>
