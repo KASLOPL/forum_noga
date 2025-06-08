@@ -2,8 +2,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import "./main.css";
-import defaultQuestions from '../../data/questions';
-
+import { getAllQuestions, incrementViews, likeQuestion } from '../../utils/firebaseUtils';
 import {
   FiBookmark, FiChevronDown, FiChevronUp, FiEye, FiHeart, FiHelpCircle,
   FiHome, FiLogOut, FiMail, FiMessageSquare, FiMoon, FiMoreVertical,
@@ -11,166 +10,214 @@ import {
 } from "react-icons/fi";
 
 const useBookmarks = () => {
-  // zmienna i funckja do zmiany jej 
   const [bookmarks, setBookmarks] = useState(() => {
-    // wyjmuje bookarki jak sa takie z localstorage 
-    const saved = localStorage.getItem("bookmarks");
-    // jak nie pusta tablica 
-    return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem("bookmarks");
+      return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
+    } catch (error) {
+      return [];
+    }
   });
 
-  // kiedy cos sie zmieni w zakladkach odrazu zapisuje sie w localStorage 
   useEffect(() => {
-    localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+    try {
+      localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+    } catch (error) {
+      console.error('Error saving bookmarks:', error);
+    }
   }, [bookmarks]);
 
-  // dodawanie zakladek 
   const toggleBookmark = useCallback((item) => {
     setBookmarks(prev => {
-      // czy juz jest zapisana 
       const isBookmarked = prev.some(b => b.id === item.id);
       return isBookmarked 
-      // jak jest usuwa ja 
         ? prev.filter(b => b.id !== item.id) 
-        // jak niema dodaje ja 
         : [...prev, { ...item, isBookmarked: true }];
     });
   }, []);
 
-  // sprawdza czy zakladka o takim id jest juz dodana 
   const isBookmarked = useCallback((id) => bookmarks.some(b => b.id === id), [bookmarks]);
   return { toggleBookmark, isBookmarked };
 };
 
-
 function Main() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const [user, setUser] = useState(null);
   const [expandedQuestion, setExpandedQuestion] = useState(null);
-  // pobiera funkcje z bookmarks 
   const { toggleBookmark, isBookmarked } = useBookmarks();
-
-  // DODANE: Definiowanie userTags na podstawie danych użytkownika
-  const [userTags] = useState(() => {
-    // Możesz dostosować logikę w zależności od tego, jak przechowujesz tagi użytkownika
-    return user?.tags || user?.interests || [];
-  });
-
-  // lista polubionych pytan albo zadne 
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [likedQuestions, setLikedQuestions] = useState(() => {
-    const saved = localStorage.getItem("likedQuestions");
-    return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
-  });  
-
-  // wyswietla pytania dodane jesli niema zadnych to domyslne zawsze 
-  const [questions, setQuestions] = useState(() => {
-    const saved = localStorage.getItem("questions");
-    const localQuestions = saved && saved !== 'undefined' ? JSON.parse(saved) : [];
-    return saved && saved !== 'undefined' ? JSON.parse(saved) : defaultQuestions;
+    try {
+      const saved = localStorage.getItem("likedQuestions");
+      return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
+    } catch (error) {
+      return [];
+    }
   });
-
-  // POPRAWIONE: Przeniesienie filtrowania do useMemo lub wewnątrz komponentu
-  const filteredQuestions = questions.filter(q =>
-    q.tags?.some(tag => userTags.includes(tag))
-  );
-
-  const remainingQuestions = questions.filter(q =>
-    !filteredQuestions.includes(q)
-  );
-
-  const orderedQuestions = [...filteredQuestions, ...remainingQuestions];
-
-  // jak cos sie zmienia zapisuje sie to odrazu w localstorage
-  useEffect(() => {
-    localStorage.setItem("likedQuestions", JSON.stringify(likedQuestions));
-  }, [likedQuestions]);
-
-  useEffect(() => {
-    localStorage.setItem("questions", JSON.stringify(questions));
-  }, [questions]);
 
   const goTo = useCallback((path) => navigate(path), [navigate]);
-
-  // wylogowywanie i zerowanie zmian
   const logout = useCallback(() => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('likedQuestions');
-    navigate('/');
-  }, [navigate]);
-
-  useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    if (!isLoggedIn || isLoggedIn !== 'true') {
-      navigate('/');
+    try {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('likedQuestions');
+      navigate('/', { replace: true });
+    } catch (error) {
+      navigate('/', { replace: true });
     }
   }, [navigate]);
 
-  // rozwijanie pytan
   const toggleQuestion = useCallback((questionId, e) => {
     e.stopPropagation();
-    setExpandedQuestion(prev => prev === questionId ? null // zwija je 
-    : questionId); // rozwija 
+    setExpandedQuestion(prev => prev === questionId ? null : questionId);
   }, []);
 
-  // dodawanie i usuwanie zakladek 
   const bookmarkClick = useCallback((question, e) => {
     e.stopPropagation();
-    // uzywa togglequestion ( dodawanie i usuwanie )
     toggleBookmark(question);
   }, [toggleBookmark]);
 
-  // klikniecie na pytanie przenosi do odpowiedzi 
-  const cardClick = useCallback((question) => {
+  const cardClick = useCallback(async (question) => {
+    try {
+      await incrementViews(question.id);
+      setQuestions(prev => prev.map(q => 
+        q.id === question.id ? { ...q, views: (q.views || 0) + 1 } : q
+      ));
+    } catch (error) {
+      console.error('Error incrementing views:', error);
+    }
     navigate(`/answer_q/${question.id}`, { state: { question } });
   }, [navigate]);
 
-  const getUserName = () => {
-    return user?.userName || user?.name || 'Guest';
-  };
+  const loadQuestions = useCallback(async () => {
+    if (!isLoggedIn) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await getAllQuestions();
+      if (result.success) {
+        setQuestions(result.questions);
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError('Failed to load questions');
+    } finally {
+      setLoading(false);
+    }
+  }, [isLoggedIn]);
 
-  const getUserInitials = () => {
-    const name = getUserName();
-    if (name === 'Guest') return 'GU';
-    return name.substring(0, 2).toUpperCase();
-  };
-
-  console.log('questions:', questions, 'isArray:', Array.isArray(questions));
-
-  // polubienia 
-  const likeClick = (questionId, e) => {
+  const likeClick = useCallback(async (questionId, e) => {
     e.stopPropagation();
-    
     const isAlreadyLiked = likedQuestions.includes(questionId);
     
-    // sprawdza czy polubiona z listy filter
-    if (isAlreadyLiked) {
-      const newLiked = likedQuestions.filter(id => id !== questionId);
-      setLikedQuestions(newLiked);
-      
-      // jesli polubione -1
-      setQuestions(prev => prev.map(q => 
-        q.id === questionId ? { ...q, likes: q.likes - 1 } : q
-      ));
-      
-    } else {
-      // jesli nie polubione +1
-      const newLiked = [...likedQuestions, questionId];
-      setLikedQuestions(newLiked);
-      
-      setQuestions(prev => prev.map(q => 
-        q.id === questionId ? { ...q, likes: q.likes + 1 } : q
-      ));
+    try {
+      if (isAlreadyLiked) {
+        const newLiked = likedQuestions.filter(id => id !== questionId);
+        setLikedQuestions(newLiked);
+        setQuestions(prev => prev.map(q => 
+          q.id === questionId ? { ...q, likes: Math.max((q.likes || 0) - 1, 0) } : q
+        ));
+      } else {
+        const result = await likeQuestion(questionId);
+        if (result.success) {
+          const newLiked = [...likedQuestions, questionId];
+          setLikedQuestions(newLiked);
+          setQuestions(prev => prev.map(q => 
+            q.id === questionId ? { ...q, likes: (q.likes || 0) + 1 } : q
+          ));
+        }
+      }
+    } catch (error) {
+      console.error('Error in likeClick:', error);
     }
-  };
+  }, [likedQuestions]);
+
+  const getUserName = useCallback(() => user?.userName || user?.name || 'Guest', [user]);
+  const getUserInitials = useCallback(() => {
+    const name = getUserName();
+    return name === 'Guest' ? 'GU' : name.substring(0, 2).toUpperCase();
+  }, [getUserName]);
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const loggedIn = localStorage.getItem('isLoggedIn');
+      const userData = localStorage.getItem('currentUser');
+      
+      if (!loggedIn || loggedIn !== 'true' || !userData) {
+        navigate('/', { replace: true });
+        return false;
+      }
+      
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        setIsLoggedIn(true);
+        return true;
+      } catch (error) {
+        navigate('/', { replace: true });
+        return false;
+      }
+    };
+    checkAuth();
+  }, [navigate]);
+
+  useEffect(() => {
+    if (isLoggedIn) loadQuestions();
+  }, [isLoggedIn, loadQuestions]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("likedQuestions", JSON.stringify(likedQuestions));
+    } catch (error) {
+      console.error('Error saving liked questions:', error);
+    }
+  }, [likedQuestions]);
+
+  if (!user || !isLoggedIn) {
+    return (
+      <div className="app-main">
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+          <div>Checking authentication...</div>
+        </div>
+      </div>
+    );
+  }
+
+  const userTags = user?.tags || user?.interests || [];
+  const filteredQuestions = questions.filter(q => q.tags?.some(tag => userTags.includes(tag)));
+  const remainingQuestions = questions.filter(q => !filteredQuestions.includes(q));
+  const orderedQuestions = [...filteredQuestions, ...remainingQuestions];
+
+  if (loading) {
+    return (
+      <div className="app-main">
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+          <div>Loading questions...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="app-main">
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+          <div>Error loading questions: {error}</div>
+          <button onClick={loadQuestions} style={{ marginTop: '10px' }}>Retry</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app-main">
       <div className="app">
-        {/* HEADER */}
         <header className="header">
           <div className="header-content">
-            {/* LOGO */}
             <div className="logo-section">
               <div className="logo">
                 <div className="logo-icon"><FiZap /></div>
@@ -213,7 +260,6 @@ function Main() {
         </header>
 
         <div className="main-container">
-          {/* NAWIGACJA  */}
           <aside className="sidebar">
             <div className="sidebar-content">
               <div className="add-question-section">
@@ -244,27 +290,17 @@ function Main() {
             </div>
           </aside>
 
-          {/* BANER MAIN */}
           <main className="content">
             <div className="welcome-banner">
               <h1>Hi, {getUserName()}!</h1>
-              <p>
-                Stuck on a question? SnapSolve connects you with experts for fast, accurate answers—no stress, just solutions!
-              </p>
+              <p>Stuck on a question? SnapSolve connects you with experts for fast, accurate answers—no stress, just solutions!</p>
             </div>
 
-            {/* PYTANIA  */}
             <div className="posts-count">{questions.length} posts</div>
             <div className="questions-container">
               <div className="questions-list">
                 {Array.isArray(orderedQuestions) && orderedQuestions.map((question) => (
-                  <div 
-                  // klikanie na pytanie i zmiana kursora
-                    key={question.id} 
-                    className="question-card"
-                    onClick={() => cardClick(question)}
-                    style={{ cursor: 'pointer' }}
-                  >
+                  <div key={question.id} className="question-card" onClick={() => cardClick(question)} style={{ cursor: 'pointer' }}>
                     <div className="card-header" onClick={(e) => { e.stopPropagation(); }}>
                       <div className="author">
                         <div className="avatar">
@@ -276,54 +312,55 @@ function Main() {
                         </div>
                       </div>
                       <div className="card-actions">
-                        <button 
-                          className={`icon-btn ${isBookmarked(question.id) ? 'bookmarked' : ''}`}
-                          onClick={(e) => bookmarkClick(question, e)}
-                        >
+                        <button className={`icon-btn ${isBookmarked(question.id) ? 'bookmarked' : ''}`} onClick={(e) => bookmarkClick(question, e)}>
                           <FiBookmark style={{ fill: isBookmarked(question.id) ? '#4CAF50' : 'none' }} />
                         </button>
                         <button className="icon-btn" onClick={(e) => { e.stopPropagation(); }}><FiMoreVertical /></button> 
                       </div>
                     </div>
 
-                    <div className="question-title"><h3>{question.highlight}</h3></div>
+                    <div className="question-title">
+                      <h3>{question.title || question.highlight}</h3>
+                    </div>
                     <div className="question-tags">
                       {question.tags && question.tags.map(tag => (
                          <span key={tag} className="tag">{tag}</span>
                         ))}
-                        </div>
+                    </div>
 
                     <div className="question-content">
                       <p>{expandedQuestion === question.id ? question.fullContent : question.content}</p>
-                      <button className="expand-btn" onClick={(e) => toggleQuestion(question.id, e)}>
-                        {expandedQuestion === question.id ? <><span>Show less</span><FiChevronUp /></> : <><span>Read more</span><FiChevronDown /></>}
-                      </button>
+                      {question.fullContent && question.fullContent !== question.content && (
+                        <button className="expand-btn" onClick={(e) => toggleQuestion(question.id, e)}>
+                          {expandedQuestion === question.id ? 
+                            <><span>Show less</span><FiChevronUp /></> : 
+                            <><span>Read more</span><FiChevronDown /></>
+                          }
+                        </button>
+                      )}
                     </div>
 
                     <div className="card-footer" onClick={(e) => { e.stopPropagation(); }}>
                       <div className="responders">
-                        {/* lista ludzi odpowiadajacych */}
-                        {Array.from({ length: question.responders }, (_, i) => (
-                          // niby ludzie ktorzy odpowiedzieli
-                          <div key={i} className="avatar avatar-small"><span>{String.fromCharCode(65 + i)}</span></div>
+                        {Array.from({ length: question.responders || 0 }, (_, i) => (
+                          <div key={i} className="avatar avatar-small">
+                            <span>{String.fromCharCode(65 + i)}</span>
+                          </div>
                         ))}
                       </div>
 
                       <div className="stats">
-                        <div 
-                          className="stat like-btn" 
-                          onClick={(e) => likeClick(question.id, e)}
-                        >
+                        <div className="stat like-btn" onClick={(e) => likeClick(question.id, e)}>
                           <FiHeart 
-                          className="heart-icon" 
-                        style={{ 
-                          fill: likedQuestions.includes(question.id) ? '#ff4757' : 'none',
-                          color: likedQuestions.includes(question.id) ? '#ff4757' : '#666'
-                        }} 
-                      />
-                        <span>{question.likes}</span>
-                      </div>
-                        <div className="stat"><FiEye /><span>{question.views}</span></div>
+                            className="heart-icon" 
+                            style={{ 
+                              fill: likedQuestions.includes(question.id) ? '#ff4757' : 'none',
+                              color: likedQuestions.includes(question.id) ? '#ff4757' : '#666'
+                            }} 
+                          />
+                          <span>{question.likes || 0}</span>
+                        </div>
+                        <div className="stat"><FiEye /><span>{question.views || 0}</span></div>
                       </div>
                     </div>
                   </div>
@@ -332,7 +369,6 @@ function Main() {
             </div>
           </main>
 
-          {/* EKSPERCI */}
           <aside className="right-sidebar">
             <div className="experts-section">
               <h3>Top Experts</h3>
@@ -345,9 +381,10 @@ function Main() {
                   { name: "Emma Wilson", specialty: "UI/UX Design" },
                   { name: "Alex Rodriguez", specialty: "DevOps" }
                 ].map((expert, index) => (
-                  // kazdy ma imie i specjalizacje 
                   <div key={index} className="expert-item">
-                    <div className="avatar avatar-small"><span>{expert.name.split(' ').map(n => n[0]).join('')}</span></div>
+                    <div className="avatar avatar-small">
+                      <span>{expert.name.split(' ').map(n => n[0]).join('')}</span>
+                    </div>
                     <div className="expert-info">
                       <div className="expert-name">{expert.name}</div>
                       <div className="expert-specialty">{expert.specialty}</div>
@@ -356,12 +393,11 @@ function Main() {
                 ))}
               </div>
             </div>
-                {/* TAGI */}
+
             <div className="tags-section">
               <h3>Popular Tags</h3>
               <div className="tags-list">
                 {["Python", "GitHub", "Data Structures", "React.js", "Java", "JavaScript", "CSS", "Machine Learning", "SQL", "Node.js"].map(tag => (
-                  // kazdy mozna klikac 
                   <div key={tag} className="tag tag-clickable">{tag}</div>
                 ))}
               </div>

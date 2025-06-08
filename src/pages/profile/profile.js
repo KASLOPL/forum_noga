@@ -1,144 +1,121 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './profile.css';
 import {
   FiSearch, FiArrowLeft, FiMail, FiHome, FiUsers, FiMessageSquare,
   FiPlus, FiMinus, FiZap, FiChevronDown, FiBookmark, FiUser,
-  FiHelpCircle, FiMoreVertical, FiHeart, FiEye
+  FiHelpCircle, FiMoreVertical, FiHeart, FiEye, FiCheck
 } from 'react-icons/fi';
-import { ThumbsUp, Eye, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { getAllQuestions } from '../../utils/firebaseUtils';
 
-// glowa funkcja 
 const Profile = () => {
-  // Nawigacja i pobieranie danych o urzytkowniku z localStorage
   const navigate = useNavigate();
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-  // Funkcja wyswietlania inicjalow i nazwy urzytkownika 
-  const getUserDisplayName = () => {
-    return currentUser?.userName || currentUser?.name || 'Guest';
-  };
-
-  const getUserInitials = () => {
-    const displayName = getUserDisplayName();
-    if (displayName === 'Guest') return 'GU';
-    return displayName.substring(0, 2).toUpperCase();
-  };
-
-  // Stany komponentu
-  const [activeTab, setActiveTab] = useState('Questions & Replies');
-  // dostepne tagi w tablicy
-  const [tags, setTags] = useState([
-    'Python', 'Java', 'SQL', 'html', 'css', 'javascript', 'react',
-    'node.js', 'flask', 'arduino', 'linux', 'database', 'networking',
-    'school_project', 'teamwork', 'presentation', 'figma', 'ux/ui', 'pitch_deck', 'other', 'none'
-  ]);
+  const [userQuestions, setUserQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Dane użytkownika
-  const user = {
-    name: 'Basjan Kojko',
-    username: '@basjan.kojko',
-    school: 'Zespół Szkół Energetycznych Technikum nr 13',
-    bio: 'Klepię kod jak combo w ulubionych grze, bo nie ma lepszego uczucia niż zobaczyć jak wszystko w końcu działa 😎'
-  };
-
-  // Funkcje do obsługi tagów
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
-  // dodaje wybrany tag do zainteresowan 
-  const handleTagSelect = (tag) => {
-  if (!selectedTags.includes(tag)) {
-    const updatedTags = [...selectedTags, tag];
-    setSelectedTags(updatedTags);
-
-    const updatedUser = { ...currentUser, selectedTags: updatedTags };
-    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-  }
-  setIsDropdownOpen(false);
-};
-
-  // usuwa tag z zainteresowan
-  const handleRemoveTag = (tagToRemove) => {
-  const updatedTags = selectedTags.filter(tag => tag !== tagToRemove);
-  setSelectedTags(updatedTags);
-
-  const updatedUser = { ...currentUser, selectedTags: updatedTags };
-  localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-};
-
-  // Nawigacja ( linki )
-  const navLinks = [
-    { icon: <FiHome size={16} />, text: 'Home', active: false, path: '/main' }, 
-    { icon: <FiMessageSquare size={16} />, text: 'Notifications', active: false },
-    { icon: <FiUsers size={16} />, text: 'Specialists', active: false },
-    { icon: <FiUser size={16} />, text: 'My Questions', active: false, path: '/my_questions' },
-    { icon: <FiBookmark size={16} />, text: 'Bookmarks', active: false, path: '/zakładki'}
-  ];
-
-  // Przykładowe pytania
-  const questions = [
-    {
-      id: 1,
-      author: "Anna K.",
-      timeAgo: "2 godziny temu",
-      highlight: "Jak zoptymalizować zapytania SQL w dużej bazie danych?",
-      tags: ["SQL", "Database", "Performance"],
-      content: "Mam problem z wydajnością zapytań SQL w bazie danych zawierającej miliony rekordów...",
-      fullContent: "Pracuję nad aplikacją, która musi przetwarzać duże ilości danych...",
-      likes: 23,
-      views: 1284,
-      responders: 3
-    },
-    {
-      id: 2,
-      author: "Tomasz M.",
-      timeAgo: "4 godziny temu",
-      highlight: "React Hook useEffect - problem z nieskończoną pętlą",
-      tags: ["React", "JavaScript", "Hooks"],
-      content: "Mój useEffect wchodzi w nieskończoną pętlą rerenderowania...",
-      fullContent: "Pracuję nad komponentem React, który ma pobierać dane z API...",
-      likes: 45,
-      views: 892,
-      responders: 5
-    },
-    {
-      id: 3,
-      author: "Michał P.",
-      timeAgo: "6 godzin temu",
-      highlight: "Algorytmy sortowania - który wybrać dla dużych zbiorów danych?",
-      tags: ["Algorithms", "Performance", "Data Structures"],
-      content: "Potrzebuję posortować tablicę z 100,000+ elementów...",
-      fullContent: "Pracuję nad aplikacją, która musi sortować bardzo duże zbiory danych...",
-      likes: 31,
-      views: 567,
-      responders: 4
-    },
-    {
-      id: 4,
-      author: "Julia W.",
-      timeAgo: "8 godzin temu",
-      highlight: "CSS Grid vs Flexbox - kiedy używać którego?",
-      tags: ["CSS", "Layout", "Frontend"],
-      content: "Ciągle się zastanawiam, kiedy powinienem używać CSS Grid...",
-      fullContent: "Uczę się nowoczesnego CSS-a i mam problem z wyborem między Grid a Flexbox...",
-      likes: 18,
-      views: 743,
-      responders: 6
+  // Inicjalizacja danych użytkownika
+  useEffect(() => {
+    const userData = localStorage.getItem('currentUser');
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setCurrentUser(parsedUser);
+        if (parsedUser.selectedTags) setSelectedTags(parsedUser.selectedTags);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
     }
+  }, []);
+
+  // Pobieranie pytań użytkownika
+  useEffect(() => {
+    const loadUserQuestions = async () => {
+      if (!currentUser?.userName) return;
+      setLoading(true);
+      try {
+        const result = await getAllQuestions();
+        if (result.success) {
+          const myQuestions = result.questions.filter(q => q.author === currentUser.userName);
+          setUserQuestions(myQuestions);
+        }
+      } catch (err) {
+        console.error('Error loading questions:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadUserQuestions();
+  }, [currentUser]);
+
+  const getUserDisplayName = () => currentUser?.userName || currentUser?.name || 'Guest';
+  const getUserInitials = () => {
+    const displayName = getUserDisplayName();
+    return displayName === 'Guest' ? 'GU' : displayName.substring(0, 2).toUpperCase();
+  };
+
+  const tags = [
+    'Python', 'Java', 'SQL', 'html', 'css', 'javascript', 'react',
+    'node.js', 'flask', 'arduino', 'linux', 'database', 'networking',
+    'school_project', 'teamwork', 'presentation', 'figma', 'ux/ui', 'pitch_deck', 'other', 'none'
   ];
+
+  const user = {
+    name: currentUser?.userName || 'Guest User',
+    username: `@${currentUser?.userName?.toLowerCase().replace(' ', '.') || 'guest'}`,
+    school: currentUser?.school || 'Zespół Szkół Energetycznych Technikum nr 13',
+    bio: currentUser?.bio || 'Klepię kod jak combo w ulubionych grze, bo nie ma lepszego uczucia niż zobaczyć jak wszystko w końcu działa 😎'
+  };
+
+  const handleTagSelect = (tag) => {
+    if (!selectedTags.includes(tag)) {
+      const updatedTags = [...selectedTags, tag];
+      setSelectedTags(updatedTags);
+      if (currentUser) {
+        const updatedUser = { ...currentUser, selectedTags: updatedTags };
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+        setCurrentUser(updatedUser);
+      }
+    }
+    setIsDropdownOpen(false);
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    const updatedTags = selectedTags.filter(tag => tag !== tagToRemove);
+    setSelectedTags(updatedTags);
+    if (currentUser) {
+      const updatedUser = { ...currentUser, selectedTags: updatedTags };
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      setCurrentUser(updatedUser);
+    }
+  };
+
+  const navLinks = [
+    { icon: <FiHome size={16} />, text: 'Home', path: '/main' },
+    { icon: <FiMessageSquare size={16} />, text: 'Notifications' },
+    { icon: <FiUsers size={16} />, text: 'Specialists' },
+    { icon: <FiUser size={16} />, text: 'My Questions', path: '/my_questions' },
+    { icon: <FiBookmark size={16} />, text: 'Bookmarks', path: '/zakładki'}
+  ];
+
+  const StatusBadge = ({ status }) => (
+    <div className="status-badge" style={{ backgroundColor: status === 'complete' ? '#4CAF50' : '#FF9800' }}>
+      {status === 'complete' && <FiCheck />}
+      <span>{status === 'complete' ? 'Complete' : 'In Progress'}</span>
+    </div>
+  );
+
+  if (loading) return <div>Loading...</div>;
+  if (!currentUser) return <div>Loading user data...</div>;
 
   return (
     <div className='Profall'>
       <div className="app">
-        {/* HEADER */}
         <header className="header">
           <div className="navbar">
             <div className="left-section">
-              {/* cofanie do poprzedniej strony */}
               <button className="back-btn" onClick={() => navigate(-1)}>
                 <FiArrowLeft size={20} />
               </button>
@@ -147,12 +124,10 @@ const Profile = () => {
                 <span className="logo-text">Snap<span className="highlight">solve</span></span>
               </div>
             </div>
-
             <nav className="nav">
               <ul>
-                {/* wyroznia ta strpne na ktorej jestes i podlacza css ( zmusza do korzystania z nawigacji z funkcji ) */}
                 {navLinks.map((item, i) => (
-                  <li key={i} className={item.active ? 'active' : ''}>
+                  <li key={i}>
                     <a href="#" onClick={(e) => {
                       e.preventDefault();
                       if (item.path) navigate(item.path);
@@ -163,7 +138,6 @@ const Profile = () => {
                 ))}
               </ul>
             </nav>
-
             <div className="right-nav">
               <button className="icon-btn"><FiMail size={20} /></button>
               <div className="user-profile" onClick={() => navigate('/profile')}>
@@ -182,25 +156,25 @@ const Profile = () => {
           <aside className="sidebar">
             <div className="profile-card">
               <div className="profile-header">
-                <div className="profile-avatar">BK</div>
+                <div className="profile-avatar">{getUserInitials()}</div>
                 <h2 className="profile-name">{user.name}</h2>
                 <p className="profile-username">{user.username}</p>
                 <p className="profile-school">{user.school}</p>
               </div>
               <div className="profile-bio">
-                <p>Klepię kod jak combo w ulubionych grze, bo nie ma lepszego uczucia niż zobaczyć jak wszystko w końcu działa </p>
+                <p>{user.bio}</p>
               </div>
               <div className="stats">
                 <div className="stat">
-                  <div className="stat-num">23</div>
+                  <div className="stat-num">{userQuestions.length}</div>
                   <div className="stat-label">Questions</div>
                 </div>
                 <div className="stat">
-                  <div className="stat-num">47</div>
+                  <div className="stat-num">{userQuestions.filter(q => q.status === 'complete').length}</div>
                   <div className="stat-label">Answers</div>
                 </div>
                 <div className="stat">
-                  <div className="stat-num">156</div>
+                  <div className="stat-num">{userQuestions.reduce((sum, q) => sum + (q.likes || 0), 0)}</div>
                   <div className="stat-label">Likes</div>
                 </div>
               </div>
@@ -213,39 +187,22 @@ const Profile = () => {
                   {selectedTags.map((tag, index) => (
                     <span key={index} className="tag">
                       {tag}
-                      <button 
-                        className="tag-remove" 
-                        onClick={() => handleRemoveTag(tag)}
-                        aria-label={`Remove ${tag}`}
-                      >
-                        ×
-                      </button>
+                      <button className="tag-remove" onClick={() => handleRemoveTag(tag)}>×</button>
                     </span>
                   ))}
                 </div>
-                
                 <div className="dropdown-container">
-                  <button 
-                    className="dropdown-toggle"
-                    onClick={toggleDropdown}
-                  >
+                  <button className="dropdown-toggle" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                     Select your interests
                     <FiChevronDown className={`dropdown-icon ${isDropdownOpen ? 'open' : ''}`} />
                   </button>
-                  
                   {isDropdownOpen && (
                     <div className="dropdown-menu">
-                      {tags
-                        .filter(tag => !selectedTags.includes(tag))
-                        .map((tag, index) => (
-                          <div
-                            key={index}
-                            className="dropdown-item"
-                            onClick={() => handleTagSelect(tag)}
-                          >
-                            {tag}
-                          </div>
-                        ))}
+                      {tags.filter(tag => !selectedTags.includes(tag)).map((tag, index) => (
+                        <div key={index} className="dropdown-item" onClick={() => handleTagSelect(tag)}>
+                          {tag}
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -256,19 +213,7 @@ const Profile = () => {
           <main className="content">
             <div className="content-header">
               <div className="tabs">
-                <button 
-                // przelacza na ta strone
-                  className={`tab ${activeTab === 'Questions & Replies' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('Questions & Replies')}
-                >
-                  Questions & Replies
-                </button>
-                <button 
-                  className={`tab ${activeTab === 'Questions' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('Questions')}
-                >
-                  Questions
-                </button>
+                <button className="tab active">Questions ({userQuestions.length})</button>
               </div>
               <div className="actions">
                 <button className="btn-edit">Edit profile</button>
@@ -277,52 +222,58 @@ const Profile = () => {
             </div>
 
             <div className="questions">
-              {/* dane brane z tabeli i inportowane do pytan wedul wzoru */}
-              {questions.map((question) => (
-                <div className="question" key={question.id}>
-                  <div className="question-header">
-                    <div className="user-avatar">{question.author.substring(0, 2)}</div>
-                    <div className="meta">
-                      <div className="author-name">{question.author}</div>
-                      <div className="author-time">{question.timeAgo}</div>
-                    </div>
-                    <button className="menu-btn"><FiMoreVertical size={16} /></button>
-                  </div>
-                  
-                  <div className="question-content">
-                    <div className="question-highlight">
-                      <h3>{question.highlight}</h3>
-                    </div>
-                    
-                    <div className="content-tags">
-                      {question.tags.map((tag, i) => (
-                        <span key={i} className="content-tag">{tag}</span>
-                      ))}
-                    </div>
-                    
-                    <div className="question-text">
-                      <p>{question.content}</p>
-                    </div>
-                  </div>
-
-                  <div className="question-footer">
-                    <div className="reactions">
-                      {Array.from({ length: question.responders }, (_, i) => (
-                        <div key={i} className="reaction">{String.fromCharCode(65 + i)}</div>
-                      ))}
-                    </div>
-                    
-                    <div className="engagement">
-                      <span className="engagement-item">
-                        <FiHeart size={14} /> {question.likes}
-                      </span>
-                      <span className="engagement-item">
-                        <FiEye size={14} /> {question.views}
-                      </span>
-                    </div>
-                  </div>
+              {userQuestions.length === 0 ? (
+                <div className="no-questions">
+                  <p>Nie masz jeszcze żadnych pytań.</p>
                 </div>
-              ))}
+              ) : (
+                userQuestions.map((question) => (
+                  <div className={`question ${question.status === 'complete' ? 'complete' : ''}`} key={question.id}>
+                    <div className="question-header">
+                      <div className="user-avatar">{getUserInitials()}</div>
+                      <div className="meta">
+                        <div className="author-name">{getUserDisplayName()}</div>
+                        <div className="author-time">{question.timeAgo}</div>
+                      </div>
+                      <div className="question-actions">
+                        <StatusBadge status={question.status || 'in_progress'} />
+                        <button className="menu-btn"><FiMoreVertical size={16} /></button>
+                      </div>
+                    </div>
+                    
+                    <div className="question-content">
+                      <div className="question-highlight">
+                        <h3>{question.title}</h3>
+                      </div>
+                      <div className="content-tags">
+                        {question.tags && question.tags.map((tag, i) => (
+                          <span key={i} className="content-tag">{tag}</span>
+                        ))}
+                      </div>
+                      <div className="question-text">
+                        <p>{question.content}</p>
+                      </div>
+                    </div>
+
+                    <div className="question-footer">
+                      <div className="reactions">
+                        {Array.from({ length: question.responseCount || question.responders || 0 }, (_, i) => (
+                          <div key={i} className="reaction">{String.fromCharCode(65 + i)}</div>
+                        ))}
+                        <span className="responders-text">{question.responseCount || question.responders || 0} responses</span>
+                      </div>
+                      <div className="engagement">
+                        <span className="engagement-item">
+                          <FiHeart size={14} /> {question.likes || 0}
+                        </span>
+                        <span className="engagement-item">
+                          <FiEye size={14} /> {question.views || 0}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </main>
         </div>
