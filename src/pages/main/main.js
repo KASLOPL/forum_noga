@@ -9,24 +9,20 @@ import {
   FiPlus, FiSearch, FiSettings, FiUser, FiUsers, FiZap
 } from "react-icons/fi";
 
+// pobiera zakladki z localstorage na profilu
 const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState(() => {
-    try {
-      const saved = localStorage.getItem("bookmarks");
-      return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
-    } catch (error) {
-      return [];
-    }
+    const saved = localStorage.getItem("bookmarks");
+    // jesli nie pusta tablica = strona
+    return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
   });
 
+  // kiedy zmieni sie bookmarks automatycznie zapisuje sie w localstorage
   useEffect(() => {
-    try {
-      localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
-    } catch (error) {
-      console.error('Error saving bookmarks:', error);
-    }
+    localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
   }, [bookmarks]);
 
+  // usuwanie i dodawanie zakladek 
   const toggleBookmark = useCallback((item) => {
     setBookmarks(prev => {
       const isBookmarked = prev.some(b => b.id === item.id);
@@ -36,6 +32,7 @@ const useBookmarks = () => {
     });
   }, []);
 
+  // sprawdza czy element o tym id jest w zakladkach 
   const isBookmarked = useCallback((id) => bookmarks.some(b => b.id === id), [bookmarks]);
   return { toggleBookmark, isBookmarked };
 };
@@ -47,136 +44,119 @@ function Main() {
   const { toggleBookmark, isBookmarked } = useBookmarks();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // id pytan ladownych z localstorage
   const [likedQuestions, setLikedQuestions] = useState(() => {
-    try {
-      const saved = localStorage.getItem("likedQuestions");
-      return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
-    } catch (error) {
-      return [];
-    }
+    const saved = localStorage.getItem("likedQuestions");
+    return saved && saved !== 'undefined' ? JSON.parse(saved) : [];
   });
 
+  // funkcja do nawigacji 
   const goTo = useCallback((path) => navigate(path), [navigate]);
+  // wylogowywanie i usuwanie danych z localstorage
   const logout = useCallback(() => {
-    try {
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('likedQuestions');
-      navigate('/', { replace: true });
-    } catch (error) {
-      navigate('/', { replace: true });
-    }
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('likedQuestions');
+    navigate('/', { replace: true });
   }, [navigate]);
 
+  // zwijanie i rozwijanie pytan w zalenzosci w jakim stanie sa 
   const toggleQuestion = useCallback((questionId, e) => {
     e.stopPropagation();
     setExpandedQuestion(prev => prev === questionId ? null : questionId);
   }, []);
 
+  // klikanie w zakladke czyli ikone do zapisywania
   const bookmarkClick = useCallback((question, e) => {
     e.stopPropagation();
     toggleBookmark(question);
   }, [toggleBookmark]);
 
+  // klikanie w pytanie na stronie do answer przekierowuje 
   const cardClick = useCallback(async (question) => {
-    try {
-      await incrementViews(question.id);
-      setQuestions(prev => prev.map(q => 
-        q.id === question.id ? { ...q, views: (q.views || 0) + 1 } : q
-      ));
-    } catch (error) {
-      console.error('Error incrementing views:', error);
-    }
+    await incrementViews(question.id);
+    // zwiekszanie liczbe wyswietlen o wejsciu i zapisuje w bazie danych je 
+    setQuestions(prev => prev.map(q => 
+      q.id === question.id ? { ...q, views: (q.views || 0) + 1 } : q
+    ));
     navigate(`/answer_q/${question.id}`, { state: { question } });
   }, [navigate]);
 
+  // laduje pytania z bazy danych 
   const loadQuestions = useCallback(async () => {
-    if (!isLoggedIn) return;
+    if (!isLoggedIn) return; // jesli zalogowany urzytkownik
     setLoading(true);
-    setError(null);
-    try {
-      const result = await getAllQuestions();
-      if (result.success) {
-        setQuestions(result.questions);
-      } else {
-        setError(result.error);
-      }
-    } catch (err) {
-      setError('Failed to load questions');
-    } finally {
-      setLoading(false);
+    const result = await getAllQuestions(); // pobiera dane z firebase 
+    if (result.success) {
+      setQuestions(result.questions); // aktualizuje pytania 
     }
+    setLoading(false);
   }, [isLoggedIn]);
 
+  // polubianie pytan 
   const likeClick = useCallback(async (questionId, e) => {
     e.stopPropagation();
     const isAlreadyLiked = likedQuestions.includes(questionId);
     
-    try {
-      if (isAlreadyLiked) {
-        const newLiked = likedQuestions.filter(id => id !== questionId);
+    if (isAlreadyLiked) {
+      // jesli jest polubione usuwa loklanie i w bazie 
+      const newLiked = likedQuestions.filter(id => id !== questionId);
+      setLikedQuestions(newLiked);
+      setQuestions(prev => prev.map(q => 
+        q.id === questionId ? { ...q, likes: Math.max((q.likes || 0) - 1, 0) } : q
+      ));
+    } else {
+      const result = await likeQuestion(questionId);
+      if (result.success) {
+        const newLiked = [...likedQuestions, questionId];
+        // jesli nie jest dodaje lokalnie i w bazie 
         setLikedQuestions(newLiked);
         setQuestions(prev => prev.map(q => 
-          q.id === questionId ? { ...q, likes: Math.max((q.likes || 0) - 1, 0) } : q
+          q.id === questionId ? { ...q, likes: (q.likes || 0) + 1 } : q
         ));
-      } else {
-        const result = await likeQuestion(questionId);
-        if (result.success) {
-          const newLiked = [...likedQuestions, questionId];
-          setLikedQuestions(newLiked);
-          setQuestions(prev => prev.map(q => 
-            q.id === questionId ? { ...q, likes: (q.likes || 0) + 1 } : q
-          ));
-        }
       }
-    } catch (error) {
-      console.error('Error in likeClick:', error);
     }
   }, [likedQuestions]);
 
+  // pobiera imie urzytkownika i tworzy inicjaly 
   const getUserName = useCallback(() => user?.userName || user?.name || 'Guest', [user]);
   const getUserInitials = useCallback(() => {
     const name = getUserName();
     return name === 'Guest' ? 'GU' : name.substring(0, 2).toUpperCase();
   }, [getUserName]);
 
+  // wylogowanie jesli podczas zaladowywanie wykruje blad
   useEffect(() => {
     const checkAuth = () => {
       const loggedIn = localStorage.getItem('isLoggedIn');
       const userData = localStorage.getItem('currentUser');
       
       if (!loggedIn || loggedIn !== 'true' || !userData) {
+        // przenosi na strone logowania 
         navigate('/', { replace: true });
         return false;
       }
       
-      try {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-        setIsLoggedIn(true);
-        return true;
-      } catch (error) {
-        navigate('/', { replace: true });
-        return false;
-      }
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser);
+      setIsLoggedIn(true);
+      return true;
     };
     checkAuth();
   }, [navigate]);
 
+  // ladowanie pytan gdy zaloguje sie urzytkownik 
   useEffect(() => {
     if (isLoggedIn) loadQuestions();
   }, [isLoggedIn, loadQuestions]);
 
+  // zapisywanie polubionych pytan w localstorage 
   useEffect(() => {
-    try {
-      localStorage.setItem("likedQuestions", JSON.stringify(likedQuestions));
-    } catch (error) {
-      console.error('Error saving liked questions:', error);
-    }
+    localStorage.setItem("likedQuestions", JSON.stringify(likedQuestions));
   }, [likedQuestions]);
 
+  // ekran po zalogowaniu
   if (!user || !isLoggedIn) {
     return (
       <div className="app-main">
@@ -187,27 +167,21 @@ function Main() {
     );
   }
 
+  // sortowanie pytan - pierszenstwo maja te z zainteresowaniami urzytkownika potem reszta
   const userTags = user?.tags || user?.interests || [];
+  // pytania ktore zgadzaja sie przynajmniej jednym z zainteresowaniami
   const filteredQuestions = questions.filter(q => q.tags?.some(tag => userTags.includes(tag)));
+  // inne
   const remainingQuestions = questions.filter(q => !filteredQuestions.includes(q));
+  // poukladaj od tych pod urzytkownika do tych nie pasujacyh w tej kolejnosci 
   const orderedQuestions = [...filteredQuestions, ...remainingQuestions];
 
+  // ladowanie strony na srodku napis loading 
   if (loading) {
     return (
       <div className="app-main">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
           <div>Loading questions...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="app-main">
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-          <div>Error loading questions: {error}</div>
-          <button onClick={loadQuestions} style={{ marginTop: '10px' }}>Retry</button>
         </div>
       </div>
     );
@@ -241,6 +215,7 @@ function Main() {
               </div>
             </div>
 
+            {/* HEADER */}
             <div className="header-actions">
               <div className="divider"></div>
               <button className="icon-btn"><FiMoon /></button>
@@ -259,10 +234,12 @@ function Main() {
           </div>
         </header>
 
+        {/* NAWIGACJA  */}
         <div className="main-container">
           <aside className="sidebar">
             <div className="sidebar-content">
               <div className="add-question-section">
+                {/* pytanie dodaj */}
                 <button className="add-question-btn" onClick={() => goTo('/addquestion')}>
                   <span>ADD QUESTION</span>
                   <div className="plus-icon"><FiPlus /></div>
@@ -290,12 +267,14 @@ function Main() {
             </div>
           </aside>
 
+          {/* BANER */}
           <main className="content">
             <div className="welcome-banner">
               <h1>Hi, {getUserName()}!</h1>
               <p>Stuck on a question? SnapSolve connects you with experts for fast, accurate answers—no stress, just solutions!</p>
             </div>
 
+              {/* PYTANIE */}
             <div className="posts-count">{questions.length} posts</div>
             <div className="questions-container">
               <div className="questions-list">
@@ -312,6 +291,7 @@ function Main() {
                         </div>
                       </div>
                       <div className="card-actions">
+                        {/* styl i klikniecie na ikone zakladki  */}
                         <button className={`icon-btn ${isBookmarked(question.id) ? 'bookmarked' : ''}`} onClick={(e) => bookmarkClick(question, e)}>
                           <FiBookmark style={{ fill: isBookmarked(question.id) ? '#4CAF50' : 'none' }} />
                         </button>
@@ -329,10 +309,12 @@ function Main() {
                     </div>
 
                     <div className="question-content">
+                      {/* tersc pytania rozwinieta albo nie  */}
                       <p>{expandedQuestion === question.id ? question.fullContent : question.content}</p>
                       {question.fullContent && question.fullContent !== question.content && (
                         <button className="expand-btn" onClick={(e) => toggleQuestion(question.id, e)}>
                           {expandedQuestion === question.id ? 
+                          // rozwijanie z ikonami 
                             <><span>Show less</span><FiChevronUp /></> : 
                             <><span>Read more</span><FiChevronDown /></>
                           }
@@ -342,6 +324,7 @@ function Main() {
 
                     <div className="card-footer" onClick={(e) => { e.stopPropagation(); }}>
                       <div className="responders">
+                        {/* awatary i ilosc losowa oraz litery na nich z kodu ascii dlatego liczby  */}
                         {Array.from({ length: question.responders || 0 }, (_, i) => (
                           <div key={i} className="avatar avatar-small">
                             <span>{String.fromCharCode(65 + i)}</span>
@@ -354,12 +337,14 @@ function Main() {
                           <FiHeart 
                             className="heart-icon" 
                             style={{ 
+                              // zmiana wygaldu serca po polubieniu itp
                               fill: likedQuestions.includes(question.id) ? '#ff4757' : 'none',
                               color: likedQuestions.includes(question.id) ? '#ff4757' : '#666'
                             }} 
                           />
                           <span>{question.likes || 0}</span>
                         </div>
+                        {/* ile osob zobaczylo */}
                         <div className="stat"><FiEye /><span>{question.views || 0}</span></div>
                       </div>
                     </div>
@@ -373,6 +358,7 @@ function Main() {
             <div className="experts-section">
               <h3>Top Experts</h3>
               <div className="experts-list">
+                {/* lista ekspertow  */}
                 {[
                   { name: "Dr. Sarah Chen", specialty: "Machine Learning" },
                   { name: "Mike Johnson", specialty: "Web Development" },
@@ -383,6 +369,7 @@ function Main() {
                 ].map((expert, index) => (
                   <div key={index} className="expert-item">
                     <div className="avatar avatar-small">
+                      {/* kazdy ma imie i specializacje  */}
                       <span>{expert.name.split(' ').map(n => n[0]).join('')}</span>
                     </div>
                     <div className="expert-info">
@@ -397,6 +384,7 @@ function Main() {
             <div className="tags-section">
               <h3>Popular Tags</h3>
               <div className="tags-list">
+                {/* lista tagow i tworzenie im osobnych divow ( jako osobne elemnty ) */}
                 {["Python", "GitHub", "Data Structures", "React.js", "Java", "JavaScript", "CSS", "Machine Learning", "SQL", "Node.js"].map(tag => (
                   <div key={tag} className="tag tag-clickable">{tag}</div>
                 ))}

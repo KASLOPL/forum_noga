@@ -9,9 +9,11 @@ import {
   FiUser, FiUsers, FiZap, FiCheck
 } from "react-icons/fi";
 
+// kolor obramowania z zaleznosci od statusu pytania 
 const statusColors = { complete: '#4CAF50', in_progress: '#FF9800' };
 const statusNames = { complete: 'Complete', in_progress: 'In Progress' };
 
+// nawigacja 
 const navItems = [
   { icon: FiHome, text: "Home", path: "/main" },
   { icon: FiMessageSquare, text: "Notifications", path: "/notifications" },
@@ -20,15 +22,18 @@ const navItems = [
   { icon: FiBookmark, text: "Bookmarks", path: "/zakładki" }
 ];
 
+// poboczna nawigacja 
 const settingsItems = [
   { icon: FiSettings, text: "Settings", path: "/settings" },
   { icon: FiHelpCircle, text: "Help & FAQ", path: "/help" }
 ];
 
+// zarzadzanie logowaniem oraz stan urzytkownika 
 const useAuth = (navigate) => {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // sprawdzanie czy urzytkonik zalogowany jak nie to wraca na strone logowania 
   useEffect(() => {
     const loggedIn = localStorage.getItem('isLoggedIn');
     const userData = localStorage.getItem('currentUser');
@@ -47,6 +52,7 @@ const useAuth = (navigate) => {
     }
   }, [navigate]);
 
+  // funkcja wylogowywania 
   const logout = useCallback(() => {
     try {
       localStorage.removeItem('isLoggedIn');
@@ -62,12 +68,14 @@ const useAuth = (navigate) => {
   return { user, logout, isLoggedIn };
 };
 
+// statustyki urzytkownika ile pytan zadal itp o jeden w gore zwieksza
 const getStats = (questions) => questions.reduce((acc, q) => {
   acc[q.status] = (acc[q.status] || 0) + 1;
   acc.total = questions.length;
   return acc;
 }, {});
 
+// pojedynczy element nawigacji budowa - pobiera dane z tablicy wyzej 
 const NavItem = ({ icon: Icon, text, path, active, onClick }) => (
   <a href="#" className={`nav-item ${active ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); onClick(path); }}>
     <Icon /><span>{text}</span>
@@ -83,6 +91,7 @@ const Sidebar = ({ onNavigate, onLogout }) => (
           <div className="plus-icon-container"><FiPlus /></div>
         </button>
       </div>
+      {/* nawigacja i pobieranie danych z tablicy */}
       <nav className="sidebar-nav">
         {navItems.map((item) => <NavItem key={item.path} {...item} onClick={onNavigate} />)}
       </nav>
@@ -90,6 +99,7 @@ const Sidebar = ({ onNavigate, onLogout }) => (
         {settingsItems.map((item) => <NavItem key={item.path} {...item} onClick={onNavigate} />)}
       </div>
     </div>
+    {/* przycisk wylogowywania */}
     <div className="sidebar-footer">
       <button className="sign-out-button" onClick={onLogout}>
         <FiLogOut /> Sign out
@@ -98,13 +108,16 @@ const Sidebar = ({ onNavigate, onLogout }) => (
   </aside>
 );
 
+// status pytania i pod niego kolor
 const StatusBadge = ({ status }) => (
   <div className="status-badge" style={{ backgroundColor: statusColors[status] }}>
+    {/* ikona check tylko dla complete czyli zielonego  */}
     {status === 'complete' && <FiCheck />}
     <span>{statusNames[status]}</span>
   </div>
 );
 
+// awatary kodem acii losowa ilosc 
 const QuestionResponders = ({ count }) => (
   <div className="question-responders">
     {Array.from({ length: count }, (_, i) => (
@@ -112,10 +125,12 @@ const QuestionResponders = ({ count }) => (
         <span>{String.fromCharCode(65 + i)}</span>
       </div>
     ))}
+    {/* liczba odpowiedzi  */}
     <span className="responders-text">{count} responses</span>
   </div>
 );
 
+// pytanie i jego zawartosc jakie dane sa takie umieszcza pokoleji 
 const QuestionCard = ({ question, isExpanded, onToggleExpand, onCardClick }) => (
   <div className={`question-card ${question.status === 'complete' ? 'complete' : ''}`} onClick={onCardClick}>
     <div className="question-card-header" onClick={(e) => e.stopPropagation()}>
@@ -141,6 +156,7 @@ const QuestionCard = ({ question, isExpanded, onToggleExpand, onCardClick }) => 
     <div className="question-tags">
       {question.tags && question.tags.map(tag => <span key={tag} className="tag">{tag}</span>)}
     </div>
+    {/* rozwijanie i odwrotnie pytan  */}
     <div className="question-content">
       <p>{isExpanded ? question.fullContent : question.content}</p>
       <button className="expand-button" onClick={onToggleExpand}>
@@ -151,6 +167,7 @@ const QuestionCard = ({ question, isExpanded, onToggleExpand, onCardClick }) => 
       <QuestionResponders count={question.responseCount || question.responders || 0} />
       <div className="question-stats">
         <div className="stat">
+          {/* statystyki jesli niema to domyslne 0 */}
           <FiHeart className="heart-icon" />
           <span>{question.likes || 0}</span>
         </div>
@@ -171,6 +188,7 @@ const StatItem = ({ number, label, className }) => (
 );
 
 function MyQuestions() {
+  // nawigacja 
   const navigate = useNavigate();
   const [expandedQuestion, setExpandedQuestion] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -183,6 +201,7 @@ function MyQuestions() {
     e.stopPropagation();
     setExpandedQuestion(prev => prev === questionId ? null : questionId);
   }, []);
+  // sprawdzanie czy urzytkownik jest zalogowany
   const openQuestion = useCallback((question) => {
     navigate(`/answer_q/${question.id}`, { state: { question } });
   }, [navigate]);
@@ -194,6 +213,7 @@ function MyQuestions() {
     setError(null);
     
     try {
+      // pobieranie nazwy urzytkownika 
       const userName = user.userName || user.name;
       let result = await getUserQuestions(userName);
       
@@ -209,6 +229,7 @@ function MyQuestions() {
         }
       }
       
+      // bledy zaladowywania 
       if (result.success) {
         setQuestions(result.questions);
       } else {
@@ -223,10 +244,12 @@ function MyQuestions() {
     }
   }, [isLoggedIn, user]);
 
+  // laduje pytania kiedy urzytkownik jest zalogowany
   useEffect(() => {
     if (isLoggedIn && user) loadUserQuestions();
   }, [isLoggedIn, user, loadUserQuestions]);
 
+  // loading screen podczas sprawdzania danych 
   if (!user || !isLoggedIn) {
     return (
       <div className="caloscMyQuestions">
@@ -237,6 +260,7 @@ function MyQuestions() {
     );
   }
 
+  // lodaing podczas ladowania pytan 
   if (loading) {
     return (
       <div className="caloscMyQuestions">
@@ -247,6 +271,7 @@ function MyQuestions() {
     );
   }
 
+  // error ladowania pytan 
   if (error) {
     return (
       <div className="caloscMyQuestions">
@@ -281,6 +306,7 @@ function MyQuestions() {
           
           <main className="main-content">
             <div className="stats-banner">
+              {/* baner z statystykami urzytkownika  */}
               <StatItem number={stats.complete || 0} label="Complete" className="complete" />
               <StatItem number={stats.in_progress || 0} label="In Progress" className="in-progress" />
               <StatItem number={questions.length} label="Total Questions" className="total" />
@@ -291,8 +317,10 @@ function MyQuestions() {
             <div className="question-cards-container">
               <div className="question-cards">
                 {questions.length === 0 ? (
+                  // jesli niema pytan empty state 
                   <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
                     <p>You haven't asked any questions yet.</p>
+                    {/* jesli niema nic to przycisk do formularza  */}
                     <button onClick={() => goTo('/addquestion')} style={{ 
                       marginTop: '1rem', padding: '0.5rem 1rem', backgroundColor: '#4CAF50',
                       color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'
@@ -302,6 +330,7 @@ function MyQuestions() {
                   </div>
                 ) : (
                   questions.map((question) => (
+                    // obsluga pytania i wszytskie jego dane i funkcje 
                     <QuestionCard
                       key={question.id}
                       question={question}
