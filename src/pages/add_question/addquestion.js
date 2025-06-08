@@ -6,139 +6,112 @@ import {
   FiBookmark, FiHome, FiLogOut, FiMessageSquare, FiPlus, 
   FiSettings, FiUser, FiUsers, FiHelpCircle, FiZap 
 } from 'react-icons/fi';
+import { addQuestion } from '../../utils/firebaseUtils';
 
 const AddQuestion = () => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [author, setAuthor] = useState("");
-  // altualny uzywany element nawigacji
   const navigate = useNavigate();
   const [activeItem, setActiveItem] = useState('/addquestion');
-  // dane formularza 
   const [formData, setFormData] = useState({
     title: '', caption: '', category: '', type: 'Error in code', urgent: false, answerDate: ''
   });
-  const [tags, setTags] = useState(['Java', 'Beginner', 'Eclipse']);
-  // dodawnie tagow czy otwarte 
+  const [tags, setTags] = useState([]);
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
-  // info o uzytkowniku
-  
   const [user, setUser] = useState({ name: 'Guest', role: 'Visitor' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // sprawdzanie lokalStorage czy uzytkownik jest zalogowany juz 
   useEffect(() => {
-    try {
-      const isLoggedIn = localStorage.getItem('isLoggedIn');
-      if (isLoggedIn !== 'true') return navigate('/');
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (isLoggedIn !== 'true') return navigate('/');
 
-      const storedUserData = localStorage.getItem('currentUser');
-      let storedUser = {};
-      
-      if (storedUserData && storedUserData !== 'undefined' && storedUserData !== 'null') {
-        try {
-          storedUser = JSON.parse(storedUserData);
-        } catch (parseError) {
-          console.error('Error parsing stored user data:', parseError);
-          storedUser = {};
-        }
+    const userData = localStorage.getItem('currentUser');
+    let currentUser = {};
+    
+    if (userData && userData !== 'undefined' && userData !== 'null') {
+      try {
+        currentUser = JSON.parse(userData);
+      } catch (e) {
+        console.error('Error parsing user data:', e);
       }
-
-      const safeName = storedUser.name || storedUser.userName || 'Guest';
-      const safeRole = storedUser.role || 'Visitor';
-
-      setUser({ name: safeName, role: safeRole });
-      setFormData(prev => ({ ...prev, author: safeName }));
-
-    } catch (error) {
-      console.error('useEffect error:', error);
-      navigate('/');
     }
+
+    const name = currentUser.name || currentUser.userName || 'Guest';
+    const role = currentUser.role || 'Visitor';
+    
+    setUser({ name, role });
+    setFormData(prev => ({ ...prev, author: name }));
   }, [navigate]);
 
-  // nawigacja i wylogowywanie 
   const handleNavigation = (path) => {
     setActiveItem(path);
     navigate(path);
   };
 
   const handleLogout = () => {
-    try {
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('currentUser');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('currentUser');
     navigate('/');
   };
 
-  // aktualizowanie pol formularza po wpisaniu
   const updateForm = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
-  // usuwanie dodanych tagow 
   const removeTag = (tagToRemove) => setTags(tags.filter(tag => tag !== tagToRemove));
-  // dodaanie tagow jesli jeszcze nie sa dodane 
   const addTag = (newTag) => {
     if (!tags.includes(newTag)) setTags([...tags, newTag]);
     setTagDropdownOpen(false);
   };
 
-  // sprawdza czy sa wypelnione pola formularza 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Bezpieczne pobieranie danych użytkownika
-    let currentUser = {};
-    try {
-      const storedUser = localStorage.getItem('currentUser');
-      if (storedUser && storedUser !== 'undefined' && storedUser !== 'null') {
-        currentUser = JSON.parse(storedUser);
-      }
-    } catch (error) {
-      console.error('Error parsing currentUser:', error);
-      currentUser = {};
+    if (!formData.title.trim() || !formData.caption.trim() || !formData.category) {
+      alert('Wypełnij wszystkie wymagane pola!');
+      return;
+    }
+    
+    if (tags.length === 0) {
+      alert('Dodaj przynajmniej jeden tag!');
+      return;
     }
 
-    console.log(currentUser.name);
-
-    const newQuestion = {
-      id: Date.now(),
-      author: currentUser?.userName || currentUser?.name || 'Anonymous',
-      timeAgo: "przed chwilą",
-      highlight: formData.title,
-      tags: tags.map(tag => tag.trim()),
-      content: formData.caption.slice(0, 100) + "...",
-      fullContent: formData.caption,
-      likes: 0,
-      views: 0,
-      responders: 0
-    };
-
-    // Bezpieczne pobieranie pytań
-    let questions = [];
+    setIsSubmitting(true);
+    
     try {
-      const stored = localStorage.getItem("questions");
-      if (stored && stored !== 'undefined' && stored !== 'null') {
-        questions = JSON.parse(stored);
+      const userData = localStorage.getItem('currentUser');
+      let currentUser = {};
+      
+      if (userData && userData !== 'undefined' && userData !== 'null') {
+        currentUser = JSON.parse(userData);
+      }
+
+      const questionData = {
+        author: currentUser?.userName || currentUser?.name || 'Anonymous',
+        title: formData.title,
+        content: formData.caption,
+        fullContent: formData.caption,
+        category: formData.category,
+        type: formData.type,
+        urgent: formData.urgent,
+        answerDate: formData.answerDate || null,
+        tags: tags.map(tag => tag.trim())
+      };
+
+      const result = await addQuestion(questionData);
+      
+      if (result.success) {
+        setFormData({
+          title: '', caption: '', category: '', type: 'Error in code', urgent: false, answerDate: ''
+        });
+        setTags([]);
+        alert("Pytanie zostało dodane!");
+        navigate('/main');
+      } else {
+        alert('Błąd podczas dodawania pytania: ' + result.error);
       }
     } catch (error) {
-      console.error('Error parsing questions:', error);
-      questions = [];
+      console.error('Error in handleSubmit:', error);
+      alert('Błąd podczas dodawania pytania. Spróbuj ponownie.');
+    } finally {
+      setIsSubmitting(false);
     }
-
-    questions.unshift(newQuestion);
-    localStorage.setItem("questions", JSON.stringify(questions));
-
-    // Reset formularza i tagów
-    setFormData({
-      title: '',
-      caption: '',
-      category: '',
-      type: 'Error in code',
-      urgent: false,
-      answerDate: ''
-    });
-    setTags([]);
-
-    alert("Pytanie zostało dodane!");
   };
 
   const availableTags = [
@@ -160,7 +133,6 @@ const AddQuestion = () => {
     { path: '/help', icon: FiHelpCircle, label: 'Help & FAQ' }
   ];
 
-  // aktywny elelmt nawigacji wyrozniony 
   const NavItem = ({ item }) => {
     const Icon = item.icon;
     return (
@@ -174,7 +146,6 @@ const AddQuestion = () => {
 
   return (
     <div className="caloscAdd">
-      {/* HEADER */}
       <header className="template-header">
         <div className="template-header-container">
           <div className="header-left">
@@ -191,13 +162,14 @@ const AddQuestion = () => {
           </div>
           <div className="header-right">
             <button className="cancel-btn" onClick={() => navigate('/main')}>Cancel</button>
-            <button className="post-btn" onClick={handleSubmit}>Post</button>
+            <button className="post-btn" onClick={handleSubmit} disabled={isSubmitting}>
+              {isSubmitting ? 'Posting...' : 'Post'}
+            </button>
           </div>
         </div>
       </header>
 
       <div className="app-container">
-        {/* NAWIGACJA  */}
         <aside className="template-sidebar">
           <div className="template-sidebar-content">
             <div className="template-add-question-button-container">
@@ -208,11 +180,9 @@ const AddQuestion = () => {
             </div>
 
             <nav className="template-sidebar-nav">
-              {/* glowna nawigacja jak main */}
               {navItems.map(item => <NavItem key={item.path} item={item} />)}
             </nav>
 
-            {/* nawigacja dodatkowa - settings itp */}
             <div className="template-sidebar-nav-secondary">
               {secondaryNavItems.map(item => <NavItem key={item.path} item={item} />)}
             </div>
@@ -229,7 +199,6 @@ const AddQuestion = () => {
           <div className="content-wrapper">
             <div className="form-container">
               <div className="form-header">
-                {/* naglowek formularza  */}
                 <h1>Ask a Specialist</h1>
                 <p className="form-description">
                   Need help with your code? Ask an expert and get a quick answer! You can{' '}
@@ -241,17 +210,28 @@ const AddQuestion = () => {
               <form className="question-form" onSubmit={handleSubmit}>
                 <div className="form-group">
                   <label className="form-label">Question Title<span className="required">*</span></label>
-                  <input type="text" className="form-input" placeholder="Enter your question title"
-                  // AKTUALZIACJA formularza przy kazdej zmianie 
-                         value={formData.title} onChange={(e) => updateForm('title', e.target.value)} />
+                  <input 
+                    type="text" 
+                    className="form-input" 
+                    placeholder="Enter your question title"
+                    value={formData.title} 
+                    onChange={(e) => updateForm('title', e.target.value)}
+                    disabled={isSubmitting}
+                    required
+                  />
                 </div>
 
                 <div className="form-group">
                   <label className="form-label">Caption<span className="required">*</span></label>
-                  <textarea className="form-textarea" placeholder="Write the question caption"
-                  // kontrolowana wartosc wpisania , onchange zmiana stanu formularza 
-                            value={formData.caption} onChange={(e) => updateForm('caption', e.target.value)} rows={6} />
-                            {/* limit znakow i wyswietalnie ile napisane np 100/500 */}
+                  <textarea 
+                    className="form-textarea" 
+                    placeholder="Write the question caption"
+                    value={formData.caption} 
+                    onChange={(e) => updateForm('caption', e.target.value)} 
+                    rows={6}
+                    disabled={isSubmitting}
+                    required
+                  />
                   <div className="character-count">{formData.caption.length}/500 Characters</div>
                 </div>
 
@@ -259,25 +239,27 @@ const AddQuestion = () => {
                   <label className="form-label">
                     Add Some Tags <span className="min-tags">(min. 1)</span><span className="required">*</span>
                   </label>
-                  {/* dostepne tagi i ich usuwanie - branie z tablicy  */}
                   <div className="tags-container">
                     {tags.map((tag, i) => (
                       <span key={i} className="tag">
                         {tag}
-                        <button type="button" className="tag-remove" onClick={() => removeTag(tag)}>×</button>
+                        <button type="button" className="tag-remove" onClick={() => removeTag(tag)} disabled={isSubmitting}>
+                          ×
+                        </button>
                       </span>
                     ))}
                     <div className="simple-tag-dropdown-container">
-                      {/* przycisk do dodawnia tagow  */}
-                      <button type="button" className="simple-add-tag-btn"
-                              // poakzuje sie etylko kiedy nie otwarte
-                              onClick={() => setTagDropdownOpen(!tagDropdownOpen)}>
+                      <button 
+                        type="button" 
+                        className="simple-add-tag-btn"
+                        onClick={() => setTagDropdownOpen(!tagDropdownOpen)}
+                        disabled={isSubmitting}
+                      >
                         Add Tags <ChevronDown size={16} />
                       </button>
                       {tagDropdownOpen && (
                         <div className="simple-tag-dropdown">
                           <div className="simple-tag-list">
-                            {/* POKAZAUJE TYLKO TAGI NIE DODANE  */}
                             {availableTags.filter(tag => !tags.includes(tag)).map(tag => (
                               <div key={tag} className="simple-tag-item" onClick={() => addTag(tag)}>
                                 {tag}
@@ -291,12 +273,15 @@ const AddQuestion = () => {
                 </div>
 
                 <div className="form-group">
-                  {/* wymagane pole do uzupelnienia  - required */}
                   <label className="form-label">Category<span className="required">*</span></label>
                   <div className="select-wrapper">
-                    <select className="form-select" value={formData.category}
-                            // AKTUALIZOWNIE formularza 
-                            onChange={(e) => updateForm('category', e.target.value)}>
+                    <select 
+                      className="form-select" 
+                      value={formData.category}
+                      onChange={(e) => updateForm('category', e.target.value)}
+                      disabled={isSubmitting}
+                      required
+                    >
                       <option value="">Select Category</option>
                       <option value="programming">Programming</option>
                       <option value="web-development">Web Development</option>
@@ -309,10 +294,12 @@ const AddQuestion = () => {
                 <div className="form-group">
                   <label className="form-label">Question Type</label>
                   <div className="select-wrapper">
-                    {/* lista roziwjana  */}
-                    <select className="form-select" value={formData.type}
-                            // event jesli kliknieto zmiana stanu formularza - aktualizacja 
-                            onChange={(e) => updateForm('type', e.target.value)}>
+                    <select 
+                      className="form-select" 
+                      value={formData.type}
+                      onChange={(e) => updateForm('type', e.target.value)}
+                      disabled={isSubmitting}
+                    >
                       <option value="Error in code">Error in code</option>
                       <option value="General question">General question</option>
                       <option value="Code review">Code review</option>
@@ -321,42 +308,53 @@ const AddQuestion = () => {
                   </div>
                 </div>
 
-                {/* checkbox czy pilne pytanie  */}
                 <label className="checkbox-label">
-                  <input type="checkbox" checked={formData.urgent}
-                        // wartosc boolen z checkboxa ( true false )
-                         onChange={(e) => updateForm('urgent', e.target.checked)} />
+                  <input 
+                    type="checkbox" 
+                    checked={formData.urgent}
+                    onChange={(e) => updateForm('urgent', e.target.checked)}
+                    disabled={isSubmitting}
+                  />
                   I need a quick answer
                 </label>
 
-                {/* pole na date - nie wymagane  */}
                 <div className="form-group">
                   <label className="form-label">By when do you want to have the answer?</label>
-                  <input type="text" className="form-input" placeholder="dd/mm/yyyy"
-                         value={formData.answerDate} onChange={(e) => updateForm('answerDate', e.target.value)} />
+                  <input 
+                    type="text" 
+                    className="form-input" 
+                    placeholder="dd/mm/yyyy"
+                    value={formData.answerDate} 
+                    onChange={(e) => updateForm('answerDate', e.target.value)}
+                    disabled={isSubmitting}
+                  />
                 </div>
               </form>
             </div>
 
-            {/* FILE UPLOAD */}
             <div className="file-upload-section">
               <div className="file-upload-area">
-                {/* duza ikona  */}
                 <Upload size={32} />
                 <div className="upload-content">
                   <div className="upload-title">Select File to Upload</div>
                   <div className="upload-formats">
-                    {/* obslugiwane formaty */}
                     Supported formats:<br />
                     .java, .py, .cpp, .js, .txt, .zip
                   </div>
                   <div className="upload-size">Max 10 MB</div>
-                  {/* input file niewidoczny */}
-                  <input type="file" id="fileInput" style={{ display: 'none' }}
-                        // zawieranie wybranego pliku - nie wizualnie narazie 
-                         onChange={(e) => console.log('File selected:', e.target.files[0])} />
-                  <button type="button" className="select-file-btn"
-                          onClick={() => document.getElementById('fileInput').click()}>
+                  <input 
+                    type="file" 
+                    id="fileInput" 
+                    style={{ display: 'none' }}
+                    onChange={(e) => console.log('File selected:', e.target.files[0])}
+                    disabled={isSubmitting}
+                  />
+                  <button 
+                    type="button" 
+                    className="select-file-btn"
+                    onClick={() => document.getElementById('fileInput').click()}
+                    disabled={isSubmitting}
+                  >
                     <Upload size={16} />
                     Select File
                   </button>
@@ -365,9 +363,10 @@ const AddQuestion = () => {
             </div>
           </div>
 
-          {/* funkcja wysylanie formularza ( submit ) */}
           <div className="submit-section">
-            <button type="submit" className="submit-btn" onClick={handleSubmit}>Post</button>
+            <button type="submit" className="submit-btn" onClick={handleSubmit} disabled={isSubmitting}>
+              {isSubmitting ? 'Posting...' : 'Post'}
+            </button>
           </div>
         </div>
       </div>
