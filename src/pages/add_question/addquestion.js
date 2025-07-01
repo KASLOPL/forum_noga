@@ -307,43 +307,6 @@ const AddQuestion = () => {
                     </div>
                   </div>
                 </div>
-
-                <div className="form-group">
-                  <label className="form-label">Category<span className="required">*</span></label>
-                  <div className="select-wrapper">
-                    <select 
-                      className="form-select" 
-                      value={formData.category}
-                      onChange={(e) => updateForm('category', e.target.value)}
-                      disabled={isSubmitting}
-                      required
-                    >
-                      <option value="">Select Category</option>
-                      <option value="programming">Programming</option>
-                      <option value="web-development">Web Development</option>
-                      <option value="mobile-development">Mobile Development</option>
-                    </select>
-                    <ChevronDown size={16} />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Question Type</label>
-                  <div className="select-wrapper">
-                    <select 
-                      className="form-select" 
-                      value={formData.type}
-                      onChange={(e) => updateForm('type', e.target.value)}
-                      disabled={isSubmitting}
-                    >
-                      <option value="Error in code">Error in code</option>
-                      <option value="General question">General question</option>
-                      <option value="Code review">Code review</option>
-                    </select>
-                    <ChevronDown size={16} />
-                  </div>
-                </div>
-
                 <label className="checkbox-label">
                   <input 
                     type="checkbox" 
@@ -353,18 +316,6 @@ const AddQuestion = () => {
                   />
                   I need a quick answer
                 </label>
-
-                <div className="form-group">
-                  <label className="form-label">By when do you want to have the answer?</label>
-                  <input 
-                    type="text" 
-                    className="form-input" 
-                    placeholder="dd/mm/yyyy"
-                    value={formData.answerDate} 
-                    onChange={(e) => updateForm('answerDate', e.target.value)}
-                    disabled={isSubmitting}
-                  />
-                </div>
               </form>
             </div>
 
