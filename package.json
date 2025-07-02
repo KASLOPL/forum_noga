@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "cors": "^2.8.5",
     "cra-template": "1.2.0",
+    "express": "^5.1.0",
     "firebase": "^11.9.0",
     "icons": "^1.0.0",
     "lucide-react": "^0.511.0",
+    "multer": "^2.0.1",
     "mysql2": "^3.14.1",
     "react": "^19.1.0",
     "react-dom": "^19.0.0",

@@ -25,3 +25,5 @@ yarn-error.log*
 /src/database.js
 
 /src/firebase.js
+
+/question_files

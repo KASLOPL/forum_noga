@@ -16,6 +16,7 @@ const AddQuestion = () => {
 
   // Śledzenie aktualnie aktywnego linku nawigacyjnego
   const [activeItem, setActiveItem] = useState('/addquestion');
+  const [selectedFile, setSelectedFile] = useState(null);
 
   // Formularz danych pytania
   const [formData, setFormData] = useState({
@@ -86,7 +87,7 @@ const AddQuestion = () => {
     e.preventDefault();
 
     // Sprawdzenie czy wszystkie wymagane pola są wypełnione
-    if (!formData.title.trim() || !formData.caption.trim() || !formData.category) {
+    if (!formData.title.trim() || !formData.caption.trim()) {
       alert('Wypełnij wszystkie wymagane pola!');
       return;
     }
@@ -139,6 +140,27 @@ const AddQuestion = () => {
     } finally {
       setIsSubmitting(false); // Odblokowanie formularza
     }
+
+    if (selectedFile) {
+  const formData = new FormData();
+  formData.append('file', selectedFile);
+
+  try {
+    const uploadResponse = await fetch('http://localhost:3001/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (uploadResponse.ok) {
+      console.log('Plik przesłany!');
+    } else {
+      console.error('Błąd przesyłania pliku.');
+    }
+  } catch (uploadError) {
+    console.error('Błąd podczas przesyłania pliku:', uploadError);
+  }
+}
+
   };
 
   // Lista dostępnych tagów do wyboru
@@ -174,6 +196,34 @@ const AddQuestion = () => {
       </a>
     );
   };
+ const handleFileUpload = async () => {
+  if (!selectedFile) {
+    alert('Najpierw wybierz plik!');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('file', selectedFile);
+
+  try {
+    const response = await fetch('http://localhost:3001/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (response.ok) {
+      console.log('Plik przesłany!');
+      alert('Plik został przesłany!');
+    } else {
+      console.error('Błąd przesyłania.');
+      alert('Błąd podczas przesyłania pliku.');
+    }
+  } catch (error) {
+    console.error('Błąd:', error);
+    alert('Wystąpił błąd.');
+  }
+};
+
 
   // JSX – kod HTML tej strony (formularz i nawigacja)
   return (
@@ -329,13 +379,15 @@ const AddQuestion = () => {
                     .java, .py, .cpp, .js, .txt, .zip
                   </div>
                   <div className="upload-size">Max 10 MB</div>
-                  <input 
-                    type="file" 
-                    id="fileInput" 
-                    style={{ display: 'none' }}
-                    onChange={(e) => console.log('File selected:', e.target.files[0])}
-                    disabled={isSubmitting}
-                  />
+                 
+                      <input 
+                        type="file" 
+                        name="file"
+                        id="fileInput" 
+                        style={{ display: 'none' }}
+                        onChange={(e) => setSelectedFile(e.target.files[0])}
+                        disabled={isSubmitting}
+                      />
                   <button 
                     type="button" 
                     className="select-file-btn"
