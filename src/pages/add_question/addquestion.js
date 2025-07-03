@@ -146,7 +146,7 @@ const AddQuestion = () => {
   formData.append('file', selectedFile);
 
   try {
-    const uploadResponse = await fetch('http://localhost:3001/api/upload', {
+    const uploadResponse = await fetch('http://localhost:3001/api/upload_questions', {
       method: 'POST',
       body: formData,
     });

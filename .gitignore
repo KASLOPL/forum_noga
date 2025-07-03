@@ -27,3 +27,4 @@ yarn-error.log*
 /src/firebase.js
 
 /question_files
+/profile_pictures
