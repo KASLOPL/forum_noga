@@ -25,7 +25,12 @@ const storageProf = multer.diskStorage({
     cb(null, 'profile_pictures/');
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    const ext = path.extname(file.originalname);
+    const timestamp = Date.now();
+    const randomId = Math.random().toString(36).substring(2, 8);
+    const uniqueFileName = `${timestamp}_${randomId}${ext}`;
+
+    cb(null, uniqueFileName);
   },
 });
 
