@@ -6,7 +6,7 @@ app.use(cors());
 const multer = require('multer');
 const path = require('path');
 
-const storage_questions = multer.diskStorage({
+const storageQuestions = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'question_files/');
   },
@@ -20,27 +20,27 @@ const storage_questions = multer.diskStorage({
   }
 });
 
-const storage_prof = multer.diskStorage({
-    destination: function (req, file, cb) {
-    cb(null, 'profile_pictures/')
+const storageProf = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'profile_pictures/');
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
   },
-})
-
-const questions_upload = multer({storage: storage_questions});
-const prof_upload = multer({storage: storage_prof});
-
-app.get('/', (req, res) => {
-    res.send("Serwerek ;)");
 });
 
-app.post('/api/upload_questions', questions_upload.single('file'), (req, res) => {
+const questionsUpload = multer({ storage: storageQuestions });
+const profUpload = multer({ storage: storageProf });
+
+app.get('/', (req, res) => {
+  res.send("Serwerek ;)");
+});
+
+app.post('/api/uploadQuestions', questionsUpload.single('file'), (req, res) => {
   console.log('Odebrany plik:', req.file);
 });
 
-app.post('/api/upload_profs',prof_upload.single('prof'), (req, res) => {
+app.post('/api/uploadProfs', profUpload.single('prof'), (req, res) => {
   console.log('Odebrane zdięcie:', req.originalname);
 });
 
