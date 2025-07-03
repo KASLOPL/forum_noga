@@ -18,6 +18,9 @@ const AddQuestion = () => {
   const [activeItem, setActiveItem] = useState('/addquestion');
   const [selectedFile, setSelectedFile] = useState(null);
 
+  const [answerVisibility, setAnswerVisibility] = useState(null); // np. 'everyone', 'specialists', 'friends'
+
+
   // Formularz danych pytania
   const [formData, setFormData] = useState({
     title: '', // Tytuł pytania
@@ -117,7 +120,9 @@ const AddQuestion = () => {
         type: formData.type,
         urgent: formData.urgent,
         answerDate: formData.answerDate || null,
-        tags: tags.map(tag => tag.trim())
+        tags: tags.map(tag => tag.trim()),
+        visibility: answerVisibility || 'everyone',
+
       };
 
       // Wysłanie pytania do Firebase
@@ -356,6 +361,26 @@ const AddQuestion = () => {
                       )}
                     </div>
                   </div>
+                  <div className="form-group">
+                    <label className="form-label">Choose who can answer your question</label>
+                    <div className="answer-options">
+                      <button
+                        type="button"
+                        className={`answer-button ${answerVisibility === 'everyone' ? 'selected' : ''}`}
+                        onClick={() => setAnswerVisibility('everyone')}
+                      >
+                        Specialists Only
+                      </button>
+                      <button
+                        type="button"
+                        className={`answer-button ${answerVisibility === 'specialists' ? 'selected' : ''}`}
+                        onClick={() => setAnswerVisibility('specialists')}
+                      >
+                        Everyone
+                      </button>
+                    </div>
+                  </div>
+
                 </div>
                 <label className="checkbox-label">
                   <input 
