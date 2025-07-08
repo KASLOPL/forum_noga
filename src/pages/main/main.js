@@ -10,6 +10,7 @@ import {
   FiHome, FiLogOut, FiMail, FiMessageSquare, FiMoon, FiMoreVertical,
   FiPlus, FiSearch, FiSettings, FiUser, FiUsers, FiZap
 } from "react-icons/fi";
+import {useRedirectToHomeRootWhenNotLoggedIn} from "../../hooks/redirect_to_home_root_when_not_logged_in";
 
 // pobiera zakladki z localstorage na profilu
 const useBookmarks = () => {
@@ -131,17 +132,12 @@ function Main() {
     return name === 'Guest' ? 'GU' : name.substring(0, 2).toUpperCase();
   }, [getUserName]);
 
+  useRedirectToHomeRootWhenNotLoggedIn();
+
   // wylogowanie jesli podczas zaladowywanie wykruje blad
   useEffect(() => {
     const checkAuth = () => {
-      const loggedIn = localStorage.getItem('isLoggedIn');
       const userData = localStorage.getItem('currentUser');
-      
-      if (!loggedIn || loggedIn !== 'true' || !userData) {
-        // przenosi na strone logowania 
-        navigate('/', { replace: true });
-        return false;
-      }
       
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
