@@ -4,37 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snapsolve - Empowering Questions. Enabling Growth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="landing.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#B0B996',
+                        'primary-dark': '#8A9D6A',
+                        'text-primary': '#1a1a1a',
+                        'text-secondary': '#454545',
+                        'text-muted': '#718096',
+                        'bg-light': '#f8fafc',
+                        'bg-section': '#e2e8f0',
+                        'dark-bg': '#272D33',
+                        'white': '#ffffff',
+                        'border-light': '#e2e8f0'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
+<body class="font-inter text-text-primary bg-white overflow-x-hidden">
     <!-- Header -->
-    <header class="header" id="main-header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">Snapsolve</div>
-                <nav class="nav">
-                    <a href="#how-it-works" class="nav-link">How it works</a>
-                    <a href="#reviews" class="nav-link">Reviews</a>
-                    <a href="#mentors" class="nav-link">Mentors</a>
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200" id="main-header">
+        <div class="max-w-6xl mx-auto px-5">
+            <div class="flex justify-between items-center py-5">
+                <div class="text-2xl font-bold text-primary flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary rounded-full"></div>
+                    Snapsolve
+                </div>
+                <nav class="hidden md:flex gap-10">
+                    <a href="#how-it-works" class="text-dark-bg font-medium py-2 hover:text-primary">How it works</a>
+                    <a href="#reviews" class="text-dark-bg font-medium py-2 hover:text-primary">Reviews</a>
+                    <a href="#mentors" class="text-dark-bg font-medium py-2 hover:text-primary">Mentors</a>
                 </nav>
-                <div class="auth-buttons">
-                    <a href="#" class="btn btn-outline">Log In</a>
-                    <a href="#" class="btn btn-primary">Sign Up</a>
+                <div class="flex gap-4">
+                    <a href="#" class="inline-flex items-center justify-center px-6 py-3 text-sm font-medium border-2 border-gray-300 text-dark-bg rounded-lg hover:border-primary hover:text-primary">Log In</a>
+                    <a href="#" class="inline-flex items-center justify-center px-6 py-3 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary-dark">Sign Up</a>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-bg"></div>
-        <div class="container">
-            <div class="hero-content">
+    <section class="relative min-h-screen flex items-center pt-20 overflow-hidden bg-gray-50">
+        <div class="max-w-6xl mx-auto px-5 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-15 items-center">
                 <div class="hero-text">
-                    <h1>Empowering Questions. Enabling Growth</h1>
-                    <p>We connect vocational students with industry professionals to foster practical learning and problem solving. Ask your question, gain insights, and take the next step in your technical journey. Our platform bridges the gap between academic theory and real-world application, providing you with expert guidance from seasoned professionals who understand the challenges you face.</p>
+                    <h1 class="text-5xl lg:text-6xl font-bold leading-tight mb-6 text-text-primary">Empowering Questions. Enabling Growth</h1>
+                    <p class="text-lg lg:text-xl text-text-secondary mb-8">We connect vocational students with industry professionals to foster practical learning and problem solving. Ask your question, gain insights, and take the next step in your technical journey. Our platform bridges the gap between academic theory and real-world application, providing you with expert guidance from seasoned professionals who understand the challenges you face.</p>
                     <div class="hero-buttons">
-                        <a href="#" class="btn btn-primary btn-large">Ask Your Question Now</a>
+                        <a href="#" class="inline-flex items-center justify-center px-8 py-4 text-base font-medium bg-primary text-white rounded-xl hover:bg-primary-dark">Ask Your Question Now</a>
                     </div>
                 </div>
                 <div class="hero-image">
@@ -45,52 +71,54 @@
     </section>
 
     <!-- Logo Strip -->
-    <section class="logo-strip">
-        <div class="strip-title">Trusted by professionals from</div>
-        <div class="logo-slider">
-            <div class="company-logos">
-                <div class="company-logo">MICROSOFT</div>
-                <div class="company-logo">GOOGLE</div>
-                <div class="company-logo">AMAZON</div>
-                <div class="company-logo">APPLE</div>
-                <div class="company-logo">FACEBOOK</div>
-                <div class="company-logo">NETFLIX</div>
-                <div class="company-logo">TESLA</div>
-                <div class="company-logo">SPOTIFY</div>
-                <div class="company-logo">ADOBE</div>
-                <div class="company-logo">NVIDIA</div>
-                <div class="company-logo">INTEL</div>
-                <div class="company-logo">SAMSUNG</div>
+    <section class="py-12 bg-white">
+        <div class="max-w-6xl mx-auto px-5">
+            <div class="text-center text-text-muted mb-8">Trusted by professionals from</div>
+            <div class="logo-slider">
+                <div class="company-logos">
+                    <div class="company-logo">MICROSOFT</div>
+                    <div class="company-logo">GOOGLE</div>
+                    <div class="company-logo">AMAZON</div>
+                    <div class="company-logo">APPLE</div>
+                    <div class="company-logo">FACEBOOK</div>
+                    <div class="company-logo">NETFLIX</div>
+                    <div class="company-logo">TESLA</div>
+                    <div class="company-logo">SPOTIFY</div>
+                    <div class="company-logo">ADOBE</div>
+                    <div class="company-logo">NVIDIA</div>
+                    <div class="company-logo">INTEL</div>
+                    <div class="company-logo">SAMSUNG</div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Stats Section -->
-    <section class="stats-section">
-        <div class="container">
-            <div class="stats-content">
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-5">
+            <div class="grid lg:grid-cols-2 gap-15 items-center">
                 <div class="stats-image">
                     <div class="stats-placeholder"></div>
                 </div>
                 <div class="stats-text">
-                    <h2>We Let the Numbers Speak for Themselves</h2>
-                    <p>Our thriving community of verified experts spans dozens of technical fields, delivering comprehensive answers that help students and professionals solve complex challenges daily. From software development to network security, from data analysis to cloud architecture, our mentors bring real-world experience and practical solutions to every question. Join thousands of learners who have already accelerated their careers through our platform.</p>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <span class="stat-number">2000+</span>
-                            <div class="stat-label">Questions Answered</div>
+                    <h2 class="text-4xl lg:text-5xl font-bold mb-6 text-text-primary">We Let the Numbers Speak for Themselves</h2>
+                    <p class="text-lg text-text-secondary mb-8">Our thriving community of verified experts spans dozens of technical fields, delivering comprehensive answers that help students and professionals solve complex challenges daily. From software development to network security, from data analysis to cloud architecture, our mentors bring real-world experience and practical solutions to every question. Join thousands of learners who have already accelerated their careers through our platform.</p>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="stat-item text-center">
+                            <span class="stat-number block text-3xl font-bold text-primary mb-2">2000+</span>
+                            <div class="stat-label text-text-secondary">Questions Answered</div>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-number">345</span>
-                            <div class="stat-label">Expert Professionals</div>
+                        <div class="stat-item text-center">
+                            <span class="stat-number block text-3xl font-bold text-primary mb-2">345</span>
+                            <div class="stat-label text-text-secondary">Expert Professionals</div>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-number">95%</span>
-                            <div class="stat-label">Satisfaction Rate</div>
+                        <div class="stat-item text-center">
+                            <span class="stat-number block text-3xl font-bold text-primary mb-2">95%</span>
+                            <div class="stat-label text-text-secondary">Satisfaction Rate</div>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-number">24h</span>
-                            <div class="stat-label">Average Response</div>
+                        <div class="stat-item text-center">
+                            <span class="stat-number block text-3xl font-bold text-primary mb-2">24h</span>
+                            <div class="stat-label text-text-secondary">Average Response</div>
                         </div>
                     </div>
                 </div>
@@ -99,32 +127,32 @@
     </section>
 
     <!-- How it Works -->
-    <section class="how-it-works" id="how-it-works">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">How it works</h2>
-                <p class="section-subtitle">Simple steps to get expert help</p>
+    <section class="py-20 bg-white" id="how-it-works">
+        <div class="max-w-6xl mx-auto px-5">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4 text-text-primary">How it works</h2>
+                <p class="text-lg text-text-secondary">Simple steps to get expert help</p>
             </div>
-            <div class="steps-grid">
-                <div class="step-item">
-                    <div class="step-number">1</div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="step-item text-center">
+                    <div class="step-number w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">1</div>
                     <div class="step-box">
-                        <h3 class="step-title">Ask a question</h3>
-                        <p class="step-description">Describe your problem or question related to your chosen field. Be specific - the more details you provide, the better guidance you'll receive. Upload images, code snippets, or documents to help experts understand your challenge.</p>
+                        <h3 class="step-title text-xl font-bold mb-4 text-text-primary">Ask a question</h3>
+                        <p class="step-description text-text-secondary">Describe your problem or question related to your chosen field. Be specific - the more details you provide, the better guidance you'll receive. Upload images, code snippets, or documents to help experts understand your challenge.</p>
                     </div>
                 </div>
-                <div class="step-item">
-                    <div class="step-number">2</div>
+                <div class="step-item text-center">
+                    <div class="step-number w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">2</div>
                     <div class="step-box">
-                        <h3 class="step-title">Get an answer</h3>
-                        <p class="step-description">An experienced specialist from the industry will answer your question within 24 hours, sharing practical knowledge and advice. Our experts are verified professionals with real-world experience who provide detailed explanations and actionable solutions.</p>
+                        <h3 class="step-title text-xl font-bold mb-4 text-text-primary">Get an answer</h3>
+                        <p class="step-description text-text-secondary">An experienced specialist from the industry will answer your question within 24 hours, sharing practical knowledge and advice. Our experts are verified professionals with real-world experience who provide detailed explanations and actionable solutions.</p>
                     </div>
                 </div>
-                <div class="step-item">
-                    <div class="step-number">3</div>
+                <div class="step-item text-center">
+                    <div class="step-number w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">3</div>
                     <div class="step-box">
-                        <h3 class="step-title">Keep growing</h3>
-                        <p class="step-description">Ask follow-up questions, learn from others, and accelerate your professional knowledge step by step. Build your reputation by helping others, bookmark valuable answers, and track your learning progress.</p>
+                        <h3 class="step-title text-xl font-bold mb-4 text-text-primary">Keep growing</h3>
+                        <p class="step-description text-text-secondary">Ask follow-up questions, learn from others, and accelerate your professional knowledge step by step. Build your reputation by helping others, bookmark valuable answers, and track your learning progress.</p>
                     </div>
                 </div>
             </div>
@@ -132,54 +160,53 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="cta-section" id="mentors">
-        <div class="cta-bg"></div>
-        <div class="container">
-            <div class="cta-content">
-                <h2>Have experience in your field?<br>Help younger colleagues spread their wings!</h2>
-                <p>Join our community of expert mentors and make a difference in the next generation of professionals.</p>
+    <section class="py-20 bg-dark-bg" id="mentors">
+        <div class="max-w-6xl mx-auto px-5">
+            <div class="text-center text-white">
+                <h2 class="text-4xl lg:text-5xl font-bold mb-6">Have experience in your field?<br>Help younger colleagues spread their wings!</h2>
+                <p class="text-lg mb-8 opacity-90">Join our community of expert mentors and make a difference in the next generation of professionals.</p>
                 <div class="cta-buttons">
-                    <a href="#" class="btn btn-white btn-large">Become a mentor</a>
+                    <a href="#" class="inline-flex items-center justify-center px-8 py-4 text-base font-medium bg-white text-primary rounded-xl hover:bg-gray-100">Become a mentor</a>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Reviews Section -->
-    <section class="reviews-section" id="reviews">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">What our users say</h2>
-                <p class="section-subtitle">Real stories from our community</p>
+    <section class="py-20 bg-white" id="reviews">
+        <div class="max-w-6xl mx-auto px-5">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4 text-text-primary">What our users say</h2>
+                <p class="text-lg text-text-secondary">Real stories from our community</p>
             </div>
-            <div class="reviews-grid">
-                <div class="review-card">
-                    <p class="review-text">Miałem problem z optymalizacją zapytań SQL - aplikacja strasznie wolno działała. Ekspert od baz danych nie tylko przepisał moje query, ale też pokazał mi indeksy i wyjaśnił plan wykonania. Teraz zapytania lecą w 50ms zamiast 2 sekund.</p>
-                    <div class="reviewer">
-                        <div class="reviewer-avatar">BK</div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="review-card bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300">
+                    <p class="review-text text-text-secondary mb-6">Miałem problem z optymalizacją zapytań SQL - aplikacja strasznie wolno działała. Ekspert od baz danych nie tylko przepisał moje query, ale też pokazał mi indeksy i wyjaśnił plan wykonania. Teraz zapytania lecą w 50ms zamiast 2 sekund.</p>
+                    <div class="reviewer flex items-center gap-4">
+                        <div class="reviewer-avatar w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center font-bold">BK</div>
                         <div class="reviewer-info">
-                            <div class="reviewer-name">Bastian Kojko</div>
-                            <div class="reviewer-role">Backend Developer</div>
+                            <div class="reviewer-name font-semibold text-text-primary">Bastian Kojko</div>
+                            <div class="reviewer-role text-text-muted">Backend Developer</div>
                         </div>
                     </div>
                 </div>
-                <div class="review-card">
-                    <p class="review-text">Potrzebowałem pomocy z React Hooks i zarządzaniem stanem. Mentor pokazał mi nie tylko jak używać useState i useEffect, ale też jak optymalizować komponenty i unikać niepotrzebnych rerenderów. Dzięki jego wskazówkom moja aplikacja działa znacznie płynniej.</p>
-                    <div class="reviewer">
-                        <div class="reviewer-avatar">AK</div>
+                <div class="review-card bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300">
+                    <p class="review-text text-text-secondary mb-6">Potrzebowałem pomocy z React Hooks i zarządzaniem stanem. Mentor pokazał mi nie tylko jak używać useState i useEffect, ale też jak optymalizować komponenty i unikać niepotrzebnych rerenderów. Dzięki jego wskazówkom moja aplikacja działa znacznie płynniej.</p>
+                    <div class="reviewer flex items-center gap-4">
+                        <div class="reviewer-avatar w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center font-bold">AK</div>
                         <div class="reviewer-info">
-                            <div class="reviewer-name">Anna Kowalska</div>
-                            <div class="reviewer-role">Frontend Developer</div>
+                            <div class="reviewer-name font-semibold text-text-primary">Anna Kowalska</div>
+                            <div class="reviewer-role text-text-muted">Frontend Developer</div>
                         </div>
                     </div>
                 </div>
-                <div class="review-card">
-                    <p class="review-text">Miałem problem z konfiguracją Docker kontenerów w środowisku produkcyjnym. Ekspert pomógł mi zoptymalizować Dockerfile, pokazał jak używać multi-stage builds i wytłumaczył najlepsze praktyki bezpieczeństwa. Deployment teraz trwa 3x krócej i jest bardziej stabilny.</p>
-                    <div class="reviewer">
-                        <div class="reviewer-avatar">MN</div>
+                <div class="review-card bg-white p-8 rounded-2xl border border-gray-200 hover:border-gray-300">
+                    <p class="review-text text-text-secondary mb-6">Miałem problem z konfiguracją Docker kontenerów w środowisku produkcyjnym. Ekspert pomógł mi zoptymalizować Dockerfile, pokazał jak używać multi-stage builds i wytłumaczył najlepsze praktyki bezpieczeństwa. Deployment teraz trwa 3x krócej i jest bardziej stabilny.</p>
+                    <div class="reviewer flex items-center gap-4">
+                        <div class="reviewer-avatar w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center font-bold">MN</div>
                         <div class="reviewer-info">
-                            <div class="reviewer-name">Marcin Nowak</div>
-                            <div class="reviewer-role">DevOps Engineer</div>
+                            <div class="reviewer-name font-semibold text-text-primary">Marcin Nowak</div>
+                            <div class="reviewer-role text-text-muted">DevOps Engineer</div>
                         </div>
                     </div>
                 </div>
@@ -187,22 +214,52 @@
         </div>
     </section>
 
-    <script src="script.js"></script>
-</body>
-<script>
-    let lastScrollPos = 0;
-const header = document.getElementById('main-header');
+    <!-- Footer -->
+    <footer class="py-16 bg-dark-bg text-white">
+        <div class="max-w-6xl mx-auto px-5">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="col-span-2">
+                    <div class="text-2xl font-bold text-primary mb-4">Snapsolve</div>
+                    <p class="text-gray-400 leading-relaxed max-w-md">Empowering questions and enabling growth through expert mentorship and practical learning solutions.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Platform</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-primary">How it works</a></li>
+                        <li><a href="#" class="hover:text-primary">Reviews</a></li>
+                        <li><a href="#" class="hover:text-primary">Mentors</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-primary">Help Center</a></li>
+                        <li><a href="#" class="hover:text-primary">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-primary">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Snapsolve. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 
-window.addEventListener('scroll', function() {
-    const currentScrollPos = window.pageYOffset || document.documentElement.scrollTop;
-    
-    if (currentScrollPos > lastScrollPos && currentScrollPos > 50) {
-        header.classList.add('hidden');
-    } else {
-        header.classList.remove('hidden');
-    }
-    
-    lastScrollPos = currentScrollPos;
-});
-</script>
-</html>
+    <script>
+        let lastScrollPos = 0;
+        const header = document.getElementById('main-header');
+
+        window.addEventListener('scroll', function() {
+            const currentScrollPos = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (currentScrollPos > lastScrollPos && currentScrollPos > 50) {
+                header.classList.add('-translate-y-full');
+            } else {
+                header.classList.remove('-translate-y-full');
+            }
+            
+            lastScrollPos = currentScrollPos;
+        });
+    </script>
+</body>
+</html> 
