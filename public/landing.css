@@ -1,55 +1,273 @@
-/* ===== SIMPLE STYLES WITHOUT ANIMATIONS ===== */
+/* ===== PROFESSIONAL ANIMATIONS & EFFECTS ===== */
 
 /* Hero Graphic */
 .hero-graphic {
-    width: 400px;
-    height: 400px;
-    background: #B0B996;
+    width: 500px;
+    height: 500px;
+    background: linear-gradient(135deg, #B0B996 0%, #8A9D6A 100%);
     border-radius: 50%;
     position: relative;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 25px 50px rgba(176, 185, 150, 0.2);
+    overflow: hidden;
 }
 
-/* Logo Slider */
+.hero-graphic::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 400px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border-radius: 50%;
+}
+
+/* Logo Slider Animation */
 .company-logos {
     display: flex;
-    gap: 80px;
+    gap: 100px;
+    animation: slide 40s linear infinite;
     white-space: nowrap;
 }
 
 .company-logo {
     font-weight: 700;
-    color: #1a1a1a;
-    font-size: 18px;
+    color: #1E293B;
+    font-size: 20px;
     padding: 0;
     border: none;
     background: transparent;
-    transition: color 0.3s ease;
+    box-shadow: none;
+    transition: all 0.3s ease;
+    opacity: 0.7;
 }
 
 .company-logo:hover {
     color: #B0B996;
+    opacity: 1;
+    transform: translateY(-3px);
+}
+
+@keyframes slide {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 
 /* Stats Placeholder */
 .stats-placeholder {
     width: 100%;
-    height: 300px;
-    background: #f8fafc;
-    border-radius: 20px;
+    height: 400px;
+    background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+    border-radius: 24px;
     position: relative;
-    border: 2px dashed #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.stats-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* CTA Section Background */
+.cta-section {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #272D33 0%, #3A4147 100%);
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(176, 185, 150, 0.1) 0%, transparent 70%);
+    animation: rotate 25s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Loading Animations */
+.hero-text h1 {
+    opacity: 0;
+    animation: fadeInUp 1s ease-out forwards;
+    animation-delay: 0.3s;
+}
+
+.hero-text p {
+    opacity: 0;
+    animation: fadeInUp 1s ease-out forwards;
+    animation-delay: 0.6s;
+}
+
+.hero-text .flex {
+    opacity: 0;
+    animation: fadeInUp 1s ease-out forwards;
+    animation-delay: 0.9s;
+}
+
+.hero-image {
+    opacity: 0;
+    animation: fadeInRight 1s ease-out forwards;
+    animation-delay: 0.5s;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Stats Animation */
+.stat-number {
+    opacity: 0;
+    animation: countUp 2s ease-out forwards;
+    animation-delay: 0.5s;
+}
+
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Step Items Animation */
+.step-item {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.step-item:nth-child(1) { animation-delay: 0.2s; }
+.step-item:nth-child(2) { animation-delay: 0.4s; }
+.step-item:nth-child(3) { animation-delay: 0.6s; }
+
+/* Review Cards Animation */
+.review-card {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out forwards;
+    transform: translateY(20px);
+}
+
+.review-card:nth-child(1) { animation-delay: 0.2s; }
+.review-card:nth-child(2) { animation-delay: 0.4s; }
+.review-card:nth-child(3) { animation-delay: 0.6s; }
+
+.review-card:hover {
+    transform: translateY(-10px);
+}
+
+/* Button Hover Effects */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+/* Navigation Link Hover Effect */
+.nav-link {
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(135deg, #B0B996 0%, #8A9D6A 100%);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Section Headers Animation */
+.section-header {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out forwards;
+    animation-delay: 0.3s;
+}
+
+/* Stats Grid Animation */
+.stats-grid {
+    opacity: 0;
+    animation: fadeInUp 1s ease-out forwards;
+    animation-delay: 1s;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .hero-graphic {
-        width: 300px;
-        height: 300px;
+        width: 350px;
+        height: 350px;
+    }
+    
+    .hero-graphic::before {
+        width: 250px;
+        height: 250px;
     }
     
     .company-logos {
-        gap: 40px;
+        gap: 60px;
     }
     
     .company-logo {
@@ -57,32 +275,72 @@
     }
     
     .stats-placeholder {
-        height: 250px;
+        height: 300px;
     }
 }
 
 @media (max-width: 1024px) {
     .hero-graphic {
-        width: 350px;
-        height: 350px;
+        width: 400px;
+        height: 400px;
+    }
+    
+    .hero-graphic::before {
+        width: 300px;
+        height: 300px;
     }
 }
 
-/* Basic hover effects */
-.review-card:hover {
-    transform: translateY(-2px);
+/* Scroll-triggered animations */
+.step-item, .review-card, .stat-item {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
 }
 
-.step-number:hover {
-    transform: scale(1.05);
+.step-item.animate, .review-card.animate, .stat-item.animate {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-/* Smooth scrolling */
-html {
-    scroll-behavior: smooth;
+/* Logo animation */
+.logo {
+    position: relative;
+    overflow: hidden;
 }
 
-/* Basic transitions */
+.logo::before {
+    animation: rotate 15s linear infinite;
+}
+
+/* Footer animations */
+footer a {
+    transition: color 0.2s ease;
+}
+
+footer a:hover {
+    color: #B0B996;
+}
+
+/* Additional professional touches */
+.review-card svg {
+    transition: transform 0.3s ease;
+}
+
+.review-card:hover svg {
+    transform: scale(1.1);
+}
+
+.step-number {
+    transition: all 0.3s ease;
+}
+
+.step-item:hover .step-number {
+    transform: scale(1.1);
+    box-shadow: 0 10px 25px rgba(176, 185, 150, 0.3);
+}
+
+/* Smooth transitions for all interactive elements */
 * {
-    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-} 
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
