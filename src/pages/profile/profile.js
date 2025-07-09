@@ -3,61 +3,122 @@ import './profile.css';
 import {
   FiSearch, FiArrowLeft, FiMail, FiHome, FiUsers, FiMessageSquare,
   FiPlus, FiMinus, FiZap, FiChevronDown, FiBookmark, FiUser,
-  FiHelpCircle, FiMoreVertical, FiHeart, FiEye, FiCheck
+  FiHelpCircle, FiMoreVertical, FiHeart, FiEye, FiCheck, FiX
 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { getAllQuestions } from '../../utils/firebaseUtils';
+import EditProfile from '../edit_prof/edit_profile';
+
+const Modal = ({ isOpen, onClose, children, size = 'medium' }) => {
+  if (!isOpen) return null;
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  const sizeClasses = {
+    small: 'max-w-sm',
+    medium: 'max-w-md',
+    large: 'max-w-lg',
+    full: 'max-w-xl'
+  };
+
+  return (
+    <div
+      className="modal-backdrop"
+      onClick={handleBackdropClick}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        backdropFilter: 'blur(4px)',
+        WebkitBackdropFilter: 'blur(4px)',
+        zIndex: 1000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '10px',
+        animation: 'fadeIn 0.3s ease-out'
+      }}
+    >
+      <div
+        className={`modal-content ${sizeClasses[size]}`}
+        style={{
+          backgroundColor: 'white',
+          borderRadius: '12px',
+          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.25)',
+          width: '100%',
+          maxWidth: '420px',
+          maxHeight: '85vh',
+          overflowY: 'auto', // <-- TUTAJ SCROLL
+          overflowX: 'hidden',
+          animation: 'slideIn 0.3s ease-out',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        {/* Usuwamy overflow z tego wrappera */}
+        {children}
+      </div>
+    </div>
+  );
+};
+
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [userQuestions, setUserQuestions] = useState([]); // lista pytan uzytkownika
-  const [loading, setLoading] = useState(false); // stan ladowania danych
-  const [currentUser, setCurrentUser] = useState(null); // aktualny uzytkownik
-  const [selectedTags, setSelectedTags] = useState([]); // wybrane tagi przez uzytkownika
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // stan rozwinięcia dropdowna z tagami
+  const [userQuestions, setUserQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Pobieranie danych aktualnego użytkownika z localStorage
   useEffect(() => {
-    const userData = localStorage.getItem('currentUser'); // pobieranie danych uzytkownika z localStorage
-    if (userData) { // sprawdzanie czy dane uzytkownika istnieja
+    const userData = localStorage.getItem('currentUser');
+    if (userData) {
       try {
-        const parsedUser = JSON.parse(userData); // parsowanie danych uzytkownika
-        setCurrentUser(parsedUser); // ustawianie aktualnego uzytkownika
-        if (parsedUser.selectedTags) setSelectedTags(parsedUser.selectedTags); // ustawianie wybranych tagów
-      } catch (error) { // obsluga bledow parsowania danych uzytkownika
-        console.error('Error parsing user data:', error); // logowanie bledow parsowania danych uzytkownika
+        const parsedUser = JSON.parse(userData);
+        setCurrentUser(parsedUser);
+        if (parsedUser.selectedTags) setSelectedTags(parsedUser.selectedTags);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
       }
     }
   }, []);
 
   // Pobieranie pytan użytkownika z bazy danych
   useEffect(() => {
-    const loadUserQuestions = async () => { // sprawdzanie czy aktualny uzytkownik istnieje
-      if (!currentUser?.userName) return; // jesli nie ma uzytkownika, nie pobieraj pytan
+    const loadUserQuestions = async () => {
+      if (!currentUser?.userName) return;
       setLoading(true);
       try {
-        const result = await getAllQuestions(); //  pobieranie wszystkich pytan z bazy danych
-        if (result.success) { // sprawdzanie czy pobieranie pytan zakonczone sukcesem
-          const myQuestions = result.questions.filter(q => q.author === currentUser.userName); // filtrowanie pytan uzytkownika
-          setUserQuestions(myQuestions); // ustawianie pytan uzytkownika
+        const result = await getAllQuestions();
+        if (result.success) {
+          const myQuestions = result.questions.filter(q => q.author === currentUser.userName);
+          setUserQuestions(myQuestions);
         }
       } catch (err) {
-        console.error('Error loading questions:', err); // logowanie bledow pobierania pytan
+        console.error('Error loading questions:', err);
       } finally {
-        setLoading(false); // ustawianie stanu ladowania na false po pobraniu pytan
+        setLoading(false);
       }
     };
-    loadUserQuestions(); // wywolanie funkcji pobierajacej pytania uzytkownika
+    loadUserQuestions();
   }, [currentUser]);
 
-  const getUserDisplayName = () => currentUser?.userName || currentUser?.name || 'Guest'; // funkcja zwracajaca nazwe uzytkownika lub 'Guest' jesli nie ma uzytkownika
+  const getUserDisplayName = () => currentUser?.userName || currentUser?.name || 'Guest';
   const getUserInitials = () => {
-    const displayName = getUserDisplayName(); // pobieranie nazwy uzytkownika
-    return displayName === 'Guest' ? 'GU' : displayName.substring(0, 2).toUpperCase(); // funkcja zwracajaca inicjaly uzytkownika lub 'GU' jesli nie ma uzytkownika
+    const displayName = getUserDisplayName();
+    return displayName === 'Guest' ? 'GU' : displayName.substring(0, 2).toUpperCase();
   };
 
-  
-// lista wszystkich tagow, z ktorych mozna wybierac zainteresowania
   const tags = [
     'Python', 'Java', 'SQL', 'html', 'css', 'javascript', 'react',
     'node.js', 'flask', 'arduino', 'linux', 'database', 'networking',
@@ -71,27 +132,41 @@ const Profile = () => {
     bio: currentUser?.bio || 'Klepię kod jak combo w ulubionych grze, bo nie ma lepszego uczucia niż zobaczyć jak wszystko w końcu działa 😎'
   };
 
-  const handleTagSelect = (tag) => { // funkcja obslugujaca wybieranie tagow
-    if (!selectedTags.includes(tag)) { // sprawdzanie czy tag nie jest juz wybrany
-      const updatedTags = [...selectedTags, tag]; //  tworzenie nowej tablicy z wybranymi tagami
-      setSelectedTags(updatedTags); // ustawianie wybranych tagów
-      if (currentUser) { // sprawdzanie czy aktualny uzytkownik istnieje
-        const updatedUser = { ...currentUser, selectedTags: updatedTags }; // tworzenie nowego obiektu uzytkownika z wybranymi tagami
-        localStorage.setItem('currentUser', JSON.stringify(updatedUser)); //  zapisanie aktualnego uzytkownika do localStorage
+  const handleTagSelect = (tag) => {
+    if (!selectedTags.includes(tag)) {
+      const updatedTags = [...selectedTags, tag];
+      setSelectedTags(updatedTags);
+      if (currentUser) {
+        const updatedUser = { ...currentUser, selectedTags: updatedTags };
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
         setCurrentUser(updatedUser);
       }
     }
     setIsDropdownOpen(false);
   };
 
-  const handleRemoveTag = (tagToRemove) => { // funkcja obslugujaca usuwanie tagow
-    const updatedTags = selectedTags.filter(tag => tag !== tagToRemove); // tworzenie nowej tablicy z wybranymi tagami bez usuwanego tagu
-    setSelectedTags(updatedTags); //  ustawianie wybranych tagów bez usuwanego tagu
+  const handleRemoveTag = (tagToRemove) => {
+    const updatedTags = selectedTags.filter(tag => tag !== tagToRemove);
+    setSelectedTags(updatedTags);
     if (currentUser) {
-      const updatedUser = { ...currentUser, selectedTags: updatedTags }; // tworzenie nowego obiektu uzytkownika z wybranymi tagami bez usuwanego tagu
-      localStorage.setItem('currentUser', JSON.stringify(updatedUser)); //  zapisanie aktualnego uzytkownika do localStorage
+      const updatedUser = { ...currentUser, selectedTags: updatedTags };
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
       setCurrentUser(updatedUser);
     }
+  };
+
+  // Funkcja do zapisywania zmian profilu
+  const handleProfileSave = (newData) => {
+    const updatedUser = {
+      ...currentUser,
+      userName: newData.name,
+      school: newData.school,
+      fieldOfStudy: newData.fieldOfStudy,
+      bio: newData.bio
+    };
+    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    setCurrentUser(updatedUser);
+    setIsEditModalOpen(false); // Zamknij modal po zapisaniu
   };
 
   const navLinks = [
@@ -102,15 +177,15 @@ const Profile = () => {
     { icon: <FiBookmark size={16} />, text: 'Bookmarks', path: '/zakładki'}
   ];
 
-  const StatusBadge = ({ status }) => ( // komponent do wyswietlania statusu pytania
+  const StatusBadge = ({ status }) => (
     <div className="status-badge" style={{ backgroundColor: status === 'complete' ? '#4CAF50' : '#FF9800' }}> 
       {status === 'complete' && <FiCheck />} 
       <span>{status === 'complete' ? 'Complete' : 'In Progress'}</span>
     </div>
   );
 
-  if (loading) return <div>Loading...</div>; // komponent ladowania danych
-  if (!currentUser) return <div>Loading user data...</div>; // komponent ladowania danych uzytkownika   
+  if (loading) return <div>Loading...</div>;
+  if (!currentUser) return <div>Loading user data...</div>;
 
   return (
     <div className='Profall'>
@@ -128,24 +203,24 @@ const Profile = () => {
             </div>
             <nav className="nav">
               <ul>
-                {navLinks.map((item, i) => ( // mapowanie linków nawigacyjnych
-                  <li key={i}> {/* renderowanie linkow nawigacyjnych*/}
-                    <a href="#" onClick={(e) => { // obsluga klikniecia w linki nawigacyjne   
-                      e.preventDefault();   // zapobieganie domyslnemu zachowaniu linku
-                      if (item.path) navigate(item.path); // nawigacja do sciezki jesli jest zdefiniowana
+                {navLinks.map((item, i) => (
+                  <li key={i}>
+                    <a href="#" onClick={(e) => {
+                      e.preventDefault();
+                      if (item.path) navigate(item.path);
                     }}>
-                      {item.icon}{item.text}   {/* renderowanie ikony i tekstu linku nawigacyjnego */}
+                      {item.icon}{item.text}
                     </a>
                   </li>
                 ))}
               </ul>
             </nav>
             <div className="right-nav">
-              <button className="icon-btn"><FiMail size={20} /></button> {/* przycisk do wiadomosci */}
-              <div className="user-profile" onClick={() => navigate('/profile')}> {/* przycisk do profilu uzytkownika */}
-                <div className="avatar"><span>{getUserInitials()}</span></div> {/* avatar uzytkownika */}
+              <button className="icon-btn"><FiMail size={20} /></button>
+              <div className="user-profile" onClick={() => navigate('/profile')}>
+                <div className="avatar"><span>{getUserInitials()}</span></div>
                 <div className="user-info">
-                  <div className="name">{getUserDisplayName()}</div> {/* nazwa uzytkownika */}
+                  <div className="name">{getUserDisplayName()}</div>
                   <div className="role">Student</div>
                 </div>
                 <FiChevronDown size={16} />
@@ -159,24 +234,24 @@ const Profile = () => {
             <div className="profile-card">
               <div className="profile-header">
                 <div className="profile-avatar">{getUserInitials()}</div>
-                <h2 className="profile-name">{user.name}</h2>    {/* nazwa uzytkownika */}
+                <h2 className="profile-name">{user.name}</h2>
                 <p className="profile-username">{user.username}</p>
                 <p className="profile-school">{user.school}</p>
               </div>
               <div className="profile-bio">
-                <p>{user.bio}</p> {/* bio uzytkownika */}
+                <p>{user.bio}</p>
               </div>
               <div className="stats">
                 <div className="stat">
-                  <div className="stat-num">{userQuestions.length}</div> {/* liczba pytan uzytkownika */}
-                  <div className="stat-label">Questions</div> {/* etykieta dla liczby pytan */}
+                  <div className="stat-num">{userQuestions.length}</div>
+                  <div className="stat-label">Questions</div>
                 </div>
                 <div className="stat">
-                  <div className="stat-num">{userQuestions.filter(q => q.status === 'complete').length}</div> {/* liczba pytan zakonczinycj*/}
+                  <div className="stat-num">{userQuestions.filter(q => q.status === 'complete').length}</div>
                   <div className="stat-label">Answers</div>
                 </div>
                 <div className="stat">
-                  <div className="stat-num">{userQuestions.reduce((sum, q) => sum + (q.likes || 0), 0)}</div> {/* suma wszystkich polubien pytan uzytkownika */}
+                  <div className="stat-num">{userQuestions.reduce((sum, q) => sum + (q.likes || 0), 0)}</div>
                   <div className="stat-label">Likes</div>
                 </div>
               </div>
@@ -186,22 +261,22 @@ const Profile = () => {
               <h3>Interests</h3>
               <div className="tags-container">
                 <div className="selected-tags">
-                  {selectedTags.map((tag, index) => ( // renderowanie wybranych tagów
+                  {selectedTags.map((tag, index) => (
                     <span key={index} className="tag"> 
                       {tag}
-                      <button className="tag-remove" onClick={() => handleRemoveTag(tag)}>×</button> {/* przycisk do usuwania tagu */}
+                      <button className="tag-remove" onClick={() => handleRemoveTag(tag)}>×</button>
                     </span>
                   ))}
                 </div>
                 <div className="dropdown-container">
-                  <button className="dropdown-toggle" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>  {/* przycisk do rozwijania dropdowna */}
+                  <button className="dropdown-toggle" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                     Select your interests
-                    <FiChevronDown className={`dropdown-icon ${isDropdownOpen ? 'open' : ''}`} />  {/* ikona strzałki */}
+                    <FiChevronDown className={`dropdown-icon ${isDropdownOpen ? 'open' : ''}`} />
                   </button>
-                  {isDropdownOpen && ( // sprawdzanie czy dropdown jest otwarty
+                  {isDropdownOpen && (
                     <div className="dropdown-menu">
-                      {tags.filter(tag => !selectedTags.includes(tag)).map((tag, index) => ( // filtrowanie tagów, aby nie pokazywać już wybranych
-                        <div key={index} className="dropdown-item" onClick={() => handleTagSelect(tag)}> {/* renderowanie tagów w dropdownie */}
+                      {tags.filter(tag => !selectedTags.includes(tag)).map((tag, index) => (
+                        <div key={index} className="dropdown-item" onClick={() => handleTagSelect(tag)}>
                           {tag}
                         </div>
                       ))}
@@ -215,81 +290,107 @@ const Profile = () => {
           <main className="content">
             <div className="content-header">
               <div className="tabs">
-                <button className="tab active">Questions ({userQuestions.length})</button> {/* Pole hasła */}
+                <button className="tab active">Questions ({userQuestions.length})</button>
               </div>
               <div className="actions">
-                <button className="btn-edit">Edit profile</button>
+                <button 
+                  className="btn-edit"
+                  onClick={() => setIsEditModalOpen(true)}
+                >
+                  Edit profile
+                </button>
                 <button className="btn-settings">Settings</button>
               </div>
             </div>
 
             <div className="questions">
-              {userQuestions.length === 0 ? ( // sprawdzanie czy uzytkownik ma pytania
+              {userQuestions.length === 0 ? (
                 <div className="no-questions">
                   <p>Nie masz jeszcze żadnych pytań.</p>
                 </div>
               ) : (
-                userQuestions.map((question) => ( // renderowanie pytan uzytkownika
-                  <div className={`question ${question.status === 'complete' ? 'complete' : ''}`} key={question.id}> {/* sprawdzanie statusu pytania i dodawanie klasy 'complete' */}
-                    
-                    {/* gora pytania - avatar, kto napisal, kiedy i status */}
+                userQuestions.map((question) => (
+                  <div className={`question ${question.status === 'complete' ? 'complete' : ''}`} key={question.id}>
                     <div className="question-header">
                       <div className="user-avatar">{getUserInitials()}</div>
                       <div className="meta">
-                        <div className="author-name">{getUserDisplayName()}</div> {/* nazwa uzytkownika */}
-                        <div className="author-time">{question.timeAgo}</div> {/* ile czasu temu */}
+                        <div className="author-name">{getUserDisplayName()}</div>
+                        <div className="author-time">{question.timeAgo}</div>
                       </div>
                       <div className="question-actions">
-                        <StatusBadge status={question.status || 'in_progress'} /> {/* status pytania */}
-                        <button className="menu-btn"><FiMoreVertical size={16} /></button> {/* 3 kropki (opcje) */}
+                        <StatusBadge status={question.status || 'in_progress'} />
+                        <button className="menu-btn"><FiMoreVertical size={16} /></button>
                       </div>
                     </div>
                 
-                    {/* srodek pytania tytul, tagi i tresc */}
                     <div className="question-content">
                       <div className="question-highlight">
-                        <h3>{question.title}</h3> {/* tytul pytania */}
+                        <h3>{question.title}</h3>
                       </div>
                       <div className="content-tags">
-                        {/* wypisuje wszystkie tagi do pytania */}
-                        {question.tags && question.tags.map((tag, i) => ( //sprawdzanie czy pytanie ma tagi i mapowanie ich
+                        {question.tags && question.tags.map((tag, i) => (
                           <span key={i} className="content-tag">{tag}</span>
                         ))}
                       </div>
                       <div className="question-text">
-                        <p>{question.content}</p> {/* glowna tresc pytania */}
+                        <p>{question.content}</p>
                       </div>
                     </div>
                 
-                    {/* dol pytania reakcje i statystyki */}
                     <div className="question-footer">
                       <div className="reactions">
-                        {/* reakcje na pytanie, pokazuje ile jest odpowiedzi */}
-                        {Array.from({ length: question.responseCount || question.responders || 0 }, (_, i) => ( // tworzenie tablicy z odpowiedziami
+                        {Array.from({ length: question.responseCount || question.responders || 0 }, (_, i) => (
                           <div key={i} className="reaction">{String.fromCharCode(65 + i)}</div>
                         ))}
-                        {/* pokazuje ile odpowiedzi jest */}
                         <span className="responders-text">{question.responseCount || question.responders || 0} responses</span>
                       </div>
                       <div className="engagement">
-                        {/* ilosc lajkow */}
                         <span className="engagement-item">
                           <FiHeart size={14} /> {question.likes || 0}
                         </span>
-                        {/* ilosc wyswietlen */}
                         <span className="engagement-item">
                           <FiEye size={14} /> {question.views || 0}
                         </span>
                       </div>
                     </div>
-                
                   </div>
                 ))
               )}
             </div>
           </main>
         </div>
+
+        {/* Modal for editing profile */}
+        <Modal 
+          isOpen={isEditModalOpen} 
+          onClose={() => setIsEditModalOpen(false)}
+          size="large"
+        >
+          <EditProfile 
+            currentUser={currentUser}
+            onClose={() => setIsEditModalOpen(false)}
+            onSave={handleProfileSave}
+          />
+        </Modal>
       </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+          from { 
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95);
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0) scale(1);
+          }
+        }
+      `}</style>
     </div>
   );
 };
