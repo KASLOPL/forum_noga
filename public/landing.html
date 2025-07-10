@@ -6,6 +6,8 @@
     <title>Snapsolve - Empowering Questions. Enabling Growth</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="landing.css">
+    <!-- Add AOS (Animate On Scroll) CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
     <script>
         tailwind.config = {
             theme: {
@@ -35,10 +37,12 @@
             }
         }
     </script>
+    <!-- Add AOS (Animate On Scroll) JS -->
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 </head>
 <body class="font-inter text-text-primary bg-white overflow-x-hidden">
-    <!-- Header -->
-    <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-medium/50 transition-transform duration-300 shadow-sm" id="main-header">
+    <!-- Header (now part of hero, not fixed) -->
+    <header class="absolute top-0 left-0 right-0 w-full bg-transparent z-20" id="main-header" style="border-bottom:none;box-shadow:none;pointer-events:none;">
         <div class="max-w-7xl mx-auto px-6">
             <div class="flex justify-between items-center py-6">
                 <div class="text-2xl font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent flex items-center gap-4">
@@ -70,26 +74,135 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center pt-24 overflow-hidden bg-gradient-to-br from-gray-light to-white">
+    <section class="relative min-h-screen flex items-center justify-center pt-0 overflow-hidden bg-gradient-to-br from-gray-light to-white" style="padding-top:96px;">
         <div class="absolute inset-0 bg-gradient-to-br from-gray-light/50 to-white/50"></div>
-        <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <!-- Animated question bubbles in the background -->
+        <div class="hero-bg-questions" style="pointer-events:none;position:absolute;inset:0;z-index:2;">
+            <div class="question-bubble" style="top:8%;left:2%;"></div>
+            <div class="question-bubble" style="top:20%;right:3%;"></div>
+            <div class="question-bubble" style="top:65%;left:4%;"></div>
+            <div class="question-bubble" style="bottom:10%;left:8%;"></div>
+            <div class="question-bubble" style="top:15%;right:8%;"></div>
+            <div class="question-bubble" style="top:55%;right:5%;"></div>
+            <div class="question-bubble" style="bottom:20%;right:2%;"></div>
+            <div class="question-bubble" style="bottom:8%;left:18%;"></div>
+        </div>
+        <style>
+            .hero-bg-questions { pointer-events:none; }
+            .question-bubble {
+                position: absolute;
+                min-width: 320px;
+                max-width: 440px;
+                font-size: 1.05rem;
+                color: #a3aab7;
+                opacity: 0.7;
+                background: rgba(243,244,246,0.18);
+                border-radius: 1.5em;
+                padding: 0.7em 2.2em;
+                font-family: inherit;
+                font-weight: 500;
+                white-space: pre-line;
+                overflow: hidden;
+                z-index: 2;
+                user-select: none;
+                pointer-events: none;
+                transition: background 0.3s, opacity 0.3s;
+                backdrop-filter: blur(2px);
+            }
+            @media (max-width: 900px) {
+                .question-bubble { font-size: 0.95rem; min-width: 180px; max-width: 260px; padding: 0.5em 1.2em; }
+            }
+            @media (max-width: 600px) {
+                .question-bubble { font-size: 0.8rem; min-width: 90px; max-width: 120px; padding: 0.4em 0.7em; }
+            }
+        </style>
+        <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-center justify-center min-h-[70vh] text-center">
+            <div class="hero-text space-y-8 w-full flex flex-col items-center justify-center">
+                <h1 class="text-5xl lg:text-7xl font-bold leading-tight hero-fadein">
+                    <span id="hero-typewriter" style="background: linear-gradient(90deg, #B0B996 0%, #272D33 100%); -webkit-background-clip: text; background-clip: text; color: transparent;"></span>
+                </h1>
+                <p class="text-xl text-dark leading-relaxed max-w-2xl hero-fadein-delayed">We connect students with professionals for practical learning and real answers. Every answer brings you closer to your goals and builds your confidence. Discover a place where learning is interactive and every question matters.</p>
+                <script>
+                    // Typewriter for main headline (nie zmieniam)
+                    const typewriterText = "Empowering Questions.\nEnabling Growth.";
+                    const typewriterElem = document.getElementById('hero-typewriter');
+                    let i = 0;
+                    function typeWriter() {
+                        if (i < typewriterText.length) {
+                            if(typewriterText[i] === "\n") {
+                                typewriterElem.innerHTML += "<br>";
+                            } else {
+                                typewriterElem.innerHTML += typewriterText[i];
+                            }
+                            i++;
+                            setTimeout(typeWriter, 55);
+                        }
+                    }
+                    typeWriter();
+                </script>
+                <div class="flex flex-col sm:flex-row gap-4 hero-fadein-delayed2 justify-center">
+                    <a href="#" class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-200">Ask Your Question Now</a>
+                </div>
+            </div>
+        </div>
+        <script>
+            // Animated question bubbles in the background
+            const questions = [
+                "How can I deploy a full-stack React and Node.js app to production with CI/CD?",
+                "What are the best practices for securing REST APIs in 2024, especially for mobile apps?",
+                "How do I optimize performance in large-scale JavaScript applications with many users?",
+                "What is the difference between SQL and NoSQL databases, and when to use each?",
+                "How to prepare for a technical interview in a software company and what to expect?",
+                "How do I use Docker to containerize my web application and manage dependencies?",
+                "What are the most important ES2023 features for modern JavaScript developers?",
+                "How to debug asynchronous code in Node.js effectively and avoid common pitfalls?"
+            ];
+            const bubbles = document.querySelectorAll('.question-bubble');
+            function animateBubble(bubble, qList) {
+                let idx = Math.floor(Math.random() * qList.length);
+                let txt = qList[idx];
+                let j = 0;
+                bubble.textContent = '';
+                function type() {
+                    if (j < txt.length) {
+                        bubble.textContent += txt[j];
+                        j++;
+                        setTimeout(type, 28 + Math.random()*22);
+                    } else {
+                        setTimeout(() => {
+                            animateBubble(bubble, qList);
+                        }, 1800 + Math.random()*1200);
+                    }
+                }
+                type();
+            }
+            bubbles.forEach((bubble, k) => {
+                setTimeout(() => animateBubble(bubble, questions), k*350);
+            });
+        </script>
+    </section>
+
+    <!-- Stats Section: We Let the Numbers Speak for Themselves -->
+    <section class="py-20 bg-gray-light" data-aos="fade-up" data-aos-delay="200">
+        <div class="max-w-7xl mx-auto px-6">
             <div class="grid lg:grid-cols-2 gap-20 items-center">
-                <div class="hero-text space-y-8">
-                    <h1 class="text-5xl lg:text-7xl font-bold leading-tight text-dark">
-                        Empowering Questions.<br>
-                        <span class="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">Enabling Growth.</span>
-                    </h1>
-                    <p class="text-xl text-text-secondary leading-relaxed max-w-2xl">
-                        We connect vocational students with industry professionals to foster practical learning and problem solving. Ask your question, gain insights, and take the next step in your technical journey.
-                    </p>
-                                    <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="#" class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl hover:shadow-xl hover:shadow-primary/25 transition-all duration-200 transform hover:-translate-y-1">
-                        Ask Your Question Now
-                    </a>
+                <div class="text-left max-w-xl ml-2">
+                    <h2 class="text-4xl lg:text-5xl font-bold mb-8 text-dark">We Let the Numbers<br><span class="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">Speak for Themselves</span></h2>
+                    <p class="text-xl text-text-secondary mb-0">Snapsolve is a modern forum where you can ask questions, share knowledge, and connect with a helpful tech community. Join us and grow together!</p>
                 </div>
-                </div>
-                <div class="hero-image flex justify-center">
-                    <div class="hero-graphic"></div>
+                <div class="flex flex-row gap-12 items-center justify-center w-full">
+                    <div class="flex flex-col items-center">
+                        <span class="block text-5xl font-bold text-primary mb-2">2000+</span>
+                        <span class="text-text-secondary font-medium">Questions</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="block text-5xl font-bold text-primary mb-2">345</span>
+                        <span class="text-text-secondary font-medium">Professionals</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="block text-5xl font-bold text-primary mb-2">95%</span>
+                        <span class="text-text-secondary font-medium">Satisfaction</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -101,38 +214,37 @@
             <div class="text-center text-text-muted text-lg font-medium mb-12">Trusted by professionals from</div>
             <div class="logo-slider">
                 <div class="company-logos">
-                    <div class="company-logo">MICROSOFT</div>
-                    <div class="company-logo">GOOGLE</div>
-                    <div class="company-logo">AMAZON</div>
-                    <div class="company-logo">APPLE</div>
-                    <div class="company-logo">FACEBOOK</div>
-                    <div class="company-logo">NETFLIX</div>
-                    <div class="company-logo">TESLA</div>
-                    <div class="company-logo">SPOTIFY</div>
-                    <div class="company-logo">ADOBE</div>
-                    <div class="company-logo">NVIDIA</div>
-                    <div class="company-logo">INTEL</div>
-                    <div class="company-logo">SAMSUNG</div>
+                    <div class="company-logo">LOGO</div>
+                    <div class="company-logo">LOGO</div>
+                    <div class="company-logo">LOGO</div>
+                    <div class="company-logo">LOGO</div>
+                    <div class="company-logo">LOGO</div>
+                    <div class="company-logo">LOGO</div>
+                    <div class="company-logo">LOGO</div>
+                    <div class="company-logo">LOGO</div>
+                    <div class="company-logo">LOGO</div>
+                    <div class="company-logo">LOGO</div>
+                    <div class="company-logo">LOGO</div>
+                    <div class="company-logo">LOGO</div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Stats Section -->
-    <section class="py-24 bg-gray-light">
+    <section class="py-24 bg-gray-light" data-aos="fade-up" data-aos-delay="200">
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid lg:grid-cols-2 gap-20 items-center">
                 <div class="stats-image">
-                    <div class="stats-placeholder"></div>
+                  <div class="stats-placeholder"></div>
                 </div>
                 <div class="stats-text">
                     <h2 class="text-4xl lg:text-5xl font-bold text-dark leading-tight mb-6">
-                        We Let the Numbers<br>
-                        <span class="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">Speak for Themselves</span>
+                        A Place Where Experts <br>
+                        <span class="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">Truly Help</span>
                     </h2>
                     <p class="text-xl text-text-secondary leading-relaxed mb-8">
-                        Our thriving community of verified experts spans dozens of technical fields, delivering comprehensive answers that help students and professionals solve complex challenges daily. From software development to network security, from data analysis to cloud architecture, our mentors bring real-world experience and practical solutions to every question. Join thousands of learners who have already accelerated their careers through our platform.
-                    </p>
+                        Our forum connects technical school students, university learners, and young professionals with experienced specialists across IT and technical fields. Every day, mentors with real-world expertise provide clear, practical answers that help solve real challenges—from programming and network security to data analysis and cloud architecture. Join a community where knowledge meets kindness, and every answer brings you closer to your career goals.                    </p>
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
                         <div class="stat-item text-center">
                             <span class="stat-number block text-4xl font-bold text-primary mb-3">2000+</span>
@@ -157,28 +269,28 @@
     </section>
 
     <!-- How it Works -->
-    <section class="py-24 bg-white" id="how-it-works">
+    <section class="py-24 bg-white" id="how-it-works" data-aos="fade-up" data-aos-delay="300">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-20">
+            <div class="text-center mb-20" data-aos="fade-up" data-aos-delay="350">
                 <h2 class="text-4xl lg:text-5xl font-bold mb-6 text-dark">How it works</h2>
                 <p class="text-xl text-text-secondary max-w-3xl mx-auto">Simple steps to get expert help and accelerate your professional growth</p>
             </div>
             <div class="grid md:grid-cols-3 gap-12">
-                <div class="step-item text-center group">
+                <div class="step-item text-center group" data-aos="fade-right" data-aos-delay="400">
                     <div class="step-number w-20 h-20 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl flex items-center justify-center text-3xl font-bold mx-auto mb-8 group-hover:scale-110 transition-transform duration-200">1</div>
                     <div class="step-box">
                         <h3 class="step-title text-2xl font-bold mb-6 text-dark">Ask a question</h3>
                         <p class="step-description text-text-secondary leading-relaxed">Describe your problem or question related to your chosen field. Be specific - the more details you provide, the better guidance you'll receive.</p>
                     </div>
                 </div>
-                <div class="step-item text-center group">
+                <div class="step-item text-center group" data-aos="fade-up" data-aos-delay="500">
                     <div class="step-number w-20 h-20 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl flex items-center justify-center text-3xl font-bold mx-auto mb-8 group-hover:scale-110 transition-transform duration-200">2</div>
                     <div class="step-box">
                         <h3 class="step-title text-2xl font-bold mb-6 text-dark">Get an answer</h3>
                         <p class="step-description text-text-secondary leading-relaxed">An experienced specialist from the industry will answer your question within 24 hours, sharing practical knowledge and advice.</p>
                     </div>
                 </div>
-                <div class="step-item text-center group">
+                <div class="step-item text-center group" data-aos="fade-left" data-aos-delay="600">
                     <div class="step-number w-20 h-20 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl flex items-center justify-center text-3xl font-bold mx-auto mb-8 group-hover:scale-110 transition-transform duration-200">3</div>
                     <div class="step-box">
                         <h3 class="step-title text-2xl font-bold mb-6 text-dark">Keep growing</h3>
@@ -190,7 +302,7 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="cta-section relative py-24" id="mentors">
+    <section class="cta-section relative py-24" id="mentors" data-aos="fade-up" data-aos-delay="400">
         <div class="max-w-7xl mx-auto px-6 relative z-10">
             <div class="text-center text-white max-w-4xl mx-auto">
                 <h2 class="text-4xl lg:text-6xl font-bold mb-8 leading-tight">
@@ -208,20 +320,20 @@
     </section>
 
     <!-- Reviews Section -->
-    <section class="py-24 bg-gray-light" id="reviews">
+    <section class="py-24 bg-gray-light" id="reviews" data-aos="fade-up" data-aos-delay="500">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-20">
+            <div class="text-center mb-16">
                 <h2 class="text-4xl lg:text-5xl font-bold mb-6 text-dark">What our users say</h2>
-                <p class="text-xl text-text-secondary max-w-3xl mx-auto">Real stories from our community of learners and mentors</p>
+                <p class="text-xl text-text-secondary max-w-2xl mx-auto">Opinions from our community and real results.</p>
             </div>
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="review-card bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                <div class="review-card bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 group" data-aos="fade-right" data-aos-delay="100">
                     <div class="mb-6">
                         <svg class="w-12 h-12 text-primary mb-4" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
                         </svg>
                     </div>
-                    <p class="review-text text-text-secondary mb-8 leading-relaxed text-lg">Miałem problem z optymalizacją zapytań SQL - aplikacja strasznie wolno działała. Ekspert od baz danych nie tylko przepisał moje query, ale też pokazał mi indeksy i wyjaśnił plan wykonania.</p>
+                    <p class="review-text text-text-secondary mb-8 leading-relaxed text-lg">The database expert not only rewrote my query, but also showed me how to use indexes and explained the execution plan. Thanks to this, my project runs much faster and I finally understand how to optimize SQL!</p>
                     <div class="reviewer flex items-center gap-4">
                         <div class="reviewer-avatar w-14 h-14 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl flex items-center justify-center font-bold text-lg">BK</div>
                         <div class="reviewer-info">
@@ -230,13 +342,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="review-card bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                <div class="review-card bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 group" data-aos="fade-up" data-aos-delay="200">
                     <div class="mb-6">
                         <svg class="w-12 h-12 text-primary mb-4" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
                         </svg>
                     </div>
-                    <p class="review-text text-text-secondary mb-8 leading-relaxed text-lg">Potrzebowałem pomocy z React Hooks i zarządzaniem stanem. Mentor pokazał mi nie tylko jak używać useState i useEffect, ale też jak optymalizować komponenty.</p>
+                    <p class="review-text text-text-secondary mb-8 leading-relaxed text-lg">My mentor showed me not only how to use useState and useEffect, but also how to optimize React components for better performance. Now my code is cleaner and my app is much more responsive!</p>
                     <div class="reviewer flex items-center gap-4">
                         <div class="reviewer-avatar w-14 h-14 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl flex items-center justify-center font-bold text-lg">AK</div>
                         <div class="reviewer-info">
@@ -245,13 +357,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="review-card bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                <div class="review-card bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 group" data-aos="fade-left" data-aos-delay="300">
                     <div class="mb-6">
                         <svg class="w-12 h-12 text-primary mb-4" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
                         </svg>
                     </div>
-                    <p class="review-text text-text-secondary mb-8 leading-relaxed text-lg">Miałem problem z konfiguracją Docker kontenerów w środowisku produkcyjnym. Ekspert pomógł mi zoptymalizować Dockerfile i wytłumaczył najlepsze praktyki.</p>
+                    <p class="review-text text-text-secondary mb-8 leading-relaxed text-lg">An expert helped me optimize my Dockerfile and explained best practices for containerization. Thanks to this, my deployments are faster and I feel much more confident with DevOps tools.</p>
                     <div class="reviewer flex items-center gap-4">
                         <div class="reviewer-avatar w-14 h-14 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl flex items-center justify-center font-bold text-lg">MN</div>
                         <div class="reviewer-info">
@@ -296,19 +408,10 @@
     </footer>
 
     <script>
-        let lastScrollPos = 0;
-        const header = document.getElementById('main-header');
-
-        window.addEventListener('scroll', function() {
-            const currentScrollPos = window.pageYOffset || document.documentElement.scrollTop;
-            
-            if (currentScrollPos > lastScrollPos && currentScrollPos > 50) {
-                header.classList.add('-translate-y-full');
-            } else {
-                header.classList.remove('-translate-y-full');
-            }
-            
-            lastScrollPos = currentScrollPos;
+        AOS.init({
+            duration: 900,
+            once: true,
+            easing: 'ease-out-cubic'
         });
     </script>
 </body>
