@@ -6,10 +6,9 @@ import {
   FiHelpCircle, FiMoreVertical, FiHeart, FiEye, FiCheck, FiX
 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-import { getAllQuestions } from '../../utils/firebaseUtils';
+import { getAllQuestions, updateUserTags, fetchUserDataFromFirestore } from '../../utils/firebaseUtils';
 import EditProfile from '../edit_prof/edit_profile';
-
-console.log("jak nie tu to gdzie ?", localStorage.getItem('currentUser').userName);
+import { useRef } from 'react';
 
 const Modal = ({ isOpen, onClose, children, size = 'medium' }) => {
   if (!isOpen) return null;
@@ -80,25 +79,45 @@ const Profile = () => {
   const [selectedTags, setSelectedTags] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const previousTagsRef = useRef([]);
+
 
   useEffect(() => {
-  console.log("CurrentUser zmieniony:", currentUser);
-}, [currentUser]);
+  const userData = localStorage.getItem('currentUser');
+  if (userData) {
+    const parsedUser = JSON.parse(userData);
+    if (!parsedUser?.uid) return;
 
-  // Pobieranie danych aktualnego użytkownika z localStorage
-  useEffect(() => {
-    const userData = localStorage.getItem('currentUser');
-
-    if (userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
+    fetchUserDataFromFirestore(parsedUser.uid).then((res) => {
+      if (res.success) {
+        const fullUser = { ...parsedUser, ...res.data };
+        setCurrentUser(fullUser);
+        setSelectedTags(fullUser.selectedTags || []);
+        previousTagsRef.current = fullUser.selectedTags || [];
+        localStorage.setItem('currentUser', JSON.stringify(fullUser));
+      } else {
+        console.error("Błąd przy ładowaniu użytkownika z Firestore:", res.error);
         setCurrentUser(parsedUser);
-        if (parsedUser.selectedTags) setSelectedTags(parsedUser.selectedTags);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
       }
+    });
+  }
+  return () => {
+    if (
+      currentUser?.uid &&
+      JSON.stringify(previousTagsRef.current) !== JSON.stringify(selectedTags)
+    ) {
+      updateUserTags(currentUser.uid, selectedTags)
+        .then((res) => {
+          if (res.success) {
+          } else {
+            console.error("Błąd przy aktualizacji tagów:", res.error);
+          }
+        });
     }
-  }, []);
+  };
+}, []);
+
+
 
   // Pobieranie pytan użytkownika z bazy danych
   useEffect(() => {
@@ -139,30 +158,36 @@ const user = {
   bio: currentUser?.bio
 };
 
-
-
-  const handleTagSelect = (tag) => {
-    if (!selectedTags.includes(tag)) {
-      const updatedTags = [...selectedTags, tag];
-      setSelectedTags(updatedTags);
-      if (currentUser) {
-        const updatedUser = { ...currentUser, selectedTags: updatedTags };
-        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-        setCurrentUser(updatedUser);
-      }
-    }
-    setIsDropdownOpen(false);
-  };
-
-  const handleRemoveTag = (tagToRemove) => {
-    const updatedTags = selectedTags.filter(tag => tag !== tagToRemove);
+  const handleTagSelect = async (tag) => {
+  if (!selectedTags.includes(tag)) {
+    const updatedTags = [...selectedTags, tag];
     setSelectedTags(updatedTags);
+    
     if (currentUser) {
       const updatedUser = { ...currentUser, selectedTags: updatedTags };
       localStorage.setItem('currentUser', JSON.stringify(updatedUser));
       setCurrentUser(updatedUser);
+
+      // Zapisz do Firestore
+      await updateUserTags(currentUser.uid, updatedTags);
     }
-  };
+  }
+  setIsDropdownOpen(false);
+};
+
+const handleRemoveTag = async (tagToRemove) => {
+  const updatedTags = selectedTags.filter(tag => tag !== tagToRemove);
+  setSelectedTags(updatedTags);
+  if (currentUser) {
+    const updatedUser = { ...currentUser, selectedTags: updatedTags };
+    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    setCurrentUser(updatedUser);
+
+    // Zapisz do Firestore
+    await updateUserTags(currentUser.uid, updatedTags);
+  }
+};
+
 
   // Funkcja do zapisywania zmian profilu
   const handleProfileSave = (updatedUser) => {
@@ -204,8 +229,6 @@ const user = {
 
   if (loading) return <div>Loading...</div>;
   if (!currentUser) return <div>Loading user data...</div>;
-
-        console.log(localStorage.getItem('currentUser'));
 
   return (
     <div className='Profall'>

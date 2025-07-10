@@ -15,6 +15,33 @@ import {
   getDoc
 } from 'firebase/firestore';
 
+export async function updateUserTags(uid, tags) {
+  try {
+    const userRef = doc(db, "users", uid);
+    await updateDoc(userRef, { selectedTags: tags });
+    return { success: true };
+  } catch (error) {
+    console.error("Błąd przy zapisie tagów:", error);
+    return { success: false, error };
+  }
+}
+
+export async function fetchUserDataFromFirestore(uid) {
+  try {
+    const userRef = doc(db, "users", uid);
+    const docSnap = await getDoc(userRef);
+
+    if (docSnap.exists()) {
+      return { success: true, data: docSnap.data() };
+    } else {
+      return { success: false, error: "User not found" };
+    }
+  } catch (error) {
+    console.error("Błąd przy pobieraniu danych użytkownika:", error);
+    return { success: false, error };
+  }
+}
+
 // Funkcja pomocnicza do formatowania czasu
 const getTimeAgo = (date) => {
   const now = new Date();
