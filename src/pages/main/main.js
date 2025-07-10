@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import "./main.css";
 import { getAllQuestions, incrementViews, likeQuestion } from '../../utils/firebaseUtils';
+import Modal from '../notifications/Modal'; // Import komponentu Modal
+import Notifications from '../notifications/Notifications'; // Import komponentu Notifications
 import {
   FiBookmark, FiChevronDown, FiChevronUp, FiEye, FiHeart, FiHelpCircle,
   FiHome, FiLogOut, FiMail, FiMessageSquare, FiMoon, FiMoreVertical,
   FiPlus, FiSearch, FiSettings, FiUser, FiUsers, FiZap
 } from "react-icons/fi";
+import {useRedirectToHomeRootWhenNotLoggedIn} from "../../hooks/redirect_to_home_root_when_not_logged_in";
 
 // pobiera zakladki z localstorage na profilu
 const useBookmarks = () => {
@@ -45,6 +48,9 @@ function Main() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Dodaj stan dla modal notifications
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+  
   // id pytan ladownych z localstorage
   const [likedQuestions, setLikedQuestions] = useState(() => {
     const saved = localStorage.getItem("likedQuestions");
@@ -126,17 +132,12 @@ function Main() {
     return name === 'Guest' ? 'GU' : name.substring(0, 2).toUpperCase();
   }, [getUserName]);
 
+  useRedirectToHomeRootWhenNotLoggedIn();
+
   // wylogowanie jesli podczas zaladowywanie wykruje blad
   useEffect(() => {
     const checkAuth = () => {
-      const loggedIn = localStorage.getItem('isLoggedIn');
       const userData = localStorage.getItem('currentUser');
-      
-      if (!loggedIn || loggedIn !== 'true' || !userData) {
-        // przenosi na strone logowania 
-        navigate('/', { replace: true });
-        return false;
-      }
       
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
@@ -219,7 +220,10 @@ function Main() {
             <div className="header-actions">
               <div className="divider"></div>
               <button className="icon-btn"><FiMoon /></button>
-              <button className="icon-btn"><FiMail /></button>
+              {/* Zaktualizowany przycisk dla notifications */}
+              <button className="icon-btn" onClick={() => setIsNotificationModalOpen(true)}>
+                <FiMail />
+              </button>
               <div className="user-menu" onClick={() => goTo('/profile')}>
                 <div className="avatar">
                   <span>{getUserInitials()}</span>
@@ -248,7 +252,8 @@ function Main() {
 
               <nav className="nav">
                 <a href="#" className="nav-item active" onClick={(e) => { e.preventDefault(); goTo('/main'); }}><FiHome /><span>Home</span></a>
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/notifications'); }}><FiMessageSquare /><span>Notifications</span></a>
+                {/* Zaktualizowany link do notifications */}
+                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); setIsNotificationModalOpen(true); }}><FiMessageSquare /><span>Notifications</span></a>
                 <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/specialists'); }}><FiUsers /><span>Specialists</span></a>
                 <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/my_questions'); }}><FiUser /><span>My Questions</span></a>
                 <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/zakładki'); }}><FiBookmark /><span>Bookmarks</span></a>
@@ -393,6 +398,18 @@ function Main() {
           </aside>
         </div>
       </div>
+
+      {/* Modal for notifications */}
+      <Modal 
+        isOpen={isNotificationModalOpen} 
+        onClose={() => setIsNotificationModalOpen(false)}
+        size="large"
+        title="Notifications"
+      >
+        <Notifications 
+          onClose={() => setIsNotificationModalOpen(false)}
+        />
+      </Modal>
     </div>
   );
 }
