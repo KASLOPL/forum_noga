@@ -1,12 +1,24 @@
 import * as React from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./answer_q.css";
 
 import {
   FiArrowLeft, FiBookmark, FiChevronDown, FiEye, FiHeart, FiMail,
   FiMessageSquare, FiMoon, FiMoreVertical, FiSend, FiThumbsUp, FiZap
 } from "react-icons/fi";
+
+// Firebase
+import { db } from '../../firebase'; // Upewnij się, że ten plik istnieje
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  doc
+} from "firebase/firestore";
 
 function QuestionDetail() {
   const navigate = useNavigate();
@@ -20,25 +32,19 @@ function QuestionDetail() {
     timeAgo: "2 hours ago",
     highlight: "Jak zoptymalizować zapytania SQL w dużej bazie danych?",
     tags: ["SQL", "Database", "Performance"],
-    fullContent: "Pracuję nad aplikacją, która musi przetwarzać duże ilości danych z bazy MySQL. Mam tabelę z 5 milionami rekordów i zapytania trwają bardzo długo. Próbowałem już indeksów, ale to nie pomogło wystarczająco. Czy ktoś może podpowiedzieć najlepsze praktyki optymalizacji zapytań SQL dla tak dużych zbiorów danych?",
+    fullContent: "Pracuję nad aplikacją, która musi przetwarzać duże ilości danych z bazy MySQL...",
     likes: 23,
     views: 1284,
     responders: 3
   });
 
-  const [answers, setAnswers] = useState(() => {
-    const storedAnswers = localStorage.getItem(`answers_${id}`);
-    return storedAnswers ? JSON.parse(storedAnswers) : [];
-  });
-
+  const [answers, setAnswers] = useState([]);
   const [newAnswer, setNewAnswer] = useState("");
-
   const [bookmarks, setBookmarks] = useState(() => {
     const storedBookmarks = localStorage.getItem('bookmarks');
     return storedBookmarks ? JSON.parse(storedBookmarks) : [];
   });
 
-  // Nowy stan do przechowywania ID YouTube video do wyświetlenia
   const [youtubeVideoId, setYoutubeVideoId] = useState(null);
 
   const getUserDisplayName = () => {
@@ -47,29 +53,41 @@ function QuestionDetail() {
 
   const getUserInitials = () => {
     const displayName = getUserDisplayName();
-    if (displayName === 'Guest') return 'GU';
-    return displayName.substring(0, 2).toUpperCase();
+    return displayName === 'Guest' ? 'GU' : displayName.substring(0, 2).toUpperCase();
   };
 
-  // Funkcja wyciągająca ID YouTube z linku
   const extractYouTubeVideoId = (text) => {
-    // RegExp dopasowujący link do YouTube i wyciągający video ID
     const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/;
     const match = text.match(regex);
     return match ? match[1] : null;
   };
 
-  const handleSendAnswer = () => {
+  // 🔽 Pobieranie odpowiedzi z Firebase
+  useEffect(() => {
+    const fetchAnswers = async () => {
+      try {
+        const q = query(collection(db, "answers"), where("questionId", "==", id));
+        const querySnapshot = await getDocs(q);
+        const loadedAnswers = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setAnswers(loadedAnswers);
+      } catch (err) {
+        console.error("Błąd przy pobieraniu odpowiedzi:", err);
+      }
+    };
+
+    fetchAnswers();
+  }, [id]);
+
+  const handleSendAnswer = async () => {
     if (newAnswer.trim()) {
       const videoId = extractYouTubeVideoId(newAnswer.trim());
-      if (videoId) {
-        setYoutubeVideoId(videoId);
-      } else {
-        setYoutubeVideoId(null);
-      }
-
+      setYoutubeVideoId(videoId || null);
+      
       const newAnswerObj = {
-        id: Date.now(),
+        UID: currentUser.uid,
         author: getUserDisplayName(),
         authorTitle: "Student",
         timeAgo: "just now",
@@ -77,34 +95,44 @@ function QuestionDetail() {
         likes: 0,
         isExpert: false,
         helpful: false,
-        likedBy: [],
         questionId: id,
-        questionTitle: question.highlight
       };
 
-      const updatedAnswers = [newAnswerObj, ...answers];
-      setAnswers(updatedAnswers);
-      localStorage.setItem(`answers_${id}`, JSON.stringify(updatedAnswers));
-      setNewAnswer("");
+      try {
+        const docRef = await addDoc(collection(db, "answers"), newAnswerObj);
+        setAnswers(prev => [{ id: docRef.id, ...newAnswerObj }, ...prev]);
+        setNewAnswer("");
+      } catch (err) {
+        console.error("Błąd przy dodawaniu odpowiedzi:", err);
+      }
     }
   };
 
-  const handleLikeAnswer = (answerId) => {
-    const updatedAnswers = answers.map(answer => {
-      if (answer.id === answerId) {
-        const isLiked = answer.likedBy?.includes(currentUser?.id);
-        return {
-          ...answer,
-          likes: isLiked ? answer.likes - 1 : answer.likes + 1,
-          likedBy: isLiked
-            ? answer.likedBy.filter(id => id !== currentUser?.id)
-            : [...(answer.likedBy || []), currentUser?.id]
-        };
-      }
-      return answer;
-    });
-    setAnswers(updatedAnswers);
-    localStorage.setItem(`answers_${id}`, JSON.stringify(updatedAnswers));
+  const handleLikeAnswer = async (answerId) => {
+    const answerToUpdate = answers.find(a => a.id === answerId);
+    if (!answerToUpdate) return;
+
+    const isLiked = answerToUpdate.likedBy?.includes(currentUser?.id);
+    const updatedLikes = isLiked ? answerToUpdate.likes - 1 : answerToUpdate.likes + 1;
+    const updatedLikedBy = isLiked
+      ? answerToUpdate.likedBy.filter(uid => uid !== currentUser?.id)
+      : [...(answerToUpdate.likedBy || []), currentUser?.id];
+
+    try {
+      const docRef = doc(db, "answers", answerId);
+      await updateDoc(docRef, {
+        likes: updatedLikes,
+        likedBy: updatedLikedBy
+      });
+
+      setAnswers(prev =>
+        prev.map(a =>
+          a.id === answerId ? { ...a, likes: updatedLikes, likedBy: updatedLikedBy } : a
+        )
+      );
+    } catch (err) {
+      console.error("Błąd przy aktualizacji lajków:", err);
+    }
   };
 
   const handleBookmarkAnswer = (answer) => {
@@ -112,26 +140,17 @@ function QuestionDetail() {
       bookmark => bookmark.id === answer.id && bookmark.userId === currentUser?.id
     );
 
-    let updatedBookmarks;
-
-    if (isBookmarked) {
-      updatedBookmarks = bookmarks.filter(
-        bookmark => !(bookmark.id === answer.id && bookmark.userId === currentUser?.id)
-      );
-    } else {
-      updatedBookmarks = [
-        ...bookmarks,
-        {
+    const updatedBookmarks = isBookmarked
+      ? bookmarks.filter(b => !(b.id === answer.id && b.userId === currentUser?.id))
+      : [...bookmarks, {
           id: answer.id,
           userId: currentUser?.id,
           content: answer.content,
           author: answer.author,
           timeAgo: answer.timeAgo,
-          questionId: answer.questionId || id,
-          questionTitle: answer.questionTitle || question.highlight
-        }
-      ];
-    }
+          questionId: answer.questionId,
+          questionTitle: answer.questionTitle
+        }];
 
     setBookmarks(updatedBookmarks);
     localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
