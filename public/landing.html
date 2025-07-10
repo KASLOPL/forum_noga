@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snapsolve - Empowering Questions. Enabling Growth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="landing.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#B0B996',
+                        'primary-dark': '#8A9D6A',
+                        'primary-light': '#D1D9B8',
+                        'dark': '#272D33',
+                        'dark-light': '#3A4147',
+                        'gray-light': '#F8FAFC',
+                        'gray-medium': '#E2E8F0',
+                        'gray-dark': '#64748B',
+                        'text-primary': '#1E293B',
+                        'text-secondary': '#475569',
+                        'text-muted': '#94A3B8'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif']
+                    },
+                    spacing: {
+                        '18': '4.5rem',
+                        '88': '22rem',
+                        '128': '32rem'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-inter text-text-primary bg-white overflow-x-hidden">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-medium/50 transition-transform duration-300 shadow-sm" id="main-header">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center py-6">
+                <div class="text-2xl font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent flex items-center gap-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-primary to-primary-dark rounded-xl flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    Snapsolve
+                </div>
+                <nav class="hidden lg:flex gap-12">
+                    <a href="#how-it-works" class="text-dark font-medium py-2 hover:text-primary transition-colors duration-200 relative group">
+                        How it works
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"></span>
+                    </a>
+                    <a href="#reviews" class="text-dark font-medium py-2 hover:text-primary transition-colors duration-200 relative group">
+                        Reviews
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"></span>
+                    </a>
+                    <a href="#mentors" class="text-dark font-medium py-2 hover:text-primary transition-colors duration-200 relative group">
+                        Mentors
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"></span>
+                    </a>
+                </nav>
+                <div class="flex gap-4">
+                    <a href="#" class="inline-flex items-center justify-center px-6 py-3 text-sm font-medium border-2 border-gray-medium text-dark rounded-xl hover:border-primary hover:text-primary transition-all duration-200">Log In</a>
+                    <a href="#" class="inline-flex items-center justify-center px-6 py-3 text-sm font-medium bg-gradient-to-r from-primary to-primary-dark text-white rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-200">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center pt-24 overflow-hidden bg-gradient-to-br from-gray-light to-white">
+        <div class="absolute inset-0 bg-gradient-to-br from-gray-light/50 to-white/50"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-20 items-center">
+                <div class="hero-text space-y-8">
+                    <h1 class="text-5xl lg:text-7xl font-bold leading-tight text-dark">
+                        Empowering Questions.<br>
+                        <span class="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">Enabling Growth.</span>
+                    </h1>
+                    <p class="text-xl text-text-secondary leading-relaxed max-w-2xl">
+                        We connect vocational students with industry professionals to foster practical learning and problem solving. Ask your question, gain insights, and take the next step in your technical journey.
+                    </p>
+                                    <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#" class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl hover:shadow-xl hover:shadow-primary/25 transition-all duration-200 transform hover:-translate-y-1">
+                        Ask Your Question Now
+                    </a>
+                </div>
+                </div>
+                <div class="hero-image flex justify-center">
+                    <div class="hero-graphic"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Logo Strip -->
+    <section class="py-16 bg-white border-b border-gray-medium/30">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center text-text-muted text-lg font-medium mb-12">Trusted by professionals from</div>
+            <div class="logo-slider">
+                <div class="company-logos">
+                    <div class="company-logo">MICROSOFT</div>
+                    <div class="company-logo">GOOGLE</div>
+                    <div class="company-logo">AMAZON</div>
+                    <div class="company-logo">APPLE</div>
+                    <div class="company-logo">FACEBOOK</div>
+                    <div class="company-logo">NETFLIX</div>
+                    <div class="company-logo">TESLA</div>
+                    <div class="company-logo">SPOTIFY</div>
+                    <div class="company-logo">ADOBE</div>
+                    <div class="company-logo">NVIDIA</div>
+                    <div class="company-logo">INTEL</div>
+                    <div class="company-logo">SAMSUNG</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-24 bg-gray-light">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-20 items-center">
+                <div class="stats-image">
+                    <div class="stats-placeholder"></div>
+                </div>
+                <div class="stats-text">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-dark leading-tight mb-6">
+                        We Let the Numbers<br>
+                        <span class="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">Speak for Themselves</span>
+                    </h2>
+                    <p class="text-xl text-text-secondary leading-relaxed mb-8">
+                        Our thriving community of verified experts spans dozens of technical fields, delivering comprehensive answers that help students and professionals solve complex challenges daily. From software development to network security, from data analysis to cloud architecture, our mentors bring real-world experience and practical solutions to every question. Join thousands of learners who have already accelerated their careers through our platform.
+                    </p>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div class="stat-item text-center">
+                            <span class="stat-number block text-4xl font-bold text-primary mb-3">2000+</span>
+                            <div class="stat-label text-text-secondary font-medium">Questions Answered</div>
+                        </div>
+                        <div class="stat-item text-center">
+                            <span class="stat-number block text-4xl font-bold text-primary mb-3">345</span>
+                            <div class="stat-label text-text-secondary font-medium">Expert Professionals</div>
+                        </div>
+                        <div class="stat-item text-center">
+                            <span class="stat-number block text-4xl font-bold text-primary mb-3">95%</span>
+                            <div class="stat-label text-text-secondary font-medium">Satisfaction Rate</div>
+                        </div>
+                        <div class="stat-item text-center">
+                            <span class="stat-number block text-4xl font-bold text-primary mb-3">24h</span>
+                            <div class="stat-label text-text-secondary font-medium">Average Response</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section class="py-24 bg-white" id="how-it-works">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20">
+                <h2 class="text-4xl lg:text-5xl font-bold mb-6 text-dark">How it works</h2>
+                <p class="text-xl text-text-secondary max-w-3xl mx-auto">Simple steps to get expert help and accelerate your professional growth</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-12">
+                <div class="step-item text-center group">
+                    <div class="step-number w-20 h-20 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl flex items-center justify-center text-3xl font-bold mx-auto mb-8 group-hover:scale-110 transition-transform duration-200">1</div>
+                    <div class="step-box">
+                        <h3 class="step-title text-2xl font-bold mb-6 text-dark">Ask a question</h3>
+                        <p class="step-description text-text-secondary leading-relaxed">Describe your problem or question related to your chosen field. Be specific - the more details you provide, the better guidance you'll receive.</p>
+                    </div>
+                </div>
+                <div class="step-item text-center group">
+                    <div class="step-number w-20 h-20 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl flex items-center justify-center text-3xl font-bold mx-auto mb-8 group-hover:scale-110 transition-transform duration-200">2</div>
+                    <div class="step-box">
+                        <h3 class="step-title text-2xl font-bold mb-6 text-dark">Get an answer</h3>
+                        <p class="step-description text-text-secondary leading-relaxed">An experienced specialist from the industry will answer your question within 24 hours, sharing practical knowledge and advice.</p>
+                    </div>
+                </div>
+                <div class="step-item text-center group">
+                    <div class="step-number w-20 h-20 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl flex items-center justify-center text-3xl font-bold mx-auto mb-8 group-hover:scale-110 transition-transform duration-200">3</div>
+                    <div class="step-box">
+                        <h3 class="step-title text-2xl font-bold mb-6 text-dark">Keep growing</h3>
+                        <p class="step-description text-text-secondary leading-relaxed">Ask follow-up questions, learn from others, and accelerate your professional knowledge step by step.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section relative py-24" id="mentors">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center text-white max-w-4xl mx-auto">
+                <h2 class="text-4xl lg:text-6xl font-bold mb-8 leading-tight">
+                    Have experience in your field?<br>
+                    <span class="text-primary-light">Help younger colleagues spread their wings!</span>
+                </h2>
+                <p class="text-xl mb-12 opacity-90 leading-relaxed">Join our community of expert mentors and make a difference in the next generation of professionals.</p>
+                <div class="cta-buttons">
+                    <a href="#" class="inline-flex items-center justify-center px-10 py-5 text-lg font-semibold bg-white text-dark rounded-2xl hover:shadow-xl hover:shadow-white/25 transition-all duration-200 transform hover:-translate-y-1">
+                        Become a mentor
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="py-24 bg-gray-light" id="reviews">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20">
+                <h2 class="text-4xl lg:text-5xl font-bold mb-6 text-dark">What our users say</h2>
+                <p class="text-xl text-text-secondary max-w-3xl mx-auto">Real stories from our community of learners and mentors</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="review-card bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                    <div class="mb-6">
+                        <svg class="w-12 h-12 text-primary mb-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                        </svg>
+                    </div>
+                    <p class="review-text text-text-secondary mb-8 leading-relaxed text-lg">Miałem problem z optymalizacją zapytań SQL - aplikacja strasznie wolno działała. Ekspert od baz danych nie tylko przepisał moje query, ale też pokazał mi indeksy i wyjaśnił plan wykonania.</p>
+                    <div class="reviewer flex items-center gap-4">
+                        <div class="reviewer-avatar w-14 h-14 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl flex items-center justify-center font-bold text-lg">BK</div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-name font-semibold text-dark text-lg">Bastian Kojko</div>
+                            <div class="reviewer-role text-text-muted">Backend Developer</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                    <div class="mb-6">
+                        <svg class="w-12 h-12 text-primary mb-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                        </svg>
+                    </div>
+                    <p class="review-text text-text-secondary mb-8 leading-relaxed text-lg">Potrzebowałem pomocy z React Hooks i zarządzaniem stanem. Mentor pokazał mi nie tylko jak używać useState i useEffect, ale też jak optymalizować komponenty.</p>
+                    <div class="reviewer flex items-center gap-4">
+                        <div class="reviewer-avatar w-14 h-14 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl flex items-center justify-center font-bold text-lg">AK</div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-name font-semibold text-dark text-lg">Anna Kowalska</div>
+                            <div class="reviewer-role text-text-muted">Frontend Developer</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                    <div class="mb-6">
+                        <svg class="w-12 h-12 text-primary mb-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                        </svg>
+                    </div>
+                    <p class="review-text text-text-secondary mb-8 leading-relaxed text-lg">Miałem problem z konfiguracją Docker kontenerów w środowisku produkcyjnym. Ekspert pomógł mi zoptymalizować Dockerfile i wytłumaczył najlepsze praktyki.</p>
+                    <div class="reviewer flex items-center gap-4">
+                        <div class="reviewer-avatar w-14 h-14 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl flex items-center justify-center font-bold text-lg">MN</div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-name font-semibold text-dark text-lg">Marcin Nowak</div>
+                            <div class="reviewer-role text-text-muted">DevOps Engineer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-16 bg-dark text-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="col-span-2">
+                    <div class="text-2xl font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent mb-4">Snapsolve</div>
+                    <p class="text-gray-400 leading-relaxed max-w-md">Empowering questions and enabling growth through expert mentorship and practical learning solutions.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Platform</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-primary transition-colors">How it works</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Reviews</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Mentors</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-primary transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Snapsolve. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let lastScrollPos = 0;
+        const header = document.getElementById('main-header');
+
+        window.addEventListener('scroll', function() {
+            const currentScrollPos = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (currentScrollPos > lastScrollPos && currentScrollPos > 50) {
+                header.classList.add('-translate-y-full');
+            } else {
+                header.classList.remove('-translate-y-full');
+            }
+            
+            lastScrollPos = currentScrollPos;
+        });
+    </script>
+</body>
+</html> 
