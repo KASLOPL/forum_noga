@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./edit_profile.css";
+import { fetchUserData, saveUserData } from '../../utils/updateUserDataInLocal';
 
 // SVG Icons
 const ArrowLeftIcon = () => (
@@ -41,6 +42,7 @@ const EditProfile = ({ currentUser, onClose, onSave }) => {
 
   const [schoolDropdownOpen, setSchoolDropdownOpen] = useState(false);
   const [studyDropdownOpen, setStudyDropdownOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const schoolOptions = [
     "Uniwersytet Warszawski",
@@ -69,12 +71,25 @@ const EditProfile = ({ currentUser, onClose, onSave }) => {
   ];
 
   useEffect(() => {
-    if (currentUser) {
+    // Sprawdź czy currentUser istnieje w props lub localStorage
+    let user = currentUser;
+    if (!user) {
+      try {
+        const localUser = localStorage.getItem('currentUser');
+        if (localUser) {
+          user = JSON.parse(localUser);
+        }
+      } catch (error) {
+        console.error('Error parsing currentUser from localStorage:', error);
+      }
+    }
+
+    if (user) {
       setFormData({
-        name: currentUser.userName || currentUser.name || "",
-        school: currentUser.school || "",
-        fieldOfStudy: currentUser.fieldOfStudy || "",
-        bio: currentUser.bio || "",
+        name: user.userName || user.name || "",
+        school: user.school || "",
+        fieldOfStudy: user.fieldOfStudy || "",
+        bio: user.bio || "",
       });
     }
   }, [currentUser]);
@@ -86,17 +101,90 @@ const EditProfile = ({ currentUser, onClose, onSave }) => {
     }));
   };
 
-  const handleSave = () => {
-    if (!formData.name.trim()) {
-      alert("Nazwa jest wymagana!");
-      return;
-    }
+  const handleSave = async (e) => {
+  e?.preventDefault();
+  
+  if (!formData.name.trim()) {
+    alert("Nazwa jest wymagana!");
+    return;
+  }
 
-    onSave(formData);
-  };
+  // Sprawdź czy user istnieje
+  let user = currentUser;
+  if (!user) {
+    try {
+      const localUser = localStorage.getItem('currentUser');
+      if (localUser) {
+        user = JSON.parse(localUser);
+      }
+    } catch (error) {
+      console.error('Error parsing currentUser from localStorage:', error);
+    }
+  }
+
+  if (!user || !user.uid) {
+    alert("Błąd: Nie można znaleźć danych użytkownika!");
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    const success = await saveUserData(user.uid, {
+      userName: formData.name,
+      school: formData.school,
+      fieldOfStudy: formData.fieldOfStudy,
+      bio: formData.bio,
+      email: user.email || "",
+    });
+
+    if (success) {
+      // Pobierz świeże dane z bazy danych po zapisaniu
+      const freshUserData = await fetchUserData(user.uid);
+      console.log(freshUserData);
+      
+      if (freshUserData) {
+        // Aktualizuj localStorage świeżymi danymi z bazy
+        const updatedUser = {
+          ...user,
+          ...freshUserData  // Użyj danych z bazy zamiast formData
+        };
+        
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+        console.log(localStorage.getItem('currentUser'));
+        
+        // Wywołaj callback z świeżymi danymi
+        if (onSave) {
+          onSave(updatedUser);
+        }
+        
+        // Zaktualizuj formData z świeżymi danymi z bazy
+        setFormData({
+          name: freshUserData.userName || freshUserData.name || "",
+          school: freshUserData.school || "",
+          fieldOfStudy: freshUserData.fieldOfStudy || "",
+          bio: freshUserData.bio || "",
+        });
+        
+        alert("Profil został pomyślnie zaktualizowany!");
+      } else {
+        throw new Error("Nie udało się pobrać zaktualizowanych danych z bazy");
+      }
+    } else {
+      throw new Error("Nie udało się zapisać profilu");
+    }
+    
+  } catch (error) {
+    console.error("Błąd podczas zapisywania profilu:", error);
+    alert("Wystąpił błąd podczas zapisywania profilu. Spróbuj ponownie.");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleImageUpload = () => {
     console.log("Upload image clicked");
+    // Tutaj możesz dodać logikę uploadowania obrazu
   };
 
   const getUserInitials = () => {
@@ -116,154 +204,162 @@ const EditProfile = ({ currentUser, onClose, onSave }) => {
 
   return (
     <div className="predit">
-    <div className="profile-editor">
-      <div className="profile-container">
-        {/* Header */}
-        <div className="header">
-          <div className="header-left">
-            <button className="back-button" onClick={onClose}>
-              <ArrowLeftIcon />
+      <div className="profile-editor">
+        <div className="profile-container">
+          {/* Header */}
+          <div className="header">
+            <div className="header-left">
+              <button className="back-button" onClick={onClose}>
+                <ArrowLeftIcon />
+              </button>
+              <h1 className="header-title">Edit Your Profile</h1>
+            </div>
+            <button 
+              className="save-button" 
+              onClick={handleSave}
+              onMouseDown={(e) => {
+                e.preventDefault();
+              }}
+              disabled={isLoading}
+              type="button"
+            >
+              {isLoading ? "Saving..." : "Save"}
             </button>
-            <h1 className="header-title">Edit Your Profile</h1>
           </div>
-          <button className="save-button" onClick={handleSave}>
-            Save
-          </button>
-        </div>
 
-        <div className="content">
-          {/* Avatar Section */}
-          <div className="section">
-            <label className="label">Avatar</label>
-            <div className="avatar-container">
-              <div className="avatar-wrapper">
-                <div className="avatar">{getUserInitials()}</div>
-                <button className="avatar-plus" onClick={handleImageUpload}>
-                  <PlusIcon />
-                </button>
-              </div>
-              <div className="upload-section">
-                <button className="upload-button" onClick={handleImageUpload}>
-                  <UploadIcon />
-                  Upload new image
-                </button>
-                <div className="upload-info">
-                  At least 800x800 px recommended
-                  <br />
-                  JPG or PNG is allowed
+          <div className="content">
+            {/* Avatar Section */}
+            <div className="section">
+              <label className="label">Avatar</label>
+              <div className="avatar-container">
+                <div className="avatar-wrapper">
+                  <div className="avatar">{getUserInitials()}</div>
+                  <button className="avatar-plus" onClick={handleImageUpload}>
+                    <PlusIcon />
+                  </button>
+                </div>
+                <div className="upload-section">
+                  <button className="upload-button" onClick={handleImageUpload}>
+                    <UploadIcon />
+                    Upload new image
+                  </button>
+                  <div className="upload-info">
+                    At least 800x800 px recommended
+                    <br />
+                    JPG or PNG is allowed
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Name Field */}
-          <div className="section">
-            <label className="label" htmlFor="name">
-              Name *
-            </label>
-            <input
-              id="name"
-              type="text"
-              className="input"
-              value={formData.name}
-              onChange={(e) => handleInputChange("name", e.target.value)}
-              placeholder="Enter your name"
-            />
-          </div>
+            {/* Name Field */}
+            <div className="section">
+              <label className="label" htmlFor="name">
+                Name *
+              </label>
+              <input
+                id="name"
+                type="text"
+                className="input"
+                value={formData.name}
+                onChange={(e) => handleInputChange("name", e.target.value)}
+                placeholder="Enter your name"
+              />
+            </div>
 
-          {/* School and Field of Study */}
-          <div className="section">
-            <div className="grid-two">
-              <div className="dropdown-container">
-                <label className="label" htmlFor="school">
-                  School/University
-                </label>
-                <div className="dropdown-wrapper">
-                  <input
-                    id="school"
-                    type="text"
-                    className="input dropdown-input"
-                    value={formData.school}
-                    onChange={(e) => handleInputChange("school", e.target.value)}
-                    placeholder="Enter your school"
-                    onClick={() => setSchoolDropdownOpen(!schoolDropdownOpen)}
-                  />
-                  <button 
-                    className="dropdown-arrow"
-                    onClick={() => setSchoolDropdownOpen(!schoolDropdownOpen)}
-                  >
-                    <ChevronDownIcon />
-                  </button>
-                  {schoolDropdownOpen && (
-                    <div className="dropdown-menu">
-                      {schoolOptions.map((school, index) => (
-                        <div
-                          key={index}
-                          className="dropdown-item"
-                          onClick={() => handleSchoolSelect(school)}
-                        >
-                          {school}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+            {/* School and Field of Study */}
+            <div className="section">
+              <div className="grid-two">
+                <div className="dropdown-container">
+                  <label className="label" htmlFor="school">
+                    School/University
+                  </label>
+                  <div className="dropdown-wrapper">
+                    <input
+                      id="school"
+                      type="text"
+                      className="input dropdown-input"
+                      value={formData.school}
+                      onChange={(e) => handleInputChange("school", e.target.value)}
+                      placeholder="Enter your school"
+                      onClick={() => setSchoolDropdownOpen(!schoolDropdownOpen)}
+                    />
+                    <button 
+                      className="dropdown-arrow"
+                      onClick={() => setSchoolDropdownOpen(!schoolDropdownOpen)}
+                    >
+                      <ChevronDownIcon />
+                    </button>
+                    {schoolDropdownOpen && (
+                      <div className="dropdown-menu">
+                        {schoolOptions.map((school, index) => (
+                          <div
+                            key={index}
+                            className="dropdown-item"
+                            onClick={() => handleSchoolSelect(school)}
+                          >
+                            {school}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="dropdown-container">
-                <label className="label" htmlFor="fieldOfStudy">
-                  Field of Study
-                </label>
-                <div className="dropdown-wrapper">
-                  <input
-                    id="fieldOfStudy"
-                    type="text"
-                    className="input dropdown-input"
-                    value={formData.fieldOfStudy}
-                    onChange={(e) => handleInputChange("fieldOfStudy", e.target.value)}
-                    placeholder="Enter your field of study"
-                    onClick={() => setStudyDropdownOpen(!studyDropdownOpen)}
-                  />
-                  <button 
-                    className="dropdown-arrow"
-                    onClick={() => setStudyDropdownOpen(!studyDropdownOpen)}
-                  >
-                    <ChevronDownIcon />
-                  </button>
-                  {studyDropdownOpen && (
-                    <div className="dropdown-menu">
-                      {studyOptions.map((study, index) => (
-                        <div
-                          key={index}
-                          className="dropdown-item"
-                          onClick={() => handleStudySelect(study)}
-                        >
-                          {study}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                <div className="dropdown-container">
+                  <label className="label" htmlFor="fieldOfStudy">
+                    Field of Study
+                  </label>
+                  <div className="dropdown-wrapper">
+                    <input
+                      id="fieldOfStudy"
+                      type="text"
+                      className="input dropdown-input"
+                      value={formData.fieldOfStudy}
+                      onChange={(e) => handleInputChange("fieldOfStudy", e.target.value)}
+                      placeholder="Enter your field of study"
+                      onClick={() => setStudyDropdownOpen(!studyDropdownOpen)}
+                    />
+                    <button 
+                      className="dropdown-arrow"
+                      onClick={() => setStudyDropdownOpen(!studyDropdownOpen)}
+                    >
+                      <ChevronDownIcon />
+                    </button>
+                    {studyDropdownOpen && (
+                      <div className="dropdown-menu">
+                        {studyOptions.map((study, index) => (
+                          <div
+                            key={index}
+                            className="dropdown-item"
+                            onClick={() => handleStudySelect(study)}
+                          >
+                            {study}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Bio Section */}
-          <div className="section">
-            <label className="label" htmlFor="bio">
-              Bio
-            </label>
-            <textarea
-              id="bio"
-              className="textarea"
-              value={formData.bio}
-              onChange={(e) => handleInputChange("bio", e.target.value)}
-              placeholder="Tell us about yourself..."
-              rows="4"
-            />
+            {/* Bio Section */}
+            <div className="section">
+              <label className="label" htmlFor="bio">
+                Bio
+              </label>
+              <textarea
+                id="bio"
+                className="textarea"
+                value={formData.bio}
+                onChange={(e) => handleInputChange("bio", e.target.value)}
+                placeholder="Tell us about yourself..."
+                rows="4"
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };

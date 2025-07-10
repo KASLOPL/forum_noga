@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import { getAllQuestions } from '../../utils/firebaseUtils';
 import EditProfile from '../edit_prof/edit_profile';
 
+console.log("jak nie tu to gdzie ?", localStorage.getItem('currentUser').userName);
+
 const Modal = ({ isOpen, onClose, children, size = 'medium' }) => {
   if (!isOpen) return null;
 
@@ -79,9 +81,14 @@ const Profile = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  useEffect(() => {
+  console.log("CurrentUser zmieniony:", currentUser);
+}, [currentUser]);
+
   // Pobieranie danych aktualnego użytkownika z localStorage
   useEffect(() => {
     const userData = localStorage.getItem('currentUser');
+
     if (userData) {
       try {
         const parsedUser = JSON.parse(userData);
@@ -124,13 +131,15 @@ const Profile = () => {
     'node.js', 'flask', 'arduino', 'linux', 'database', 'networking',
     'school_project', 'teamwork', 'presentation', 'figma', 'ux/ui', 'pitch_deck', 'other', 'none'
   ];
+  
+const user = {
+  name: currentUser?.userName || 'Guest User', 
+  username: `@${currentUser?.userName?.toLowerCase().replace(/\s+/g, '.') || 'guest'}`,
+  school: currentUser?.school,
+  bio: currentUser?.bio
+};
 
-  const user = {
-    name: currentUser?.userName || 'Guest User', 
-    username: `@${currentUser?.userName?.toLowerCase().replace(' ', '.') || 'guest'}`,
-    school: currentUser?.school || 'Zespół Szkół Energetycznych Technikum nr 13',
-    bio: currentUser?.bio || 'Klepię kod jak combo w ulubionych grze, bo nie ma lepszego uczucia niż zobaczyć jak wszystko w końcu działa 😎'
-  };
+
 
   const handleTagSelect = (tag) => {
     if (!selectedTags.includes(tag)) {
@@ -156,18 +165,27 @@ const Profile = () => {
   };
 
   // Funkcja do zapisywania zmian profilu
-  const handleProfileSave = (newData) => {
-    const updatedUser = {
-      ...currentUser,
-      userName: newData.name,
-      school: newData.school,
-      fieldOfStudy: newData.fieldOfStudy,
-      bio: newData.bio
-    };
-    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-    setCurrentUser(updatedUser);
-    setIsEditModalOpen(false); // Zamknij modal po zapisaniu
-  };
+  const handleProfileSave = (updatedUser) => {
+  console.log("Otrzymane dane z EditProfile:", updatedUser);
+  
+  // Aktualizuj stan komponentu Profile świeżymi danymi
+  setCurrentUser(updatedUser);
+  
+  // Zaktualizuj selectedTags jeśli istnieją
+  if (updatedUser.selectedTags) {
+    setSelectedTags(updatedUser.selectedTags);
+  }
+  
+  // Zamknij modal
+  setIsEditModalOpen(false);
+  
+  // Opcjonalnie: wymuś przeładowanie pytań użytkownika
+  // jeśli userName się zmienił
+  if (updatedUser.userName !== currentUser?.userName) {
+    // Tutaj możesz dodać logikę do przeładowania pytań
+    console.log("Username zmieniony, może warto przeładować pytania");
+  }
+};
 
   const navLinks = [
     { icon: <FiHome size={16} />, text: 'Home', path: '/main' },
@@ -186,6 +204,8 @@ const Profile = () => {
 
   if (loading) return <div>Loading...</div>;
   if (!currentUser) return <div>Loading user data...</div>;
+
+        console.log(localStorage.getItem('currentUser'));
 
   return (
     <div className='Profall'>

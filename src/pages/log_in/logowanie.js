@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react' //react i hooki
 import { useNavigate } from 'react-router-dom' // nawigacje z react routera
+import { auth } from '../../firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile
 } from 'firebase/auth' // funkcje do logowania i rejestracji z firebase
-import { auth } from '../../firebase' // nasza konfiguracje firebase
 import './logowanie.css' 
 import noprosze from '../../images/noprosze.jpg' // obrazki do slidera
 import noprosze1 from '../../images/noprosze1.jpg'
@@ -14,6 +14,8 @@ import noprosze3 from '../../images/noprosze3.jpg'
 import google from '../../icons/google.png' // import ikon social media
 import apple from '../../icons/apple.png'
 import facebook from '../../icons/facebook.png'
+import { db } from '../../firebase'; // <-- TO DODAJ
+import { doc, setDoc, getDoc } from 'firebase/firestore'; // <-- I TO
 
 // tu wszystkie obrazki do slidera
 const sliderImages = [
@@ -155,11 +157,35 @@ function Auth() {
         // logowanie uzytkownika
         const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password) // logowanie przez firebase
         const user = userCredential.user // pobieramy dane uzytkownika
+        
+        async function fetchUserData(uid) {
+              try {
+                const docRef = doc(db, 'users', uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                  const userData = docSnap.data();
+                  console.log("Dane użytkownika:", userData);
+                  return userData;
+                } else {
+                  console.log("Nie znaleziono dokumentu użytkownika");
+                  return null;
+                }
+              } catch (error) {
+                console.error("Błąd podczas pobierania danych:", error);
+                return null;
+              }
+            }
+            const userProfileData =  fetchUserData(user.uid);
 
         const userData = {
           uid: user.uid, // unikalny identyfikator uzytkownika
           email: user.email, // email uzytkownika
-          userName: user.displayName || user.email.split('@')[0] // domyslna nazwa jak nie ma displayName
+          userName: user.displayName || user.email.split('@')[0], // domyslna nazwa jak nie ma displayName
+          bio: userProfileData?.bio || '',
+          school: userProfileData?.school || '',
+          fieldOfStudy: userProfileData?.fieldOfStudy || '',
+          interests: userProfileData?.interests || ''
         }
 
         localStorage.setItem('isLoggedIn', 'true') // zapisujemy info o logowaniu
@@ -176,10 +202,23 @@ function Auth() {
           await updateProfile(user, { displayName: formData.userName.trim() }) // aktualizacja profilu uzytkownika
         }
 
+        await setDoc(doc(db, "users", user.uid), {
+          email: user.email,
+          userName: formData.userName.trim(),
+          school: "",
+          fieldOfStudy: "",
+          bio: "",
+          interests: ""
+          });
+
         const userData = {
           uid: user.uid, // unikalny identyfikator uzytkownika
           email: user.email, // email uzytkownika
-          userName: formData.userName.trim() || user.email.split('@')[0] // domyslna nazwa jak nie ma displayName
+          userName: formData.userName.trim() || user.email.split('@')[0], // domyslna nazwa jak nie ma displayName
+          bio: '',
+          school: '',
+          fieldOfStudy: '',
+          interests: ""
         }
 
         localStorage.setItem('isLoggedIn', 'true') // zapisujemy logowanie
