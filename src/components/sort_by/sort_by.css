@@ -1,0 +1,98 @@
+/* Przyciemnione tło */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+}
+
+/* Kontener główny */
+.sort-by-container {
+  position: relative;
+  display: inline-block;
+  z-index: 50;
+}
+
+/* Przycisk Sort by */
+.sort-by-button {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: #d1d5db;
+  color: #374151;
+  border: 1px solid #292e3b !important; 
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.sort-by-button:hover {
+  background: #3a414d30;
+}
+
+/* Ikona sortowania */
+.sort-icon {
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+}
+
+/* Lista opcji - tylko fade bez ruchu */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sort-by-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  width: 192px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  padding: 12px 0;
+  z-index: 50;
+  animation: fadeIn 0.22s ease-out;
+}
+
+/* Pojedyncza opcja */
+.sort-by-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  color: #1f2937;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.sort-by-option:hover {
+  color: #6b7280;
+}
+
+/* Kropka wskaźnika */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 12px;
+  background: transparent;
+}
+
+.dot.active {
+  background: #619c4c;
+}
