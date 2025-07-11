@@ -59,6 +59,13 @@ function Main() {
 
   // funkcja do nawigacji 
   const goTo = useCallback((path) => navigate(path), [navigate]);
+  // obsługa wyszukiwania
+  const [searchValue, setSearchValue] = useState("");
+  const handleSearchKeyDown = (e) => {
+    if (e.key === "Enter" && searchValue.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchValue.trim())}`);
+    }
+  };
   // wylogowywanie i usuwanie danych z localstorage
   const logout = useCallback(() => {
     localStorage.removeItem('isLoggedIn');
@@ -204,7 +211,14 @@ function Main() {
               <div className="search-box">
                 <div className="search-wrapper">
                   <FiSearch className="search-icon" />
-                  <input className="search-input" placeholder="Got a question? See if it's already asked!" type="text" />
+                  <input 
+                    className="search-input" 
+                    placeholder="Got a question? See if it's already asked!" 
+                    type="text" 
+                    value={searchValue}
+                    onChange={e => setSearchValue(e.target.value)}
+                    onKeyDown={handleSearchKeyDown}
+                  />
                 </div>
               </div>
               <button className="add-btn" onClick={() => goTo('/addquestion')}>

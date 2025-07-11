@@ -18,6 +18,7 @@ import Help from './pages/help/help.js';
 import Profile from './pages/profile/profile.js'
 import QuestionDetail from './pages/answ_question/answer_q';
 import MyQuestions from './pages/my_questions/my_questions.js';
+import Search from './pages/search/search.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -33,6 +34,7 @@ root.render(
         <Route path='/profile' element={<Profile />}></Route>
         <Route path="/answer_q/:id" element={<QuestionDetail />} />
         <Route path='/my_questions' element={<MyQuestions />} />
+        <Route path="/search" element={<Search />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
