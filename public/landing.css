@@ -737,3 +737,20 @@ section.relative.min-h-screen {
   .student-question { min-width: 90px; max-width: 120px; font-size: 0.8rem; }
   .student-questions-bg .student-question:nth-child(n+5) { display: none; }
 }
+
+.stats-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stats-photo {
+  width: 100%;
+  max-width: 520px;
+  min-width: 320px;
+  border-radius: 2.5rem;
+  box-shadow: 0 8px 32px rgba(60,72,88,0.10);
+  object-fit: cover;
+  aspect-ratio: 4/3;
+  margin: -32px auto -24px auto;
+  display: block;
+}
