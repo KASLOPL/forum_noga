@@ -747,7 +747,7 @@ section.relative.min-h-screen {
   width: 100%;
   max-width: 520px;
   min-width: 320px;
-  border-radius: 2.5rem;
+  border-radius: 1.2rem;
   box-shadow: 0 8px 32px rgba(60,72,88,0.10);
   object-fit: cover;
   aspect-ratio: 4/3;
