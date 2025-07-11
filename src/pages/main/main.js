@@ -8,9 +8,12 @@ import Notifications from '../notifications/Notifications'; // Import komponentu
 import {
   FiBookmark, FiChevronDown, FiChevronUp, FiEye, FiHeart, FiHelpCircle,
   FiHome, FiLogOut, FiMail, FiMessageSquare, FiMoon, FiMoreVertical,
-  FiPlus, FiSearch, FiSettings, FiUser, FiUsers, FiZap
-} from "react-icons/fi";
+  FiPlus, FiSearch, FiSettings, FiUser, FiUsers, FiZap 
+} from "react-icons/fi"; 
 import {useRedirectToHomeRootWhenNotLoggedIn} from "../../hooks/redirect_to_home_root_when_not_logged_in";
+import SortBy from '../../components/sort_by/sort_by';
+import Filters from '../../components/filters/filters';
+import filtersImg from '../../images/filters.png';
 
 // pobiera zakladki z localstorage na profilu
 const useBookmarks = () => {
@@ -157,6 +160,61 @@ function Main() {
     localStorage.setItem("likedQuestions", JSON.stringify(likedQuestions));
   }, [likedQuestions]);
 
+  const [sortOption, setSortOption] = useState({ value: 'newest', label: 'Newest first' });
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [currentFilters, setCurrentFilters] = useState({});
+
+  // Sorting logic for questions
+  const sortQuestions = (questions, option) => {
+    if (!option) return questions;
+    switch (option.value) {
+      case 'newest':
+        return [...questions].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      case 'upvoted':
+        return [...questions].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+      case 'answered':
+        return [...questions].sort((a, b) => (b.responders || 0) - (a.responders || 0));
+      case 'viewed':
+        return [...questions].sort((a, b) => (b.views || 0) - (a.views || 0));
+      case 'solved':
+        return [...questions].sort((a, b) => (b.solved ? 1 : 0) - (a.solved ? 1 : 0));
+      default:
+        return questions;
+    }
+  };
+
+  // Filter questions based on selected filters
+  const filterQuestions = (questions, filters) => {
+    if (!filters || Object.keys(filters).every(key => !filters[key] || filters[key].length === 0)) {
+      return questions;
+    }
+
+    return questions.filter(question => {
+      // Filter by category
+      if (filters.category && filters.category.length > 0) {
+        if (!question.category || !filters.category.includes(question.category)) {
+          return false;
+        }
+      }
+
+      // Filter by tags
+      if (filters.tags && filters.tags.length > 0) {
+        if (!question.tags || !filters.tags.some(tag => question.tags.includes(tag))) {
+          return false;
+        }
+      }
+
+      // Filter by question type
+      if (filters.questionType && filters.questionType.length > 0) {
+        if (!question.type || !filters.questionType.includes(question.type)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  };
+
   // ekran po zalogowaniu
   if (!user || !isLoggedIn) {
     return (
@@ -175,7 +233,7 @@ function Main() {
   // inne
   const remainingQuestions = questions.filter(q => !filteredQuestions.includes(q));
   // poukladaj od tych pod urzytkownika do tych nie pasujacyh w tej kolejnosci 
-  const orderedQuestions = [...filteredQuestions, ...remainingQuestions];
+  const orderedQuestions = sortQuestions([...filteredQuestions, ...remainingQuestions], sortOption);
 
   // ladowanie strony na srodku napis loading 
   if (loading) {
@@ -207,13 +265,7 @@ function Main() {
                   <input className="search-input" placeholder="Got a question? See if it's already asked!" type="text" />
                 </div>
               </div>
-              <button className="add-btn" onClick={() => goTo('/addquestion')}>
-                <FiPlus />
-              </button>
-              <div className="sort-btn">
-                <span>Sort by</span>
-                <FiChevronDown />
-              </div>
+              <Filters onFiltersChange={setCurrentFilters} currentFilters={currentFilters} />
             </div>
 
             {/* HEADER */}
@@ -280,7 +332,13 @@ function Main() {
             </div>
 
               {/* PYTANIE */}
-            <div className="posts-count">{questions.length} posts</div>
+            <div className="posts-count" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>{questions.length} posts</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <SortBy onSortChange={setSortOption} currentSort={sortOption} />
+              </div>
+            </div>
+
             <div className="questions-container">
               <div className="questions-list">
                 {Array.isArray(orderedQuestions) && orderedQuestions.map((question) => (
