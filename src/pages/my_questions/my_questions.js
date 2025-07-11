@@ -8,6 +8,7 @@ import {
   FiHome, FiLogOut, FiMessageSquare, FiMoreVertical, FiPlus, FiSettings, 
   FiUser, FiUsers, FiZap, FiCheck
 } from "react-icons/fi";
+import {useRedirectToHomeRootWhenNotLoggedIn} from "../../hooks/redirect_to_home_root_when_not_logged_in";
 
 // kolor obramowania z zaleznosci od statusu pytania 
 const statusColors = { complete: '#4CAF50', in_progress: '#FF9800' };
@@ -35,13 +36,7 @@ const useAuth = (navigate) => {
 
   // sprawdzanie czy urzytkonik zalogowany jak nie to wraca na strone logowania 
   useEffect(() => {
-    const loggedIn = localStorage.getItem('isLoggedIn');
     const userData = localStorage.getItem('currentUser');
-    
-    if (!loggedIn || loggedIn !== 'true' || !userData) {
-      navigate('/');
-      return;
-    }
     
     try {
       setUser(JSON.parse(userData));
@@ -205,6 +200,8 @@ function MyQuestions() {
   const openQuestion = useCallback((question) => {
     navigate(`/answer_q/${question.id}`, { state: { question } });
   }, [navigate]);
+
+  useRedirectToHomeRootWhenNotLoggedIn();
 
   const loadUserQuestions = useCallback(async () => {
     if (!isLoggedIn || !user) return;
