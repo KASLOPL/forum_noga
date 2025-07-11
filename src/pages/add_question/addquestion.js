@@ -91,14 +91,19 @@ const AddQuestion = () => {
 
     // Sprawdzenie czy wszystkie wymagane pola są wypełnione
     if (!formData.title.trim() || !formData.caption.trim()) {
-      alert('Wypełnij wszystkie wymagane pola!');
-      return;
-    }
+  alert('Wypełnij wszystkie wymagane pola!');
+  return;
+}
 
-    if (tags.length === 0) {
-      alert('Dodaj przynajmniej jeden tag!');
-      return;
-    }
+if (tags.length === 0) {
+  alert('Dodaj przynajmniej jeden tag!');
+  return;
+}
+
+if (!answerVisibility) {
+  alert('Wybierz kto może odpowiedzieć na pytanie!');
+  return;
+}
 
     setIsSubmitting(true); // Zablokowanie formularza
 
@@ -121,8 +126,7 @@ const AddQuestion = () => {
         urgent: formData.urgent,
         answerDate: formData.answerDate || null,
         tags: tags.map(tag => tag.trim()),
-        visibility: answerVisibility || 'everyone',
-
+        visibility: answerVisibility,
       };
 
       // Wysłanie pytania do Firebase
@@ -151,7 +155,7 @@ const AddQuestion = () => {
   formData.append('file', selectedFile);
 
   try {
-    const uploadResponse = await fetch('http://localhost:3001/api/upload_questions', {
+    const uploadResponse = await fetch('http://localhost:3001/api/uploadQuestions', {
       method: 'POST',
       body: formData,
     });
@@ -201,34 +205,6 @@ const AddQuestion = () => {
       </a>
     );
   };
- const handleFileUpload = async () => {
-  if (!selectedFile) {
-    alert('Najpierw wybierz plik!');
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('file', selectedFile);
-
-  try {
-    const response = await fetch('http://localhost:3001/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (response.ok) {
-      console.log('Plik przesłany!');
-      alert('Plik został przesłany!');
-    } else {
-      console.error('Błąd przesyłania.');
-      alert('Błąd podczas przesyłania pliku.');
-    }
-  } catch (error) {
-    console.error('Błąd:', error);
-    alert('Wystąpił błąd.');
-  }
-};
-
 
   // JSX – kod HTML tej strony (formularz i nawigacja)
   return (
@@ -362,7 +338,7 @@ const AddQuestion = () => {
                     </div>
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Choose who can answer your question</label>
+                    <label className="form-label">Choose who can answer your question<span className="required">*</span></label>
                     <div className="answer-options">
                       <button
                         type="button"

@@ -6,8 +6,9 @@ import {
   FiHelpCircle, FiMoreVertical, FiHeart, FiEye, FiCheck, FiX
 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-import { getAllQuestions } from '../../utils/firebaseUtils';
+import { getAllQuestions, updateUserTags, fetchUserDataFromFirestore } from '../../utils/firebaseUtils';
 import EditProfile from '../edit_prof/edit_profile';
+import { useRef } from 'react';
 
 const Modal = ({ isOpen, onClose, children, size = 'medium' }) => {
   if (!isOpen) return null;
@@ -78,20 +79,45 @@ const Profile = () => {
   const [selectedTags, setSelectedTags] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const previousTagsRef = useRef([]);
 
-  // Pobieranie danych aktualnego użytkownika z localStorage
+
   useEffect(() => {
-    const userData = localStorage.getItem('currentUser');
-    if (userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
+  const userData = localStorage.getItem('currentUser');
+  if (userData) {
+    const parsedUser = JSON.parse(userData);
+    if (!parsedUser?.uid) return;
+
+    fetchUserDataFromFirestore(parsedUser.uid).then((res) => {
+      if (res.success) {
+        const fullUser = { ...parsedUser, ...res.data };
+        setCurrentUser(fullUser);
+        setSelectedTags(fullUser.selectedTags || []);
+        previousTagsRef.current = fullUser.selectedTags || [];
+        localStorage.setItem('currentUser', JSON.stringify(fullUser));
+      } else {
+        console.error("Błąd przy ładowaniu użytkownika z Firestore:", res.error);
         setCurrentUser(parsedUser);
-        if (parsedUser.selectedTags) setSelectedTags(parsedUser.selectedTags);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
       }
+    });
+  }
+  return () => {
+    if (
+      currentUser?.uid &&
+      JSON.stringify(previousTagsRef.current) !== JSON.stringify(selectedTags)
+    ) {
+      updateUserTags(currentUser.uid, selectedTags)
+        .then((res) => {
+          if (res.success) {
+          } else {
+            console.error("Błąd przy aktualizacji tagów:", res.error);
+          }
+        });
     }
-  }, []);
+  };
+}, []);
+
+
 
   // Pobieranie pytan użytkownika z bazy danych
   useEffect(() => {
@@ -124,50 +150,67 @@ const Profile = () => {
     'node.js', 'flask', 'arduino', 'linux', 'database', 'networking',
     'school_project', 'teamwork', 'presentation', 'figma', 'ux/ui', 'pitch_deck', 'other', 'none'
   ];
+  
+const user = {
+  name: currentUser?.userName || 'Guest User', 
+  username: `@${currentUser?.userName?.toLowerCase().replace(/\s+/g, '.') || 'guest'}`,
+  school: currentUser?.school,
+  bio: currentUser?.bio
+};
 
-  const user = {
-    name: currentUser?.userName || 'Guest User', 
-    username: `@${currentUser?.userName?.toLowerCase().replace(' ', '.') || 'guest'}`,
-    school: currentUser?.school || 'Zespół Szkół Energetycznych Technikum nr 13',
-    bio: currentUser?.bio || 'Klepię kod jak combo w ulubionych grze, bo nie ma lepszego uczucia niż zobaczyć jak wszystko w końcu działa 😎'
-  };
-
-  const handleTagSelect = (tag) => {
-    if (!selectedTags.includes(tag)) {
-      const updatedTags = [...selectedTags, tag];
-      setSelectedTags(updatedTags);
-      if (currentUser) {
-        const updatedUser = { ...currentUser, selectedTags: updatedTags };
-        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-        setCurrentUser(updatedUser);
-      }
-    }
-    setIsDropdownOpen(false);
-  };
-
-  const handleRemoveTag = (tagToRemove) => {
-    const updatedTags = selectedTags.filter(tag => tag !== tagToRemove);
+  const handleTagSelect = async (tag) => {
+  if (!selectedTags.includes(tag)) {
+    const updatedTags = [...selectedTags, tag];
     setSelectedTags(updatedTags);
+    
     if (currentUser) {
       const updatedUser = { ...currentUser, selectedTags: updatedTags };
       localStorage.setItem('currentUser', JSON.stringify(updatedUser));
       setCurrentUser(updatedUser);
-    }
-  };
 
-  // Funkcja do zapisywania zmian profilu
-  const handleProfileSave = (newData) => {
-    const updatedUser = {
-      ...currentUser,
-      userName: newData.name,
-      school: newData.school,
-      fieldOfStudy: newData.fieldOfStudy,
-      bio: newData.bio
-    };
+      // Zapisz do Firestore
+      await updateUserTags(currentUser.uid, updatedTags);
+    }
+  }
+  setIsDropdownOpen(false);
+};
+
+const handleRemoveTag = async (tagToRemove) => {
+  const updatedTags = selectedTags.filter(tag => tag !== tagToRemove);
+  setSelectedTags(updatedTags);
+  if (currentUser) {
+    const updatedUser = { ...currentUser, selectedTags: updatedTags };
     localStorage.setItem('currentUser', JSON.stringify(updatedUser));
     setCurrentUser(updatedUser);
-    setIsEditModalOpen(false); // Zamknij modal po zapisaniu
-  };
+
+    // Zapisz do Firestore
+    await updateUserTags(currentUser.uid, updatedTags);
+  }
+};
+
+
+  // Funkcja do zapisywania zmian profilu
+  const handleProfileSave = (updatedUser) => {
+  console.log("Otrzymane dane z EditProfile:", updatedUser);
+  
+  // Aktualizuj stan komponentu Profile świeżymi danymi
+  setCurrentUser(updatedUser);
+  
+  // Zaktualizuj selectedTags jeśli istnieją
+  if (updatedUser.selectedTags) {
+    setSelectedTags(updatedUser.selectedTags);
+  }
+  
+  // Zamknij modal
+  setIsEditModalOpen(false);
+  
+  // Opcjonalnie: wymuś przeładowanie pytań użytkownika
+  // jeśli userName się zmienił
+  if (updatedUser.userName !== currentUser?.userName) {
+    // Tutaj możesz dodać logikę do przeładowania pytań
+    console.log("Username zmieniony, może warto przeładować pytania");
+  }
+};
 
   const navLinks = [
     { icon: <FiHome size={16} />, text: 'Home', path: '/main' },
