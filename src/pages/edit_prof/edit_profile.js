@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./edit_profile.css";
 import { fetchUserData, saveUserData } from '../../utils/updateUserDataInLocal';
 
@@ -43,6 +43,9 @@ const EditProfile = ({ currentUser, onClose, onSave }) => {
   const [schoolDropdownOpen, setSchoolDropdownOpen] = useState(false);
   const [studyDropdownOpen, setStudyDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
+  
 
   const schoolOptions = [
     "Uniwersytet Warszawski",
@@ -180,11 +183,31 @@ const EditProfile = ({ currentUser, onClose, onSave }) => {
   } finally {
     setIsLoading(false);
   }
+
+ if (selectedFile) {
+  const formData = new FormData();
+  formData.append('prof', selectedFile);
+
+  try {
+    const uploadResponse = await fetch('http://localhost:3001/api/uploadProfs', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (uploadResponse.ok) {
+      console.log('Plik przesłany!');
+    } else {
+      console.error('Błąd przesyłania pliku.');
+    }
+  } catch (uploadError) {
+    console.error('Błąd podczas przesyłania pliku:', uploadError);
+  }
+}
+
 };
 
   const handleImageUpload = () => {
-    console.log("Upload image clicked");
-    // Tutaj możesz dodać logikę uploadowania obrazu
+
   };
 
   const getUserInitials = () => {
@@ -234,12 +257,28 @@ const EditProfile = ({ currentUser, onClose, onSave }) => {
               <div className="avatar-container">
                 <div className="avatar-wrapper">
                   <div className="avatar">{getUserInitials()}</div>
-                  <button className="avatar-plus" onClick={handleImageUpload}>
+                  <button className="avatar-plus">
                     <PlusIcon />
                   </button>
                 </div>
                 <div className="upload-section">
-                  <button className="upload-button" onClick={handleImageUpload}>
+                  <input 
+                        type="file" 
+                        name="file"
+                        id="fileInput" 
+                        style={{ display: 'none' }}
+                       ref={fileInputRef}
+                       onChange={(e) => {
+                        const file = e.target.files[0];
+                        console.log("Wybrany plik:", file);
+                        setSelectedFile(file);
+                      }}
+                      />
+                  <button
+                    className="upload-button"
+                    onClick={() => fileInputRef.current?.click()}
+                    type="button"
+                  >
                     <UploadIcon />
                     Upload new image
                   </button>
