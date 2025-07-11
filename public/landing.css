@@ -23,14 +23,13 @@
     border-radius: 50%;
 }
 
-/* Logo Slider Animation */
+/* Restore logo slider animation and hover */
 .company-logos {
     display: flex;
     gap: 100px;
     animation: slide 40s linear infinite;
     white-space: nowrap;
 }
-
 .company-logo {
     font-weight: 700;
     color: #1E293B;
@@ -42,13 +41,11 @@
     transition: all 0.3s ease;
     opacity: 0.7;
 }
-
 .company-logo:hover {
     color: #B0B996;
     opacity: 1;
     transform: translateY(-3px);
 }
-
 @keyframes slide {
     0% { transform: translateX(0); }
     100% { transform: translateX(-50%); }
@@ -343,4 +340,400 @@ footer a:hover {
 /* Smooth transitions for all interactive elements */
 * {
     transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Header as part of hero, not fixed, no pointer events */
+#main-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: transparent;
+    box-shadow: none;
+    border-bottom: none;
+    pointer-events: none;
+    z-index: 20;
+}
+#main-header * {
+    pointer-events: auto;
+}
+
+/* === HERO SECTION === */
+.hero-text h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+/* Hero headline green gradient */
+.hero-text h1 span {
+    background: linear-gradient(90deg, #B0B996 0%, #8A9D6A 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Hero description text darker */
+.hero-text p {
+    color: #475569;
+    font-weight: 500;
+}
+
+.hero-image-placeholder {
+    width: 220px;
+    height: 220px;
+    background: #E2E8F0;
+    border-radius: 1.5rem;
+    margin: 0 auto;
+    box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* === BUTTONS === */
+.hero-text a {
+    background: linear-gradient(90deg, #B0B996 0%, #8A9D6A 100%);
+    color: #fff;
+    font-weight: 600;
+    border-radius: 1rem;
+    box-shadow: none;
+    transition: all 0.2s;
+    padding: 1rem 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+.hero-text a:hover {
+    box-shadow: 0 4px 24px 0 rgba(176, 185, 150, 0.18);
+    color: #fff;
+}
+
+.signup-btn {
+    background: linear-gradient(90deg, #B0B996 0%, #8A9D6A 100%);
+    color: #fff;
+    font-weight: 600;
+    border-radius: 1rem;
+    box-shadow: none;
+    transition: all 0.2s;
+}
+.signup-btn:hover {
+    box-shadow: 0 4px 24px 0 rgba(176, 185, 150, 0.18);
+    color: #fff;
+}
+
+/* === STATS SECTION === */
+.numbers-stats-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    justify-items: center;
+    align-items: center;
+}
+@media (min-width: 640px) {
+    .numbers-stats-row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+.numbers-stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #B0B996;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.02em;
+}
+.numbers-stat-label {
+    color: #64748B;
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
+/* === LOGO STRIP === */
+.company-logos {
+    display: flex;
+    gap: 100px;
+    animation: slide 40s linear infinite;
+    white-space: nowrap;
+}
+.company-logo {
+    font-weight: 700;
+    color: #1E293B;
+    font-size: 20px;
+    background: transparent;
+    opacity: 0.7;
+    transition: all 0.3s;
+}
+.company-logo:hover {
+    color: #B0B996;
+    opacity: 1;
+    transform: translateY(-3px);
+}
+@keyframes slide {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* === ANIMATIONS === */
+.hero-fadein {
+    opacity: 0;
+    animation: heroFadeIn 1.2s cubic-bezier(0.77,0,0.175,1) 0.2s forwards;
+}
+.hero-fadein-delayed {
+    opacity: 0;
+    animation: heroFadeIn 1.2s cubic-bezier(0.77,0,0.175,1) 0.5s forwards;
+}
+.hero-fadein-delayed2 {
+    opacity: 0;
+    animation: heroFadeIn 1.2s cubic-bezier(0.77,0,0.175,1) 0.8s forwards;
+}
+@keyframes heroFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Center hero content for desktop */
+.hero-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 60vh;
+}
+@media (min-width: 1024px) {
+    .hero-text {
+        min-height: 70vh;
+    }
+}
+
+/* Subtle review card animation */
+.review-card {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: reviewFadeIn 0.8s cubic-bezier(0.77,0,0.175,1) forwards;
+}
+.review-card:nth-child(1) { animation-delay: 0.2s; }
+.review-card:nth-child(2) { animation-delay: 0.4s; }
+.review-card:nth-child(3) { animation-delay: 0.6s; }
+@keyframes reviewFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* AOS custom overrides for smooth, premium look */
+[data-aos] {
+    opacity: 0;
+    transition-property: opacity, transform;
+    transition-timing-function: cubic-bezier(0.77,0,0.175,1);
+}
+[data-aos].aos-animate {
+    opacity: 1;
+}
+
+/* Optional: make sections pop a bit more on reveal */
+[data-aos="fade-up"] {
+    transform: translateY(40px);
+}
+[data-aos].aos-animate[data-aos="fade-up"] {
+    transform: translateY(0);
+}
+[data-aos="fade-right"] {
+    transform: translateX(-40px);
+}
+[data-aos].aos-animate[data-aos="fade-right"] {
+    transform: translateX(0);
+}
+[data-aos="fade-left"] {
+    transform: translateX(40px);
+}
+[data-aos].aos-animate[data-aos="fade-left"] {
+    transform: translateX(0);
+}
+
+/* Review card: ensure unique animation directions */
+.review-card[data-aos="fade-right"] {
+    transform: translateX(-40px);
+}
+.review-card[data-aos].aos-animate[data-aos="fade-right"] {
+    transform: translateX(0);
+}
+.review-card[data-aos="fade-up"] {
+    transform: translateY(40px);
+}
+.review-card[data-aos].aos-animate[data-aos="fade-up"] {
+    transform: translateY(0);
+}
+.review-card[data-aos="fade-left"] {
+    transform: translateX(40px);
+}
+.review-card[data-aos].aos-animate[data-aos="fade-left"] {
+    transform: translateX(0);
+}
+
+/* Prevent header overlap on hero */
+@media (min-width: 1024px) {
+    .hero-section {
+        padding-top: 96px;
+    }
+}
+
+/* Remove logo slider animation and hover */
+.company-logos.no-anim {
+    animation: none !important;
+    gap: 60px;
+}
+.company-logo {
+    opacity: 0.7;
+    color: #1E293B;
+    font-size: 20px;
+    font-weight: 700;
+    background: none;
+    border: none;
+    box-shadow: none;
+    transition: none;
+    padding: 0;
+}
+.company-logo:hover {
+    color: #1E293B;
+    opacity: 0.7;
+    transform: none;
+}
+
+/* Hero graphic rectangle background */
+.hero-graphic-rect {
+    background: linear-gradient(135deg, #232946 0%, #3A4147 100%);
+    border-radius: 2.5rem;
+    padding: 48px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+.hero-graphic-rect::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at 70% 30%, rgba(176,185,150,0.12) 0%, transparent 70%);
+    animation: heroRectBg 8s linear infinite alternate;
+    z-index: 0;
+}
+@keyframes heroRectBg {
+    0% { background-position: 70% 30%; }
+    100% { background-position: 30% 70%; }
+}
+
+/* Hero spinner: animated circular loader */
+.hero-spinner {
+    width: 120px;
+    height: 120px;
+    border: 8px solid #E2E8F0;
+    border-top: 8px solid #B0B996;
+    border-radius: 50%;
+    animation: heroSpin 1.2s linear infinite;
+    margin: 0 auto;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+}
+@keyframes heroSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Remove old hero-graphic styles if present */
+.hero-graphic, .hero-graphic-rect { display: none !important; }
+
+/* Remove animation from footer */
+footer {
+    animation: none !important;
+}
+
+/* Remove old hero stats styles if present */
+.hero-stats-row, .hero-stat, .hero-stat-number, .hero-stat-label { display: none !important; }
+
+/* Hero background rectangle: minimal left/right margin (8px), more top space, only bottom corners rounded */
+.hero-bg-rect {
+    position: absolute;
+    top: 40px;
+    left: 8px;
+    right: 8px;
+    bottom: 0;
+    width: auto;
+    height: calc(100% - 40px);
+    margin: 0;
+    background: linear-gradient(135deg, #2a3140 0%, #3A4147 100%);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 2.5rem;
+    border-bottom-right-radius: 2.5rem;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+    z-index: 1;
+    pointer-events: none;
+}
+@media (max-width: 1024px) {
+    .hero-bg-rect {
+        border-bottom-left-radius: 1.2rem;
+        border-bottom-right-radius: 1.2rem;
+        top: 24px;
+        left: 4px;
+        right: 4px;
+        height: calc(100% - 24px);
+    }
+}
+
+/* Ensure hero content is above background */
+.relative.flex.flex-col.w-full.items-center > .max-w-7xl {
+    z-index: 2;
+    position: relative;
+}
+
+/* Remove margin-top from hero section if present */
+section.relative.min-h-screen {
+    margin-top: 0 !important;
+}
+
+/* Remove .hero-bg-rect and .hero-spinner styles. Add .hero-image-placeholder. */
+.hero-bg-rect, .hero-spinner { display: none !important; }
+.hero-image-placeholder {
+    width: 220px;
+    height: 220px;
+    background: #E2E8F0;
+    border-radius: 1.5rem;
+    margin: 0 auto;
+    box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Remove conflicting styles */
+.student-question {
+  min-width: 320px;
+  max-width: 440px;
+  font-size: 1.05rem;
+  color: #a3aab7;
+  opacity: 0.7;
+  background: rgba(243,244,246,0.18);
+  border-radius: 1.5em;
+  padding: 0.7em 2.2em;
+  font-family: inherit;
+  font-weight: 500;
+  white-space: pre-line;
+  overflow: hidden;
+  z-index: 2;
+  user-select: none;
+  pointer-events: none;
+  transition: background 0.3s, opacity 0.3s;
+  backdrop-filter: blur(2px);
+}
+@media (max-width: 1100px) {
+  .student-question { min-width: 180px; max-width: 260px; font-size: 0.95rem; }
+  .student-questions-bg .student-question:nth-child(n+7) { display: none; }
+}
+@media (max-width: 700px) {
+  .student-question { min-width: 90px; max-width: 120px; font-size: 0.8rem; }
+  .student-questions-bg .student-question:nth-child(n+5) { display: none; }
 }
