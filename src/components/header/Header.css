@@ -1,0 +1,144 @@
+/* Universal Header styles for .header-main */
+.header-main {
+  background-color: white;
+  border-bottom: 1px solid #e7e7e7;
+  padding: 8px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.header-main > .navbar-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 16px;
+}
+
+.left-section-main, .right-nav-main {
+  display: flex;
+  align-items: center;
+}
+.right-nav-main { gap: 12px; }
+
+.right-nav-main .icon-btn {
+  width: 36px;
+  height: 36px;
+  background: #f2f2f2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5e5e5e;
+  transition: background 0.2s;
+  border: none;
+  padding: 0;
+}
+.right-nav-main .icon-btn:hover {
+  background: #e7e7e7;
+}
+
+.back-button-main {
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5e5e5e;
+  width: 32px;
+  height: 32px;
+  margin-right: 16px;
+  transition: background 0.2s;
+}
+.back-button-main:hover { background: #f2f2f2; }
+
+.logo-container-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo-icon-main {
+  width: 22px;
+  height: 22px;
+  background-color: #a9b18d;
+  border-radius: 4px;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.logo-text-main {
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: 0.01em;
+}
+.logo-accent-main { color: #91a160; }
+
+.nav-main {
+  margin-left: 0;
+}
+.nav-main ul {
+  display: flex;
+  list-style: none;
+  gap: 24px;
+}
+.nav-main a {
+  text-decoration: none;
+  color: #5e5e5e;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.nav-main a:hover { color: #272d33; background: #f2f2f2; }
+
+.user-profile-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.user-profile-main:hover { background: #f2f2f2; }
+
+.avatar-main {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #cacfb9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+.user-info-main {
+  display: flex;
+  flex-direction: column;
+}
+.user-name-main { font-size: 14px; font-weight: 500; color: #272d33; }
+.role-main { font-size: 12px; color: #9d9d9d; }
+
+@media (max-width: 768px) {
+  .header-main > .navbar-main { flex-direction: column; gap: 16px; height: auto; padding: 16px 0; }
+  .nav-main ul { justify-content: space-around; width: 100%; gap: 12px; }
+  .nav-main { margin-left: 0; }
+} 
