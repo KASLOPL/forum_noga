@@ -289,113 +289,6 @@
   overflow: hidden; /* Blokuje przewijanie na tym poziomie */
 }
 
-/* Sidebar styles - ZMODYFIKOWANY: fixed width i height */
-.app-main .sidebar {
-  width: 230px;
-  border-right: 1px solid #e7e7e7;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0; /* Nie pozwala się sidebar zmniejszyć */
-  height: 100%; /* Pełna wysokość dostępnego miejsca */
-}
-
-.app-main .sidebar-content {
-  flex: 1;
-  padding: 16px 0;
-  overflow-y: auto; /* Pozwala przewijać sidebar jeśli potrzeba */
-}
-
-.app-main .add-question-section {
-  padding: 0 16px;
-  margin-bottom: 16px;
-}
-
-.app-main .add-question-btn {
-  width: 100%;
-  background-color: #272d33;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: background-color 0.2s ease;
-}
-
-.app-main .add-question-btn:hover {
-  background-color: #181e24;
-}
-
-.app-main .plus-icon {
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
-  padding: 2px;
-  display: flex;
-}
-
-.app-main .nav {
-  margin-bottom: 24px;
-}
-
-.app-main .nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 16px;
-  color: #5e5e5e;
-  transition: background-color 0.2s ease;
-  cursor: pointer;
-}
-
-.app-main .nav-item:hover {
-  background-color: #f2f2f2;
-}
-
-.app-main .nav-item.active {
-  background-color: #e6ead9;
-  color: #272d33;
-  border-left: 2px solid #a9b18d;
-  font-weight: 500;
-}
-
-.app-main .nav-secondary {
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid #e7e7e7;
-}
-
-.app-main .sidebar-footer {
-  padding: 16px;
-  border-top: 1px solid #e7e7e7;
-  flex-shrink: 0; /* Footer pozostaje na dole */
-}
-
-.app-main .logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: white;
-  background-color: #272D33;
-  padding: 10px 14px;
-  border-radius: 6px;
-  font-weight: 500;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.app-main .logout-btn:hover {
-  background-color: #8d976c;
-}
-
-.app-main .logout-btn svg {
-  font-size: 16px;
-}
-
 /* Main content styles - ZMIENIONY: bez scroll, tylko kontener pytań ma scroll */
 .app-main .content {
   flex: 1;
@@ -717,4 +610,9 @@
   height: 22px;
   object-fit: contain;
   display: block;
+}
+
+/* Icon button styles shared with sidebar */
+.app-main .icon-btn.bookmarked {
+  color: #4CAF50;
 }

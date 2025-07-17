@@ -7,8 +7,10 @@ import {
   FiBookmark, FiHome, FiLogOut, FiMessageSquare, FiPlus,
   FiSettings, FiUser, FiUsers, FiHelpCircle, FiZap
 } from 'react-icons/fi'; // Więcej ikon z react-icons
-
 import { addQuestion } from '../../utils/firebaseUtils'; // Funkcja dodająca pytanie do bazy danych (Firebase)
+import Sidebar from '../../components/side_bar/side_bar.js';
+import Notifications from '../notifications/Notifications'; // Import komponentu Notifications
+import Modal from '../notifications/Modal'; // Import komponentu Modal
 
 // Główna funkcja komponentu AddQuestion
 const AddQuestion = () => {
@@ -19,7 +21,6 @@ const AddQuestion = () => {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [answerVisibility, setAnswerVisibility] = useState(null); // np. 'everyone', 'specialists', 'friends'
-
 
   // Formularz danych pytania
   const [formData, setFormData] = useState({
@@ -35,6 +36,8 @@ const AddQuestion = () => {
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false); // Czy rozwijane menu tagów jest otwarte
   const [user, setUser] = useState({ name: 'Guest', role: 'Visitor' }); // Informacje o użytkowniku
   const [isSubmitting, setIsSubmitting] = useState(false); // Czy formularz jest aktualnie wysyłany
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+  
 
   // Hook, który uruchamia się po załadowaniu komponentu
   useEffect(() => {
@@ -235,31 +238,8 @@ if (!answerVisibility) {
 
       {/* Główna zawartość aplikacji */}
       <div className="app-container">
-        <aside className="template-sidebar">
           {/* Menu boczne */}
-          <div className="template-sidebar-content">
-            <div className="template-add-question-button-container">
-              <button className="template-add-question-button active-add-question">
-                <span>ADD QUESTION</span>
-                <div className="template-plus-icon-container"><FiPlus /></div>
-              </button>
-            </div>
-
-            <nav className="template-sidebar-nav">
-              {navItems.map(item => <NavItem key={item.path} item={item} />)}
-            </nav>
-
-            <div className="template-sidebar-nav-secondary">
-              {secondaryNavItems.map(item => <NavItem key={item.path} item={item} />)}
-            </div>
-          </div>
-
-          <div className="template-sidebar-footer">
-            <button className="template-sign-out-button" onClick={handleLogout}>
-              <FiLogOut /> Sign out
-            </button>
-          </div>
-        </aside>
+          <Sidebar onNotificationClick={() => setIsNotificationModalOpen(true)} />
 
         <div className="main-content">
           <div className="content-wrapper">
@@ -411,6 +391,17 @@ if (!answerVisibility) {
           </div>
         </div>
       </div>
+<Modal 
+        isOpen={isNotificationModalOpen} 
+        onClose={() => setIsNotificationModalOpen(false)}
+        size="large"
+        title="Notifications"
+      >
+        <Notifications 
+          onClose={() => setIsNotificationModalOpen(false)}
+        />
+      </Modal>
+
     </div>
   );
 };
