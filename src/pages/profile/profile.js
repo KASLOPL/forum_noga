@@ -3,12 +3,14 @@ import './profile.css';
 import {
   FiSearch, FiArrowLeft, FiMail, FiHome, FiUsers, FiMessageSquare,
   FiPlus, FiMinus, FiZap, FiChevronDown, FiBookmark, FiUser,
-  FiHelpCircle, FiMoreVertical, FiHeart, FiEye, FiCheck, FiX
+  FiHelpCircle, FiMoreVertical, FiHeart, FiEye, FiCheck, FiX, FiBell, FiBookOpen
 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { getAllQuestions, updateUserTags, fetchUserDataFromFirestore } from '../../utils/firebaseUtils';
 import EditProfile from '../edit_prof/edit_profile';
 import { useRef } from 'react';
+import Header from '../../components/header/Header';
+import { HeaderProvider } from '../../hooks/header_context';
 
 const Modal = ({ isOpen, onClose, children, size = 'medium' }) => {
   if (!isOpen) return null;
@@ -214,10 +216,10 @@ const handleRemoveTag = async (tagToRemove) => {
 
   const navLinks = [
     { icon: <FiHome size={16} />, text: 'Home', path: '/main' },
-    { icon: <FiMessageSquare size={16} />, text: 'Notifications' },
+    { icon: <FiBell size={16} />, text: 'Notifications' },
     { icon: <FiUsers size={16} />, text: 'Specialists' },
     { icon: <FiUser size={16} />, text: 'My Questions', path: '/my_questions' },
-    { icon: <FiBookmark size={16} />, text: 'Bookmarks', path: '/zakładki'}
+    { icon: <FiBookmark size={16} />, text: 'Bookmarks', path: '/zakładki' }
   ];
 
   const StatusBadge = ({ status }) => (
@@ -231,176 +233,140 @@ const handleRemoveTag = async (tagToRemove) => {
   if (!currentUser) return <div>Loading user data...</div>;
 
   return (
-    <div className='Profall'>
-      <div className="app">
-        <header className="header">
-          <div className="navbar">
-            <div className="left-section">
-              <button className="back-btn" onClick={() => navigate(-1)}>
-                <FiArrowLeft size={20} />
-              </button>
-              <div className="logo">
-                <div className="logo-icon"><FiZap size={20} /></div>
-                <span className="logo-text">Snap<span className="highlight">solve</span></span>
-              </div>
-            </div>
-            <nav className="nav">
-              <ul>
-                {navLinks.map((item, i) => (
-                  <li key={i}>
-                    <a href="#" onClick={(e) => {
-                      e.preventDefault();
-                      if (item.path) navigate(item.path);
-                    }}>
-                      {item.icon}{item.text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            <div className="right-nav">
-              <button className="icon-btn"><FiMail size={20} /></button>
-              <div className="user-profile" onClick={() => navigate('/profile')}>
-                <div className="avatar"><span>{getUserInitials()}</span></div>
-                <div className="user-info">
-                  <div className="name">{getUserDisplayName()}</div>
-                  <div className="role">Student</div>
+    <HeaderProvider>
+      <Header />
+      <div className='Profall'>
+        <div className="app">
+          <div className="main">
+            <aside className="sidebar">
+              <div className="profile-card">
+                <div className="profile-header">
+                  <div className="profile-avatar">{getUserInitials()}</div>
+                  <h2 className="profile-name">{user.name}</h2>
+                  <p className="profile-username">{user.username}</p>
+                  <p className="profile-school">{user.school}</p>
                 </div>
-                <FiChevronDown size={16} />
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <div className="main">
-          <aside className="sidebar">
-            <div className="profile-card">
-              <div className="profile-header">
-                <div className="profile-avatar">{getUserInitials()}</div>
-                <h2 className="profile-name">{user.name}</h2>
-                <p className="profile-username">{user.username}</p>
-                <p className="profile-school">{user.school}</p>
-              </div>
-              <div className="profile-bio">
-                <p>{user.bio}</p>
-              </div>
-              <div className="stats">
-                <div className="stat">
-                  <div className="stat-num">{userQuestions.length}</div>
-                  <div className="stat-label">Questions</div>
+                <div className="profile-bio">
+                  <p>{user.bio}</p>
                 </div>
-                <div className="stat">
-                  <div className="stat-num">{userQuestions.filter(q => q.status === 'complete').length}</div>
-                  <div className="stat-label">Answers</div>
-                </div>
-                <div className="stat">
-                  <div className="stat-num">{userQuestions.reduce((sum, q) => sum + (q.likes || 0), 0)}</div>
-                  <div className="stat-label">Likes</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="interests">
-              <h3>Interests</h3>
-              <div className="tags-container">
-                <div className="selected-tags">
-                  {selectedTags.map((tag, index) => (
-                    <span key={index} className="tag"> 
-                      {tag}
-                      <button className="tag-remove" onClick={() => handleRemoveTag(tag)}>×</button>
-                    </span>
-                  ))}
-                </div>
-                <div className="dropdown-container">
-                  <button className="dropdown-toggle" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                    Select your interests
-                    <FiChevronDown className={`dropdown-icon ${isDropdownOpen ? 'open' : ''}`} />
-                  </button>
-                  {isDropdownOpen && (
-                    <div className="dropdown-menu">
-                      {tags.filter(tag => !selectedTags.includes(tag)).map((tag, index) => (
-                        <div key={index} className="dropdown-item" onClick={() => handleTagSelect(tag)}>
-                          {tag}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          <main className="content">
-            <div className="content-header">
-              <div className="tabs">
-                <button className="tab active">Questions ({userQuestions.length})</button>
-              </div>
-              <div className="actions">
-                <button 
-                  className="btn-edit"
-                  onClick={() => setIsEditModalOpen(true)}
-                >
-                  Edit profile
-                </button>
-                <button className="btn-settings">Settings</button>
-              </div>
-            </div>
-
-            <div className="questions">
-              {userQuestions.length === 0 ? (
-                <div className="no-questions">
-                  <p>Nie masz jeszcze żadnych pytań.</p>
-                </div>
-              ) : (
-                userQuestions.map((question) => (
-                  <div className={`question ${question.status === 'complete' ? 'complete' : ''}`} key={question.id}>
-                    <div className="question-header">
-                      <div className="user-avatar">{getUserInitials()}</div>
-                      <div className="meta">
-                        <div className="author-name">{getUserDisplayName()}</div>
-                        <div className="author-time">{question.timeAgo}</div>
-                      </div>
-                      <div className="question-actions">
-                        <StatusBadge status={question.status || 'in_progress'} />
-                        <button className="menu-btn"><FiMoreVertical size={16} /></button>
-                      </div>
-                    </div>
-                
-                    <div className="question-content">
-                      <div className="question-highlight">
-                        <h3>{question.title}</h3>
-                      </div>
-                      <div className="content-tags">
-                        {question.tags && question.tags.map((tag, i) => (
-                          <span key={i} className="content-tag">{tag}</span>
-                        ))}
-                      </div>
-                      <div className="question-text">
-                        <p>{question.content}</p>
-                      </div>
-                    </div>
-                
-                    <div className="question-footer">
-                      <div className="reactions">
-                        {Array.from({ length: question.responseCount || question.responders || 0 }, (_, i) => (
-                          <div key={i} className="reaction">{String.fromCharCode(65 + i)}</div>
-                        ))}
-                        <span className="responders-text">{question.responseCount || question.responders || 0} responses</span>
-                      </div>
-                      <div className="engagement">
-                        <span className="engagement-item">
-                          <FiHeart size={14} /> {question.likes || 0}
-                        </span>
-                        <span className="engagement-item">
-                          <FiEye size={14} /> {question.views || 0}
-                        </span>
-                      </div>
-                    </div>
+                <div className="stats">
+                  <div className="stat">
+                    <div className="stat-num">{userQuestions.length}</div>
+                    <div className="stat-label">Questions</div>
                   </div>
-                ))
-              )}
-            </div>
-          </main>
+                  <div className="stat">
+                    <div className="stat-num">{userQuestions.filter(q => q.status === 'complete').length}</div>
+                    <div className="stat-label">Answers</div>
+                  </div>
+                  <div className="stat">
+                    <div className="stat-num">{userQuestions.reduce((sum, q) => sum + (q.likes || 0), 0)}</div>
+                    <div className="stat-label">Likes</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="interests">
+                <h3>Interests</h3>
+                <div className="tags-container">
+                  <div className="selected-tags">
+                    {selectedTags.map((tag, index) => (
+                      <span key={index} className="tag"> 
+                        {tag}
+                        <button className="tag-remove" onClick={() => handleRemoveTag(tag)}>×</button>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="dropdown-container">
+                    <button className="dropdown-toggle" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                      Select your interests
+                      <FiChevronDown className={`dropdown-icon ${isDropdownOpen ? 'open' : ''}`} />
+                    </button>
+                    {isDropdownOpen && (
+                      <div className="dropdown-menu">
+                        {tags.filter(tag => !selectedTags.includes(tag)).map((tag, index) => (
+                          <div key={index} className="dropdown-item" onClick={() => handleTagSelect(tag)}>
+                            {tag}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <main className="content">
+              <div className="content-header">
+                <div className="tabs">
+                  <button className="tab active">Questions ({userQuestions.length})</button>
+                </div>
+                <div className="actions">
+                  <button 
+                    className="btn-edit"
+                    onClick={() => setIsEditModalOpen(true)}
+                  >
+                    Edit profile
+                  </button>
+                  <button className="btn-settings">Settings</button>
+                </div>
+              </div>
+
+              <div className="questions">
+                {userQuestions.length === 0 ? (
+                  <div className="no-questions">
+                    <p>Nie masz jeszcze żadnych pytań.</p>
+                  </div>
+                ) : (
+                  userQuestions.map((question) => (
+                    <div className={`question ${question.status === 'complete' ? 'complete' : ''}`} key={question.id}>
+                      <div className="question-header">
+                        <div className="user-avatar">{getUserInitials()}</div>
+                        <div className="meta">
+                          <div className="author-name">{getUserDisplayName()}</div>
+                          <div className="author-time">{question.timeAgo}</div>
+                        </div>
+                        <div className="question-actions">
+                          <StatusBadge status={question.status || 'in_progress'} />
+                          <button className="menu-btn"><FiMoreVertical size={16} /></button>
+                        </div>
+                      </div>
+                  
+                      <div className="question-content">
+                        <div className="question-highlight">
+                          <h3>{question.title}</h3>
+                        </div>
+                        <div className="content-tags">
+                          {question.tags && question.tags.map((tag, i) => (
+                            <span key={i} className="content-tag">{tag}</span>
+                          ))}
+                        </div>
+                        <div className="question-text">
+                          <p>{question.content}</p>
+                        </div>
+                      </div>
+                  
+                      <div className="question-footer">
+                        <div className="reactions">
+                          {Array.from({ length: question.responseCount || question.responders || 0 }, (_, i) => (
+                            <div key={i} className="reaction">{String.fromCharCode(65 + i)}</div>
+                          ))}
+                          <span className="responders-text">{question.responseCount || question.responders || 0} responses</span>
+                        </div>
+                        <div className="engagement">
+                          <span className="engagement-item">
+                            <FiHeart size={14} /> {question.likes || 0}
+                          </span>
+                          <span className="engagement-item">
+                            <FiEye size={14} /> {question.views || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </main>
+          </div>
         </div>
 
         {/* Modal for editing profile */}
@@ -434,7 +400,7 @@ const handleRemoveTag = async (tagToRemove) => {
           }
         }
       `}</style>
-    </div>
+    </HeaderProvider>
   );
 };
 

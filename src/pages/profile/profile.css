@@ -1,146 +1,311 @@
-/* Reset */
-.Profall * { margin: 0; padding: 0; box-sizing: border-box; }
-.Profall body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #fafafa; color: #272d33; }
-.Profall a { text-decoration: none; color: inherit; }
-.Profall button { background: none; border: none; cursor: pointer; font-family: inherit; }
+.Profall .app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #fafafa;
+}
 
-/* App Layout */
-.Profall .app { min-height: 100vh; display: flex; flex-direction: column; background: #fafafa; }
+.Profall .main {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  gap: 30px;
+  flex: 1;
+}
 
-/* Header */
-.Profall .header { background-color: white; border-bottom: 1px solid #e7e7e7; padding: 8px 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
-.Profall .navbar { display: flex; align-items: center; justify-content: space-between; height: 64px; max-width: 1200px; margin: 0 auto; }
-.Profall .left-section, .Profall .right-nav { display: flex; align-items: center; }
-.Profall .right-nav { gap: 12px; }
+.Profall .sidebar {
+  width: 300px;
+  flex-shrink: 0;
+}
 
-/* Logo */
-.Profall .logo { display: flex; align-items: center; gap: 8px; }
-.Profall .logo-icon { background-color: #a9b18d; border-radius: 4px; padding: 4px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: 500; }
-.Profall .logo-text { font-weight: 600; font-size: 18px; }
-.Profall .highlight { color: #91a160; }
+.Profall .profile-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border: 1px solid #f0f0f0;
+}
 
-/* Navigation */
-.Profall .nav ul { display: flex; list-style: none; gap: 24px; }
-.Profall .nav a { font-size: 14px; font-weight: 500; color: #5e5e5e; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; }
-.Profall .nav a:hover { color: #272d33; }
+.Profall .profile-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.Profall .profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #a9b18d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0 auto 16px;
+}
+.Profall .profile-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #272d33;
+  margin-bottom: 4px;
+}
+.Profall .profile-username {
+  color: #5e5e5e;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.Profall .profile-school {
+  color: #5e5e5e;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.Profall .profile-bio p {
+  color: #5e5e5e;
+  line-height: 1.6;
+  font-size: 14px;
+}
 
-/* Right Navigation */
-.Profall .right-nav { display: flex; align-items: center; gap: 15px; }
-.Profall .icon-btn { padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #5e5e5e; transition: background-color 0.2s; }
-.Profall .icon-btn:hover { background: #f2f2f2; }
+.Profall .stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+.Profall .stat {
+  text-align: center;
+}
+.Profall .stat-num {
+  font-size: 24px;
+  font-weight: 700;
+  color: #272d33;
+}
+.Profall .stat-label {
+  font-size: 12px;
+  color: #5e5e5e;
+  margin-top: 4px;
+}
 
-.Profall .user-profile { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; }
-.Profall .user-profile:hover { background: #f2f2f2; }
-
-/* Avatar */
-.Profall .avatar { width: 36px; height: 36px; border-radius: 50%; background: #cacfb9; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: 500; }
-
-.Profall .user-info { display: flex; flex-direction: column; }
-.Profall .name { font-weight: 600; color: #272d33; font-size: 14px; }
-.Profall .role { font-size: 12px; color: #5e5e5e; }
-
-/* Main Layout */
-.Profall .main { display: flex; max-width: 1200px; margin: 0 auto; padding: 20px; gap: 30px; flex: 1; }
-
-/* Sidebar */
-.Profall .sidebar { width: 300px; flex-shrink: 0; }
-
-/* Profile Card */
-.Profall .profile-card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; }
-
-.Profall .profile-header { text-align: center; margin-bottom: 20px; }
-.Profall .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: #a9b18d; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; font-weight: 600; margin: 0 auto 16px; }
-
-.Profall .profile-name { font-size: 20px; font-weight: 700; color: #272d33; margin-bottom: 4px; }
-.Profall .profile-username { color: #5e5e5e; font-size: 14px; margin-bottom: 8px; }
-.Profall .profile-school { color: #5e5e5e; font-size: 13px; line-height: 1.4; }
-
-.Profall .profile-bio p { color: #5e5e5e; line-height: 1.6; font-size: 14px; }
-
-.Profall .stats { display: flex; justify-content: space-around; margin-top: 20px; padding-top: 20px; border-top: 1px solid #f0f0f0; }
-.Profall .stat { text-align: center; }
-.Profall .stat-num { font-size: 24px; font-weight: 700; color: #272d33; }
-.Profall .stat-label { font-size: 12px; color: #5e5e5e; margin-top: 4px; }
-
-/* Interests */
-.Profall .interests { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; }
-.Profall .interests h3 { font-size: 16px; font-weight: 600; color: #272d33; margin-bottom: 16px; }
-
-.Profall .tags-container { }
-.Profall .selected-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.Profall .tag { background: #e6ead9; color: #272d33; padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
-.Profall .tag-remove { color: #5e5e5e; font-size: 16px; cursor: pointer; }
-
+.Profall .interests {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border: 1px solid #f0f0f0;
+}
+.Profall .interests h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #272d33;
+  margin-bottom: 16px;
+}
+.Profall .selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.Profall .tag {
+  background: #e6ead9;
+  color: #272d33;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.Profall .tag-remove {
+  color: #5e5e5e;
+  font-size: 16px;
+  cursor: pointer;
+}
 .Profall .dropdown-container { position: relative; }
-.Profall .dropdown-toggle { width: 100%; padding: 10px 12px; border: 1px solid #e7e7e7; border-radius: 6px; background: white; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 14px; color: #5e5e5e; }
+.Profall .dropdown-toggle {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e7e7e7;
+  border-radius: 6px;
+  background: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #5e5e5e;
+}
 .Profall .dropdown-icon { transition: transform 0.2s; }
 .Profall .dropdown-icon.open { transform: rotate(180deg); }
-
-.Profall .dropdown-menu { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e7e7e7; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 10; max-height: 200px; overflow-y: auto; }
-.Profall .dropdown-item { padding: 10px 12px; cursor: pointer; font-size: 14px; color: #272d33; }
+.Profall .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e7e7e7;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.Profall .dropdown-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #272d33;
+}
 .Profall .dropdown-item:hover { background: #f2f2f2; }
 
-/* Content */
 .Profall .content { flex: 1; }
 
-.Profall .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-.Profall .tabs { display: flex; gap: 2px; }
-.Profall .tab { padding: 12px 24px; border-radius: 8px 8px 0 0; font-weight: 500; color: #5e5e5e; background: #f8f8f8; cursor: pointer; transition: all 0.2s; }
-.Profall .tab.active { background: white; color: #272d33; border-bottom: 2px solid #a9b18d; }
+.Profall .content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.Profall .tabs {
+  display: flex;
+  gap: 2px;
+  margin-right: 12px;
+}
+.Profall .tab {
+  padding: 12px 24px;
+  border-radius: 8px 8px 0 0;
+  font-weight: 500;
+  color: #5e5e5e;
+  background: #f8f8f8;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #e7e7e7;
+  border-bottom: none;
+}
+.Profall .tab.active {
+  background: white;
+  color: #272d33;
+  border-radius: 8px 8px 0 0;
+  border: none;
+  border-bottom: 2px solid #a9b18d;
+  box-shadow: none;
+  outline: none;
+}
+.Profall .actions {
+  display: flex;
+  gap: 12px;
+}
+.Profall .btn-edit, .Profall .btn-settings {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #e7e7e7;
+  background: #fff;
+}
+.Profall .btn-edit {
+  background: #a9b18d;
+  color: white;
+  border: 1px solid #a9b18d;
+}
+.Profall .btn-edit:hover {
+  background: #91a160;
+  border: 1px solid #91a160;
+}
+.Profall .btn-settings {
+  background: #f2f2f2;
+  color: #272d33;
+  border: 1px solid #e7e7e7;
+}
+.Profall .btn-settings:hover {
+  background: #e7e7e7;
+  border: 1px solid #e7e7e7;
+}
 
-.Profall .actions { display: flex; gap: 12px; }
-.Profall .btn-edit, .Profall .btn-settings { padding: 8px 16px; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s; }
-.Profall .btn-edit { background: #a9b18d; color: white; }
-.Profall .btn-edit:hover { background: #91a160; }
-.Profall .btn-settings { background: #f2f2f2; color: #272d33; }
-.Profall .btn-settings:hover { background: #e7e7e7; }
-
-/* Questions - wzorowane na MyQuestions */
-.Profall .questions { display: flex; flex-direction: column; gap: 16px; }
-
-.Profall .question { background: white; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; transition: box-shadow 0.2s, transform 0.1s; cursor: pointer; }
-.Profall .question:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); transform: translateY(-1px); }
-
-/* Complete question styling */
-.Profall .question.complete { border: 2px solid #4CAF50; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15); }
-.Profall .question.complete:hover { box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25); }
-
-.Profall .question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.Profall .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: #cacfb9; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: 500; }
-
+.Profall .questions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.Profall .question {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 1px solid #f0f0f0;
+  transition: box-shadow 0.2s, transform 0.1s;
+  cursor: pointer;
+  position: relative;
+}
+.Profall .question:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+.Profall .question.complete {
+  border: 2px solid #4CAF50;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
+}
+.Profall .question.complete:hover {
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25);
+}
+.Profall .question-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.Profall .user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #cacfb9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
 .Profall .meta { flex: 1; margin-left: 12px; }
 .Profall .author-name { font-size: 14px; font-weight: 500; color: #272d33; }
-.Profall .author-time { font-size: 12px; color: #9d9d9d; margin-top: 2px; }
-
+.Profall .author-time { font-size: 12px; color: #9d9d9d; }
 .Profall .question-actions { display: flex; gap: 8px; align-items: center; }
-
-/* Status Badge */
 .Profall .status-badge { display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; color: white; }
 .Profall .status-badge svg { width: 12px; height: 12px; }
-
-.Profall .menu-btn { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #5e5e5e; transition: background-color 0.2s; }
+.Profall .menu-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5e5e5e;
+  transition: background-color 0.2s;
+  border: none;
+  background: none;
+}
 .Profall .menu-btn:hover { background: #f2f2f2; }
-
 .Profall .question-content { margin-bottom: 16px; }
 .Profall .question-highlight { border-left: 3px solid #a9b18d; padding-left: 12px; margin-bottom: 12px; }
 .Profall .question-highlight h3 { font-size: 16px; font-weight: 600; color: #272d33; line-height: 1.4; }
-
 .Profall .content-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .Profall .content-tag { background: #f2f2f2; color: #5e5e5e; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; }
-
 .Profall .question-text p { color: #5e5e5e; line-height: 1.6; margin-bottom: 12px; }
-
 .Profall .question-footer { border-top: 1px solid #f0f0f0; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; }
-
 .Profall .reactions { display: flex; align-items: center; gap: 8px; }
 .Profall .reaction { width: 28px; height: 28px; border-radius: 50%; background: #cacfb9; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 500; }
 .Profall .responders-text { font-size: 14px; color: #5e5e5e; margin-left: 4px; }
-
 .Profall .engagement { display: flex; align-items: center; gap: 16px; }
 .Profall .engagement-item { display: flex; align-items: center; gap: 4px; color: #5e5e5e; font-size: 14px; }
 
-/* No questions message */
-.Profall .no-questions { text-align: center; padding: 40px 20px; color: #5e5e5e; }
+.Profall .no-questions {
+  text-align: center;
+  padding: 40px 20px;
+  color: #5e5e5e;
+}
 .Profall .no-questions p { font-size: 16px; }
 
 @media (max-width: 768px) {
