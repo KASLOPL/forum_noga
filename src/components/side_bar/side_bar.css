@@ -1,0 +1,189 @@
+/* Sidebar styles - ZMODYFIKOWANY: fixed width i height */
+.sidebar {
+  width: 230px;
+  border-right: 1px solid #e7e7e7;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0; /* Nie pozwala się sidebar zmniejszyć */
+  height: 100%; /* Pełna wysokość dostępnego miejsca */
+}
+
+.sidebar-content {
+  flex: 1;
+  padding: 16px 0;
+  overflow-y: auto; /* Pozwala przewijać sidebar jeśli potrzeba */
+}
+
+.add-question-section {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+
+.add-question-btn {
+  width: 100%;
+  background-color: #272d33 !important;
+  color: white !important;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.2s ease;
+  border: none !important; /* Dodane: usuwa domyślny border */
+}
+
+.add-question-btn:hover {
+  background-color: #181e24 !important;
+}
+
+.plus-icon {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  padding: 2px;
+  display: flex;
+  color: white; /* Dodane: zapewnia że ikona jest biała */
+}
+
+.nav {
+  margin-bottom: 24px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  color: #5e5e5e;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  background-color: #f2f2f2;
+}
+
+.nav-item.active {
+  background-color: #e6ead9;
+  color: #272d33;
+  border-left: 2px solid #a9b18d;
+  font-weight: 500;
+}
+
+.nav-secondary {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e7e7e7;
+}
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid #e7e7e7;
+  flex-shrink: 0; /* Footer pozostaje na dole */
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white; /* Zapewnia biały tekst */
+  background-color: #272D33 !important;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-weight: 500;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: none; /* Dodane: usuwa domyślny border */
+}
+
+.logout-btn:hover {
+  background-color: #8d976c !important;
+}
+
+.logout-btn svg {
+  font-size: 16px;
+  color: white; /* Dodane: zapewnia że ikona logout jest biała */
+}
+
+/* Common styles used by sidebar (but also might be used elsewhere) */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Dodatkowe style dla pewności */
+.add-question-btn span {
+  color: white !important;
+}
+
+.side-bar {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  background-color: #ffffff;
+  border-right: 1px solid #ededed;
+  padding: 24px 16px;
+}
+
+.side-bar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.side-bar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #2e373f;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.side-bar-link:hover {
+  background: #f5f5f5;
+}
+
+.side-bar-link.active {
+  background: #2e373f;
+  color: white;
+}
+
+.side-bar-icon {
+  font-size: 20px;
+}
+
+.side-bar-label {
+  font-size: 16px;
+}
+
+.main-container {
+  display: flex;
+  flex: 1;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.content {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background-color: #fafafa;
+}
