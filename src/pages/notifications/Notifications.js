@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './Notifications.css';
+import { UserContext } from '../main/main';
 
 const Notifications = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState('General');
-  
+  const {user, setUser, getUserInitials} = React.useContext(UserContext);
   const notificationsData = {
     today: [
       { user: 'JohnDoe', action: 'answered your question:', content: 'How to fix the NullPointerException in Java?', time: '2 minutes ago', type: 'reply' },
@@ -17,9 +18,9 @@ const Notifications = ({ onClose }) => {
     ]
   };
 
-  const getInitials = (name) => {
+ const getInitials = (name) => {
     return name.split(/(?=[A-Z])/).map(word => word[0]).join('').toUpperCase();
-  };
+    };
 
   const getTagText = (type) => {
     switch(type) {
@@ -48,6 +49,9 @@ const Notifications = ({ onClose }) => {
       </div>
       <div className="notifications-list">
         <h3>TODAY</h3>
+        <div>
+          {getUserInitials()}
+        </div>
         {notificationsData.today.map((notification, index) => (
           <div className="notification-item" key={`today-${index}`}>
             <div className="notification-avatar">

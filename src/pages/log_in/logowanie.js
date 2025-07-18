@@ -327,7 +327,7 @@ function Auth() {
 
           {/* Link do resetu hasla (tylko przy logowaniu) */}
           {activeTab === 'login' && (
-            <a href="#" className="forgot-password">Forgot password?</a>
+            <a href="#" className="forgot-password" onClick={(e) => { e.preventDefault(); navigate('/reset_password'); }}>Forgot password?</a>
           )}
 
           {/* Przycisk submit */}
