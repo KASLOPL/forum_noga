@@ -17,9 +17,11 @@
   transition: all 0.2s ease;
 }
 
-.search-trigger:hover {
-  background: #e9ecef;
-  border-color: #dee2e6;
+.search-trigger:hover,
+.search-trigger:focus,
+.search-trigger:active {
+  background: #f8f9fa;
+  border-color: #e9ecef;
 }
 
 .search-icon {
@@ -56,6 +58,7 @@
   border: 1px solid #e9ecef;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  padding: 0;
 }
 
 .search-header {
@@ -83,11 +86,12 @@
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: #e8f5e8;
-  border: 1px solid #c8e6c9;
+  background: #D7DAD0;
+  border: 1px solid #C8CDB9;
   border-radius: 20px;
   font-size: 13px;
-  color: #2e7d32;
+  font-weight: 600;
+  color: #6A7743;
 }
 
 .tag-remove {
@@ -99,12 +103,13 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  color: #2e7d32;
+  color: #545252;
   transition: background-color 0.2s ease;
 }
 
 .tag-remove:hover {
-  background: rgba(46, 125, 50, 0.1);
+  background: none;
+  color: inherit;
 }
 
 .recent-section {
@@ -129,23 +134,29 @@
   overflow-y: hidden;
   overflow-x: hidden;
   max-height: 180px;
+  padding: 0;
 }
 
 .recent-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 0;
+  padding: 10px 16px;
   border-bottom: 1px solid #f8f9fa;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 8px;
 }
 
 .recent-item:hover {
-  background: #f8f9fa;
-  margin: 0 -24px;
-  padding-left: 24px;
-  padding-right: 24px;
+  background: #EEEFED;
+  margin: 0;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-radius: 8px;
 }
 
 .recent-item:last-child {
@@ -185,11 +196,6 @@
 }
 
 .recent-remove:hover {
-  background: #f1f3f4;
-  color: #5f6368;
+  background: none;
+  color: inherit;
 }
-
-/* Scrollbar styling */
-
-/* Responsive adjustments */
-/* USUNIĘTO media query dla .search-popup, by popup był zawsze pod search-box */

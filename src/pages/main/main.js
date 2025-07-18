@@ -166,6 +166,7 @@ function Main() {
   const [currentFilters, setCurrentFilters] = useState({});
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchBoxRef = useRef(null);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   // Sorting logic for questions
   const sortQuestions = (questions, option) => {
@@ -266,10 +267,11 @@ function Main() {
                 <div className="search-wrapper">
                   <FiSearch className="search-icon" />
                   <input
-                    className={`search-input${isSearchOpen ? ' search-input--active' : ''}`}
+                    className={`search-input${isInputFocused ? ' search-input--active' : ''}`}
                     placeholder="Got a question? See if it's already asked!"
                     type="text"
-                    onFocus={() => setIsSearchOpen(true)}
+                    onFocus={() => { setIsInputFocused(true); setIsSearchOpen(true); }}
+                    onBlur={() => setIsInputFocused(false)}
                   />
                   <SearchPopout
                     isOpen={isSearchOpen}

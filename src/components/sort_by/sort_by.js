@@ -45,33 +45,29 @@ const SortBy = ({ options = [], onSortChange, currentSort = null }) => {
   };
 
   return (
-    <>
+    <div className="sort-by-container" ref={dropdownRef}>
       {isOpen && <div className="overlay" onClick={() => setIsOpen(false)} />}
-      
-      <div className="sort-by-container" ref={dropdownRef}>
-        <button className="sort-by-button" onClick={() => setIsOpen(!isOpen)}>
-          {selected ? `Sort by: ${selected.label}` : 'Sort by'}
-          <svg className="sort-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-          </svg>
-        </button>
-
-        {isOpen && (
-          <div className="sort-by-dropdown">
-            {sortOptions.map((option, index) => (
-              <button
-                key={option.value || index}
-                onClick={() => handleOptionClick(option)}
-                className="sort-by-option"
-              >
-                <div className={`dot ${selected?.value === option.value ? 'active' : ''}`}></div>
-                {option.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    </>
+      <button className="sort-by-button" onClick={() => setIsOpen(!isOpen)}>
+        {selected ? `Sort by: ${selected.label}` : 'Sort by'}
+        <svg className="sort-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+        </svg>
+      </button>
+      {isOpen && (
+        <div className="sort-by-dropdown">
+          {sortOptions.map((option, index) => (
+            <button
+              key={option.value || index}
+              onClick={() => handleOptionClick(option)}
+              className="sort-by-option"
+            >
+              <div className={`dot ${selected?.value === option.value ? 'active' : ''}`}></div>
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
