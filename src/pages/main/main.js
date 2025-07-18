@@ -43,9 +43,26 @@ const useBookmarks = () => {
   return { toggleBookmark, isBookmarked };
 };
 
+export const UserContext = React.createContext();
+
+export const UserProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const getUserName = useCallback(() => user?.userName || user?.name || 'Guest', [user]);
+  const getUserInitials = useCallback(() => {
+    const name = getUserName();
+    return name === 'Guest' ? 'GU' : name.substring(0, 2).toUpperCase();
+  }, [getUserName]);
+
+  return (
+    <UserContext value={{ user, setUser, getUserName, getUserInitials }}>
+      {children}
+    </UserContext>
+  );
+};
+
 function Main() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const {user, setUser} = React.useContext(UserContext);
   const [expandedQuestion, setExpandedQuestion] = useState(null);
   const { toggleBookmark, isBookmarked } = useBookmarks();
   const [questions, setQuestions] = useState([]);
