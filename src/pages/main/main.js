@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import "./main.css";
 import { getAllQuestions, incrementViews, likeQuestion } from '../../utils/firebaseUtils';
 import Modal from '../notifications/Modal'; // Import komponentu Modal
@@ -163,6 +163,8 @@ function Main() {
   const [sortOption, setSortOption] = useState({ value: 'newest', label: 'Newest first' });
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [currentFilters, setCurrentFilters] = useState({});
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Sorting logic for questions
   const sortQuestions = (questions, option) => {
@@ -262,7 +264,20 @@ function Main() {
               <div className="search-box">
                 <div className="search-wrapper">
                   <FiSearch className="search-icon" />
-                  <input className="search-input" placeholder="Got a question? See if it's already asked!" type="text" />
+                  <input
+                    className={`search-input${isInputFocused ? ' search-input--active' : ''}`}
+                    placeholder="Got a question? See if it's already asked!"
+                    type="text"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    onFocus={() => { setIsInputFocused(true); }}
+                    onBlur={() => setIsInputFocused(false)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' && searchQuery.trim()) {
+                        navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                      }
+                    }}
+                  />
                 </div>
               </div>
               <Filters onFiltersChange={setCurrentFilters} currentFilters={currentFilters} />
