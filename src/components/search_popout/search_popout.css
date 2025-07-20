@@ -44,14 +44,8 @@
 }
 
 .search-popup {
-  position: absolute;
-  left: 0;
-  top: 100%;
-  width: 100%;
-  min-width: 0;
-  max-width: none;
-  z-index: 1000;
-  margin-top: 8px;
+  position: fixed;
+  z-index: 2001;
   overflow-x: hidden;
   overflow-y: visible;
   background: white;

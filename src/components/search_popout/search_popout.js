@@ -1,8 +1,9 @@
 import React from "react";
 import { X, Clock } from "lucide-react";
+import ReactDOM from "react-dom";
 import "./search_popout.css";
 
-export default function SearchPopout({ isOpen, onClose }) {
+export default function SearchPopout({ isOpen, onClose, anchorRef }) {
   const [searchTags, setSearchTags] = React.useState([
     { id: "1", label: "Design & UX" },
     { id: "2", label: "Figma" },
@@ -24,12 +25,41 @@ export default function SearchPopout({ isOpen, onClose }) {
     setSearchTags(searchTags.filter((tag) => tag.id !== tagId));
   };
 
+  const [popupStyle, setPopupStyle] = React.useState({});
+
+  React.useEffect(() => {
+    if (isOpen && anchorRef && anchorRef.current) {
+      const rect = anchorRef.current.getBoundingClientRect();
+      setPopupStyle({
+        position: 'fixed',
+        top: rect.bottom + 8, // 8px odstępu pod search barem
+        left: rect.left,
+        width: rect.width,
+        zIndex: 2001,
+      });
+    }
+    const handleResize = () => {
+      if (isOpen && anchorRef && anchorRef.current) {
+        const rect = anchorRef.current.getBoundingClientRect();
+        setPopupStyle({
+          position: 'fixed',
+          top: rect.bottom + 8,
+          left: rect.left,
+          width: rect.width,
+          zIndex: 2001,
+        });
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isOpen, anchorRef]);
+
   if (!isOpen) return null;
 
-  return (
+  return ReactDOM.createPortal(
     <>
       <div className="search-overlay" onClick={onClose} />
-      <div className="search-popup">
+      <div className="search-popup" style={popupStyle}>
         <div className="search-header">
           <h3>Searching For</h3>
         </div>
@@ -58,6 +88,7 @@ export default function SearchPopout({ isOpen, onClose }) {
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }
