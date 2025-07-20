@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import "./main.css";
 import { getAllQuestions, incrementViews, likeQuestion } from '../../utils/firebaseUtils';
 import Modal from '../notifications/Modal'; // Import komponentu Modal
@@ -14,7 +14,9 @@ import {useRedirectToHomeRootWhenNotLoggedIn} from "../../hooks/redirect_to_home
 import SortBy from '../../components/sort_by/sort_by';
 import Filters from '../../components/filters/filters';
 import filtersImg from '../../images/filters.png';
+import SearchPopout from '../../components/search_popout/search_popout';
 import Sidebar from '../../components/side_bar/side_bar.js';
+
 
 // pobiera zakladki z localstorage na profilu
 const useBookmarks = () => {
@@ -164,6 +166,9 @@ function Main() {
   const [sortOption, setSortOption] = useState({ value: 'newest', label: 'Newest first' });
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [currentFilters, setCurrentFilters] = useState({});
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const searchBoxRef = useRef(null);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   // Sorting logic for questions
   const sortQuestions = (questions, option) => {
@@ -260,10 +265,21 @@ function Main() {
             </div>
 
             <div className="search-section">
-              <div className="search-box">
+              <div className="search-box" ref={searchBoxRef}>
                 <div className="search-wrapper">
                   <FiSearch className="search-icon" />
-                  <input className="search-input" placeholder="Got a question? See if it's already asked!" type="text" />
+                  <input
+                    className={`search-input${isInputFocused ? ' search-input--active' : ''}`}
+                    placeholder="Got a question? See if it's already asked!"
+                    type="text"
+                    onFocus={() => { setIsInputFocused(true); setIsSearchOpen(true); }}
+                    onBlur={() => setIsInputFocused(false)}
+                  />
+                  <SearchPopout
+                    isOpen={isSearchOpen}
+                    onClose={() => setIsSearchOpen(false)}
+                    anchorRef={searchBoxRef}
+                  />
                 </div>
               </div>
               <Filters onFiltersChange={setCurrentFilters} currentFilters={currentFilters} />
