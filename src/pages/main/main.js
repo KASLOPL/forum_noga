@@ -14,6 +14,9 @@ import {useRedirectToHomeRootWhenNotLoggedIn} from "../../hooks/redirect_to_home
 import SortBy from '../../components/sort_by/sort_by';
 import Filters from '../../components/filters/filters';
 import filtersImg from '../../images/filters.png';
+import SearchPopout from '../../components/search_popout/search_popout';
+import Sidebar from '../../components/side_bar/side_bar.js';
+
 
 // pobiera zakladki z localstorage na profilu
 const useBookmarks = () => {
@@ -43,9 +46,26 @@ const useBookmarks = () => {
   return { toggleBookmark, isBookmarked };
 };
 
+export const UserContext = React.createContext();
+
+export const UserProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const getUserName = useCallback(() => user?.userName || user?.name || 'Guest', [user]);
+  const getUserInitials = useCallback(() => {
+    const name = getUserName();
+    return name === 'Guest' ? 'GU' : name.substring(0, 2).toUpperCase();
+  }, [getUserName]);
+
+  return (
+    <UserContext value={{ user, setUser, getUserName, getUserInitials }}>
+      {children}
+    </UserContext>
+  );
+};
+
 function Main() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const {user, setUser} = React.useContext(UserContext);
   const [expandedQuestion, setExpandedQuestion] = useState(null);
   const { toggleBookmark, isBookmarked } = useBookmarks();
   const [questions, setQuestions] = useState([]);
@@ -165,6 +185,9 @@ function Main() {
   const [currentFilters, setCurrentFilters] = useState({});
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const searchBoxRef = useRef(null);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   // Sorting logic for questions
   const sortQuestions = (questions, option) => {
@@ -261,7 +284,7 @@ function Main() {
             </div>
 
             <div className="search-section">
-              <div className="search-box">
+              <div className="search-box" ref={searchBoxRef}>
                 <div className="search-wrapper">
                   <FiSearch className="search-icon" />
                   <input
@@ -277,6 +300,13 @@ function Main() {
                         navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
                       }
                     }}
+                    onFocus={() => { setIsInputFocused(true); setIsSearchOpen(true); }}
+                    onBlur={() => setIsInputFocused(false)}
+                  />
+                  <SearchPopout
+                    isOpen={isSearchOpen}
+                    onClose={() => setIsSearchOpen(false)}
+                    anchorRef={searchBoxRef}
                   />
                 </div>
               </div>
@@ -307,37 +337,7 @@ function Main() {
 
         {/* NAWIGACJA  */}
         <div className="main-container">
-          <aside className="sidebar">
-            <div className="sidebar-content">
-              <div className="add-question-section">
-                {/* pytanie dodaj */}
-                <button className="add-question-btn" onClick={() => goTo('/addquestion')}>
-                  <span>ADD QUESTION</span>
-                  <div className="plus-icon"><FiPlus /></div>
-                </button>
-              </div>
-
-              <nav className="nav">
-                <a href="#" className="nav-item active" onClick={(e) => { e.preventDefault(); goTo('/main'); }}><FiHome /><span>Home</span></a>
-                {/* Zaktualizowany link do notifications */}
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); setIsNotificationModalOpen(true); }}><FiMessageSquare /><span>Notifications</span></a>
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/specialists'); }}><FiUsers /><span>Specialists</span></a>
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/my_questions'); }}><FiUser /><span>My Questions</span></a>
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/zakładki'); }}><FiBookmark /><span>Bookmarks</span></a>
-              </nav>
-
-              <div className="nav-secondary">
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/settings'); }}><FiSettings /><span>Settings</span></a>
-                <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/help'); }}><FiHelpCircle /><span>Help & FAQ</span></a>
-              </div>
-            </div>
-
-            <div className="sidebar-footer">
-              <button className="logout-btn" onClick={logout}>
-                <FiLogOut /> Sign out
-              </button>
-            </div>
-          </aside>
+          <Sidebar onNotificationClick={() => setIsNotificationModalOpen(true)} />
 
           {/* BANER */}
           <main className="content">
