@@ -183,6 +183,8 @@ function Main() {
   const [sortOption, setSortOption] = useState({ value: 'newest', label: 'Newest first' });
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [currentFilters, setCurrentFilters] = useState({});
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchBoxRef = useRef(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -289,6 +291,15 @@ function Main() {
                     className={`search-input${isInputFocused ? ' search-input--active' : ''}`}
                     placeholder="Got a question? See if it's already asked!"
                     type="text"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    onFocus={() => { setIsInputFocused(true); }}
+                    onBlur={() => setIsInputFocused(false)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' && searchQuery.trim()) {
+                        navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                      }
+                    }}
                     onFocus={() => { setIsInputFocused(true); setIsSearchOpen(true); }}
                     onBlur={() => setIsInputFocused(false)}
                   />
