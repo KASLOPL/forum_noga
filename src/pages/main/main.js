@@ -187,7 +187,6 @@ function Main() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchBoxRef = useRef(null);
-  const [isInputFocused, setIsInputFocused] = useState(false);
 
   // Sorting logic for questions
   const sortQuestions = (questions, option) => {
@@ -293,15 +292,13 @@ function Main() {
                     type="text"
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
-                    onFocus={() => { setIsInputFocused(true); }}
+                    onFocus={() => { setIsInputFocused(true); setIsSearchOpen(true); }}
                     onBlur={() => setIsInputFocused(false)}
                     onKeyDown={e => {
                       if (e.key === 'Enter' && searchQuery.trim()) {
                         navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
                       }
                     }}
-                    onFocus={() => { setIsInputFocused(true); setIsSearchOpen(true); }}
-                    onBlur={() => setIsInputFocused(false)}
                   />
                   <SearchPopout
                     isOpen={isSearchOpen}

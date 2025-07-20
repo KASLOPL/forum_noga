@@ -167,9 +167,11 @@ const Steps = () => {
 };
 
 const App = () => (
-  <AppProvider>
-    <Steps />
-  </AppProvider>
+  <div className="reset-pass">
+    <AppProvider>
+      <Steps />
+    </AppProvider>
+  </div>
 );
 
 export default App;
