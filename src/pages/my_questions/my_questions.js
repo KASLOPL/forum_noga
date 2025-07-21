@@ -219,7 +219,7 @@ function MyQuestions() {
         const allQuestionsResult = await getAllQuestions();
         
         if (allQuestionsResult.success) {
-          const userQuestions = allQuestionsResult.questions.filter(q => q.author === userName);
+          const userQuestions = allQuestionsResult.questions.filter(q => q.UID === user.uid);
           result = { success: true, questions: userQuestions };
         } else {
           result = allQuestionsResult;
