@@ -130,6 +130,7 @@ if (!answerVisibility) {
         answerDate: formData.answerDate || null,
         tags: tags.map(tag => tag.trim()),
         visibility: answerVisibility,
+        UID: currentUser?.uid,
       };
 
       // Wysłanie pytania do Firebase

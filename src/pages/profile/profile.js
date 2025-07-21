@@ -129,7 +129,7 @@ const Profile = () => {
       try {
         const result = await getAllQuestions();
         if (result.success) {
-          const myQuestions = result.questions.filter(q => q.author === currentUser.userName);
+          const myQuestions = result.questions.filter(q => q.UID === currentUser.uid);
           setUserQuestions(myQuestions);
         }
       } catch (err) {

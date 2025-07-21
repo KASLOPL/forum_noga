@@ -2,7 +2,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback, useRef } from "react";
 import "./main.css";
-import { getAllQuestions, incrementViews, likeQuestion } from '../../utils/firebaseUtils';
+import { getAllQuestions, incrementViews, likeQuestion,unlikeQuestion } from '../../utils/firebaseUtils';
 import Modal from '../notifications/Modal'; // Import komponentu Modal
 import Notifications from '../notifications/Notifications'; // Import komponentu Notifications
 import {
@@ -129,17 +129,18 @@ function Main() {
     const isAlreadyLiked = likedQuestions.includes(questionId);
     
     if (isAlreadyLiked) {
-      // jesli jest polubione usuwa loklanie i w bazie 
-      const newLiked = likedQuestions.filter(id => id !== questionId);
-      setLikedQuestions(newLiked);
-      setQuestions(prev => prev.map(q => 
-        q.id === questionId ? { ...q, likes: Math.max((q.likes || 0) - 1, 0) } : q
-      ));
+      const result = await unlikeQuestion(questionId);
+      if (result.success) {
+        const newLiked = likedQuestions.filter(id => id !== questionId);
+        setLikedQuestions(newLiked);
+        setQuestions(prev => prev.map(q => 
+          q.id === questionId ? { ...q, likes: Math.max((q.likes || 0) - 1, 0) } : q
+        ));
+      }
     } else {
       const result = await likeQuestion(questionId);
       if (result.success) {
         const newLiked = [...likedQuestions, questionId];
-        // jesli nie jest dodaje lokalnie i w bazie 
         setLikedQuestions(newLiked);
         setQuestions(prev => prev.map(q => 
           q.id === questionId ? { ...q, likes: (q.likes || 0) + 1 } : q

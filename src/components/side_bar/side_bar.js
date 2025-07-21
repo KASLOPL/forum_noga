@@ -36,9 +36,8 @@ const Sidebar = ({ onNotificationClick }) => {
           <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); onNotificationClick?.(); }}>
             <FiMessageSquare /><span>Notifications</span>
           </a>
-          <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/specialists'); }}>
-            <FiUsers /><span>Specialists</span>
-          </a>
+          
+          
           <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); goTo('/my_questions'); }}>
             <FiUser /><span>My Questions</span>
           </a>
