@@ -1,3 +1,7 @@
+:root {
+  --search-popup-bg: #fff;
+}
+
 .search-container {
   position: relative;
   display: inline-block;
@@ -29,15 +33,7 @@
   height: 16px;
 }
 
-.search-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.1);
-  z-index: 999;
-}
+/* Overlay nieaktywny, nie renderujemy go w ogóle */
 
 .search-box {
   position: relative;
@@ -48,10 +44,9 @@
   z-index: 2001;
   overflow-x: hidden;
   overflow-y: visible;
-  background: white;
+  background: var(--search-popup-bg);
   border: 1px solid #e9ecef;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   padding: 0;
 }
 
