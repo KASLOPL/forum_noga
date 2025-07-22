@@ -20,13 +20,15 @@ import QuestionDetail from './pages/answ_question/answer_q';
 import MyQuestions from './pages/my_questions/my_questions.js';
 import Search from './pages/search/search.js';
 import ResetPassword from './pages/reset_password/ResetPassword.js';
-
+import logout from './hooks/logout.js';
+import { LogoutProvider } from './hooks/logout';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <UserProvider>
+      <LogoutProvider>
       <Routes>
         <Route path="/" element={<Logowanie />} />
         <Route path="/logowanie" element={<Logowanie />} />
@@ -40,6 +42,7 @@ root.render(
         <Route path='/search' element={<Search />} />
         <Route path="/reset_password" element={<ResetPassword />} />
       </Routes>
+      </LogoutProvider>
       </UserProvider>
     </BrowserRouter>
   </React.StrictMode>

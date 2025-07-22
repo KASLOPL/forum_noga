@@ -17,8 +17,10 @@ import {
   where,
   getDocs,
   updateDoc,
-  doc
+  doc,
+  getDoc
 } from "firebase/firestore";
+
 
 function QuestionDetail() {
   const navigate = useNavigate();
@@ -26,17 +28,7 @@ function QuestionDetail() {
   const { id } = useParams();
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-  const [question] = useState(location.state?.question || {
-    id: parseInt(id),
-    author: "Anna K.",
-    timeAgo: "2 hours ago",
-    highlight: "Jak zoptymalizować zapytania SQL w dużej bazie danych?",
-    tags: ["SQL", "Database", "Performance"],
-    fullContent: "Pracuję nad aplikacją, która musi przetwarzać duże ilości danych z bazy MySQL...",
-    likes: 23,
-    views: 1284,
-    responders: 3
-  });
+  const [question, setQuestion] = useState(location.state?.question || null);
 
   const [answers, setAnswers] = useState([]);
   const [newAnswer, setNewAnswer] = useState("");
@@ -62,10 +54,19 @@ function QuestionDetail() {
     return match ? match[1] : null;
   };
 
-  // 🔽 Pobieranie odpowiedzi z Firebase
+  // 🔽 Pobieranie pytania i odpowiedzi z Firebase
   useEffect(() => {
-    const fetchAnswers = async () => {
+    const fetchQuestionAndAnswers = async () => {
       try {
+        // Pobierz pytanie jeśli nie ma w stanie
+        if (!question) {
+          const docRef = doc(db, "questions", id);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setQuestion({ id: docSnap.id, ...docSnap.data() });
+          }
+        }
+        // Pobierz odpowiedzi
         const q = query(collection(db, "answers"), where("questionId", "==", id));
         const querySnapshot = await getDocs(q);
         const loadedAnswers = querySnapshot.docs.map(doc => ({
@@ -74,11 +75,11 @@ function QuestionDetail() {
         }));
         setAnswers(loadedAnswers);
       } catch (err) {
-        console.error("Błąd przy pobieraniu odpowiedzi:", err);
+        console.error("Błąd przy pobieraniu danych:", err);
       }
     };
-
-    fetchAnswers();
+    fetchQuestionAndAnswers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleSendAnswer = async () => {
@@ -91,6 +92,7 @@ function QuestionDetail() {
         author: getUserDisplayName(),
         authorTitle: "Student",
         timeAgo: "just now",
+        title: question?.title || question?.highlight || '',
         content: newAnswer.trim(),
         likes: 0,
         isExpert: false,
@@ -218,13 +220,13 @@ function QuestionDetail() {
                 </div>
               </div>
               <div className="question-content-detail">
-                <h1 className="question-title">{question.highlight}</h1>
+                <h1 className="question-title">{question?.title || question?.highlight || 'Brak tytułu'}</h1>
                 <div className="question-tags">
-                  {question.tags?.map(tag => (
+                  {question?.tags?.map(tag => (
                     <span key={tag} className="tag">{tag}</span>
                   ))}
                 </div>
-                <p className="question-text">{question.fullContent}</p>
+                <p className="question-text">{question?.fullContent}</p>
               </div>
               <div className="question-stats-detail">
                 <div className="stat-group">
