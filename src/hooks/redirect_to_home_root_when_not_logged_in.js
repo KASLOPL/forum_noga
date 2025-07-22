@@ -6,8 +6,9 @@ export const useRedirectToHomeRootWhenNotLoggedIn = () => {
   const loggedIn = localStorage.getItem('isLoggedIn');
 
   useEffect(() => {
-    if (!loggedIn) {
+    // Nie przekierowuj jeśli jesteśmy na stronie resetowania hasła
+    if (!loggedIn && window.location.pathname !== '/reset_password') {
       navigate('/');
     }
   }, [loggedIn]);
-}
+};
