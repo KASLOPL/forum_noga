@@ -18,20 +18,10 @@ export const HeaderProvider = ({ children }) => {
 
   // Domyślne linki nawigacji
   const getDefaultNavLinks = (pathname) => {
-    if (pathname && pathname.includes('profile')) {
-      return [
-        { icon: 'FiHome', text: 'Home', path: '/main' },
-        { icon: 'FiBell', text: 'Notifications', path: '/notifications' },
-        { icon: 'FiUsers', text: 'Specialists', path: '/specialists' },
-        { icon: 'FiUser', text: 'My Questions', path: '/my_questions' },
-        { icon: 'FiBookmark', text: 'Bookmarks', path: '/zakładki' }
-      ];
-    }
     return [
       { icon: 'FiHome', text: 'Home', path: '/main' },
-      { icon: 'FiBell', text: 'Notifications', path: '/notifications' },
-      { icon: 'FiBookOpen', text: 'Specialists', path: '/specialists' },
-      { icon: 'FiMessageSquare', text: 'My Questions', path: '/my_questions' },
+      { icon: 'FiMessageSquare', text: 'Notifications', path: '/notifications' },
+      { icon: 'FiUser', text: 'My Questions', path: '/my_questions' },
       { icon: 'FiBookmark', text: 'Bookmarks', path: '/zakładki' }
     ];
   };
