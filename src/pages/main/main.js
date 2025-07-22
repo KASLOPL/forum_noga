@@ -185,6 +185,18 @@ function Main() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchBoxRef = useRef(null);
 
+  // --- Zamykanie popouta po kliknięciu poza search-boxem ---
+  React.useEffect(() => {
+    if (!isSearchOpen) return;
+    function handleClickOutside(e) {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) {
+        setIsSearchOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isSearchOpen]);
+
   // Sorting logic for questions
   const sortQuestions = (questions, option) => {
     if (!option) return questions;

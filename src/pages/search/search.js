@@ -308,6 +308,18 @@ const filterByStatus = (questions, statusFilter) => {
     }
   };
 
+  // Dodaj efekt zamykania popouta po kliknięciu poza search-boxem
+  useEffect(() => {
+    if (!isSearchOpen) return;
+    function handleClickOutside(e) {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) {
+        setIsSearchOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isSearchOpen]);
+
   if (!isLoggedIn) {
   return (
       <div className="app-main">
