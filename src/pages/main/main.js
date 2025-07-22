@@ -16,7 +16,8 @@ import Filters from '../../components/filters/filters';
 import filtersImg from '../../images/filters.png';
 import SearchPopout from '../../components/search_popout/search_popout';
 import Sidebar from '../../components/side_bar/side_bar.js';
-import { useLogout } from '../../hooks/logout';
+
+import QuestionField from '../../components/question_field/question_field';
 
 
 // pobiera zakladki z localstorage na profilu
@@ -363,76 +364,17 @@ function Main() {
             <div className="questions-container">
               <div className="questions-list">
                 {Array.isArray(orderedQuestions) && orderedQuestions.map((question) => (
-                  <div key={question.id} className="question-card" onClick={() => cardClick(question)} style={{ cursor: 'pointer' }}>
-                    <div className="card-header" onClick={(e) => { e.stopPropagation(); }}>
-                      <div className="author">
-                        <div className="avatar">
-                          <span>{question.author?.substring(0, 2).toUpperCase() || '??'}</span>
-                        </div>
-                        <div className="author-info">
-                          <div className="author-name">{question.author || 'Unknown Author'}</div>
-                          <div className="author-time">{question.timeAgo}</div>
-                        </div>
-                      </div>
-                      <div className="card-actions">
-                        {/* styl i klikniecie na ikone zakladki  */}
-                        <button className={`icon-btn ${isBookmarked(question.id) ? 'bookmarked' : ''}`} onClick={(e) => bookmarkClick(question, e)}>
-                          <FiBookmark style={{ fill: isBookmarked(question.id) ? '#4CAF50' : 'none' }} />
-                        </button>
-                        <button className="icon-btn" onClick={(e) => { e.stopPropagation(); }}><FiMoreVertical /></button> 
-                      </div>
-                    </div>
-
-                    <div className="question-title">
-                      <h3>{question.title || question.highlight}</h3>
-                    </div>
-                    <div className="question-tags">
-                      {question.tags && question.tags.map(tag => (
-                         <span key={tag} className="tag">{tag}</span>
-                        ))}
-                    </div>
-
-                    <div className="question-content">
-                      {/* tersc pytania rozwinieta albo nie  */}
-                      <p>{expandedQuestion === question.id ? question.fullContent : question.content}</p>
-                      {question.fullContent && question.fullContent !== question.content && (
-                        <button className="expand-btn" onClick={(e) => toggleQuestion(question.id, e)}>
-                          {expandedQuestion === question.id ? 
-                          // rozwijanie z ikonami 
-                            <><span>Show less</span><FiChevronUp /></> : 
-                            <><span>Read more</span><FiChevronDown /></>
-                          }
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="card-footer" onClick={(e) => { e.stopPropagation(); }}>
-                      <div className="responders">
-                        {/* awatary i ilosc losowa oraz litery na nich z kodu ascii dlatego liczby  */}
-                        {Array.from({ length: question.responders || 0 }, (_, i) => (
-                          <div key={i} className="avatar avatar-small">
-                            <span>{String.fromCharCode(65 + i)}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="stats">
-                        <div className="stat like-btn" onClick={(e) => likeClick(question.id, e)}>
-                          <FiHeart 
-                            className="heart-icon" 
-                            style={{ 
-                              // zmiana wygaldu serca po polubieniu itp
-                              fill: likedQuestions.includes(question.id) ? '#ff4757' : 'none',
-                              color: likedQuestions.includes(question.id) ? '#ff4757' : '#666'
-                            }} 
-                          />
-                          <span>{question.likes || 0}</span>
-                        </div>
-                        {/* ile osob zobaczylo */}
-                        <div className="stat"><FiEye /><span>{question.views || 0}</span></div>
-                      </div>
-                    </div>
-                  </div>
+                  <QuestionField
+                    key={question.id}
+                    question={question}
+                    expandedQuestion={expandedQuestion}
+                    onCardClick={cardClick}
+                    onBookmarkClick={bookmarkClick}
+                    isBookmarked={isBookmarked(question.id)}
+                    onToggleExpand={toggleQuestion}
+                    onLikeClick={likeClick}
+                    liked={likedQuestions.includes(question.id)}
+                  />
                 ))}
               </div>
             </div>
