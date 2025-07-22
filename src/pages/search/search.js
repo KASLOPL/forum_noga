@@ -300,6 +300,14 @@ const filterByStatus = (questions, statusFilter) => {
     });
   };
 
+  const handleSearchEnter = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      setIsSearchOpen(false); // zamknij popout natychmiast
+      e.target.blur(); // zabierz focus z inputa
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   if (!isLoggedIn) {
   return (
       <div className="app-main">
@@ -346,11 +354,7 @@ const filterByStatus = (questions, statusFilter) => {
                     onChange={e => setSearchQuery(e.target.value)}
                     onFocus={() => { setIsInputFocused(true); setIsSearchOpen(true); }}
                     onBlur={() => setIsInputFocused(false)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' && searchQuery.trim()) {
-                        navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-                      }
-                    }}
+                    onKeyDown={handleSearchEnter}
                   />
                   <SearchPopout
                     isOpen={isSearchOpen}
