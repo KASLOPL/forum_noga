@@ -98,6 +98,8 @@
   max-width: 100%;
   padding: 0;
   margin-right: 0;
+  position: relative;
+  z-index: 2001;
 }
 
 
@@ -108,6 +110,8 @@
   transform: translateY(-50%);
   color: #9d9d9d;
   font-size: 14px;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .app-main .search-input {
@@ -122,7 +126,9 @@
   font-size: 14px;
   box-sizing: border-box;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+  position: relative;
+  z-index: 1;
 }
 
 .app-main .search-input:focus {
@@ -141,8 +147,9 @@
 }
 
 .search-input--active {
-  border: 2px solid #91a160 ;
-  box-shadow: 0 0 0 2px #a7b59333;
+  background-color: #fff;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
 
 /* Search actions */
@@ -678,4 +685,18 @@
 .app-main .icon-btn.bookmarked {
   color: #4CAF50;
 
+}
+
+/* Upewnij się, że tylko to zostaje dla aktywnego inputa: */
+.app-main .search-box .search-input--active {
+  background: #fff !important;
+  color: #333 !important;
+  border: 2px solid #91a160 !important;
+  box-shadow: 0 0 0 2px #a7b59333, 0 10px 40px rgba(0,0,0,0.1) !important;
+  position: relative;
+  z-index: 2002;
+}
+
+.app-main .search-wrapper {
+  position: relative;
 }
