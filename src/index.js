@@ -28,21 +28,21 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <UserProvider>
-      <LogoutProvider>
-      <Routes>
-        <Route path="/" element={<Logowanie />} />
-        <Route path="/logowanie" element={<Logowanie />} />
-        <Route path="/main" element={<Main />} />
-        <Route path="/addquestion" element={<AddQuestion />} />
-        <Route path="/zakładki" element={<Zakladki />} />
-        <Route path="/help" element={<Help />} />
-        <Route path='/profile' element={<Profile />}></Route>
-        <Route path="/answer_q/:id" element={<QuestionDetail />} />
-        <Route path='/my_questions' element={<MyQuestions />} />
-        <Route path='/search' element={<Search />} />
-        <Route path="/reset_password" element={<ResetPassword />} />
-      </Routes>
-      </LogoutProvider>
+        <Routes>
+          <Route path="/" element={<LogoutProvider><Logowanie /></LogoutProvider>} />
+          <Route path="/logowanie" element={<LogoutProvider><Logowanie /></LogoutProvider>} />
+          <Route path="/reset_password" element={<ResetPassword />} />
+          <Route element={<LogoutProvider><Routes>
+            <Route path="/main" element={<Main />} />
+            <Route path="/addquestion" element={<AddQuestion />} />
+            <Route path="/zakładki" element={<Zakladki />} />
+            <Route path="/help" element={<Help />} />
+            <Route path='/profile' element={<Profile />}></Route>
+            <Route path="/answer_q/:id" element={<QuestionDetail />} />
+            <Route path='/my_questions' element={<MyQuestions />} />
+            <Route path='/search' element={<Search />} />
+          </Routes></LogoutProvider>} />
+        </Routes>
       </UserProvider>
     </BrowserRouter>
   </React.StrictMode>
