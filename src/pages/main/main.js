@@ -16,6 +16,7 @@ import Filters from '../../components/filters/filters';
 import filtersImg from '../../images/filters.png';
 import SearchPopout from '../../components/search_popout/search_popout';
 import Sidebar from '../../components/side_bar/side_bar.js';
+import { useLogout } from '../../hooks/logout';
 
 
 // pobiera zakladki z localstorage na profilu
@@ -83,12 +84,7 @@ function Main() {
   // funkcja do nawigacji 
   const goTo = useCallback((path) => navigate(path), [navigate]);
   // wylogowywanie i usuwanie danych z localstorage
-  const logout = useCallback(() => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('likedQuestions');
-    navigate('/', { replace: true });
-  }, [navigate]);
+ 
 
   // zwijanie i rozwijanie pytan w zalenzosci w jakim stanie sa 
   const toggleQuestion = useCallback((questionId, e) => {

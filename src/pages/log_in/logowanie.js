@@ -14,8 +14,9 @@ import noprosze3 from '../../images/noprosze3.jpg'
 import google from '../../icons/google.png' // import ikon social media
 import apple from '../../icons/apple.png'
 import facebook from '../../icons/facebook.png'
-import { db } from '../../firebase'; // <-- TO DODAJ
-import { doc, setDoc, getDoc } from 'firebase/firestore'; // <-- I TO
+import { db } from '../../firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { useLogout } from '../../hooks/logout';
 
 // tu wszystkie obrazki do slidera
 const sliderImages = [
@@ -26,6 +27,7 @@ const sliderImages = [
 ]
 
 function Auth() {
+  const { setIsLoggedIn } = useLogout();
   // info czy jest aktywna zakladka logowania czy rejestracji
   const [activeTab, setActiveTab] = useState('login')
 
@@ -188,10 +190,10 @@ function Auth() {
           interests: userProfileData?.interests || ''
         }
 
-        localStorage.setItem('isLoggedIn', 'true') // zapisujemy info o logowaniu
-        localStorage.setItem('currentUser', JSON.stringify(userData)) // zapisujemy dane uzytkownika
-
-        navigate('/main', { replace: true }) // przekierowanie
+        localStorage.setItem('isLoggedIn', 'true'); // zapisujemy info o logowaniu
+        localStorage.setItem('currentUser', JSON.stringify(userData)); // zapisujemy dane uzytkownika
+        setIsLoggedIn(true); // aktualizujemy kontekst
+        navigate('/main', { replace: true }); // przekierowanie
       } else {
         // rejestracja nowego uzytkownika
         const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password) // rejestracja przez firebase
@@ -221,10 +223,10 @@ function Auth() {
           interests: ""
         }
 
-        localStorage.setItem('isLoggedIn', 'true') // zapisujemy logowanie
-        localStorage.setItem('currentUser', JSON.stringify(userData)) // zapisujemy dane uzytkownika
-
-        navigate('/main', { replace: true }) // przekierowanie
+        localStorage.setItem('isLoggedIn', 'true'); // zapisujemy logowanie
+        localStorage.setItem('currentUser', JSON.stringify(userData)); // zapisujemy dane uzytkownika
+        setIsLoggedIn(true); // aktualizujemy kontekst
+        navigate('/main', { replace: true }); // przekierowanie
       }
     } catch (error) {
       console.error('Auth error:', error) // logujemy blad

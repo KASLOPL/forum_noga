@@ -6,18 +6,13 @@ import {
   FiPlus, FiSettings, FiUser, FiUsers
 } from "react-icons/fi";
 import './side_bar.css';
+import { useLogout } from '../../hooks/logout';
+
 
 const Sidebar = ({ onNotificationClick }) => {
   const navigate = useNavigate();
-
+  const { logout } = useLogout();
   const goTo = useCallback((path) => navigate(path), [navigate]);
-
-  const logout = useCallback(() => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('likedQuestions');
-    navigate('/', { replace: true });
-  }, [navigate]);
 
   return (
     <aside className="sidebar">
