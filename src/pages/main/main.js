@@ -470,7 +470,7 @@ function Main() {
               <div className="tags-list">
                 {/* lista tagow i tworzenie im osobnych divow ( jako osobne elemnty ) */}
                 {["Python", "GitHub", "Data Structures", "React.js", "Java", "JavaScript", "CSS", "Machine Learning", "SQL", "Node.js"].map(tag => (
-                  <div key={tag} className="tag tag-clickable">{tag}</div>
+                  <div key={tag} className="tag tag-clickable" onClick={() => navigate(`/search?q=${encodeURIComponent(tag)}`)}>{tag}</div>
                 ))}
               </div>
             </div>
