@@ -348,54 +348,11 @@
   flex-shrink: 0; /* Licznik zawsze widoczny */
 }
 
-/* NOWY KONTENER - tylko on ma scroll */
-.app-main .questions-container {
-  flex: 1;
-  overflow-y: auto; /* TYLKO TUTAJ JEST SCROLL */
-  padding-right: 4px; /* Miejsce na scrollbar */
-  
-  /* Custom scrollbar */
-  scrollbar-width: thin;
-  scrollbar-color: #cacfb9 #f2f2f2;
-}
-
-.app-main .questions-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-.app-main .questions-container::-webkit-scrollbar-track {
-  background: #f8f8f8;
-  border-radius: 3px;
-}
-
-.app-main .questions-container::-webkit-scrollbar-thumb {
-  background: #cacfb9;
-  border-radius: 3px;
-}
-
-.app-main .questions-container::-webkit-scrollbar-thumb:hover {
-  background: #a9b18d;
-}
-
 .app-main .questions-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding-bottom: 20px; /* Padding na dole żeby ostatnie pytanie nie było przycięte */
-}
-
-.app-main .question-card {
-  background-color: white;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid #f0f0f0;
-  transition: box-shadow 0.2s ease, transform 0.1s ease;
-}
-
-.app-main .question-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
 }
 
 /* Right sidebar styles - ZMODYFIKOWANY: fixed width i height */
