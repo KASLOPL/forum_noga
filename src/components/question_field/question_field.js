@@ -43,7 +43,26 @@ const QuestionField = ({
       </div>
 
       <div className="question-content">
-        <p>{expandedQuestion === question.id ? question.fullContent : question.content}</p>
+        {(() => {
+          const isLong = question.content && question.content.length > 300;
+          if (expandedQuestion === question.id) {
+            return <p>{question.fullContent}</p>;
+          } else if (isLong) {
+            return (
+              <p>
+                {question.content.slice(0, 300)}...
+                <button
+                  className="see-more-btn"
+                  onClick={e => { e.stopPropagation(); onCardClick(question); }}
+                >
+                  See more
+                </button>
+              </p>
+            );
+          } else {
+            return <p>{question.content}</p>;
+          }
+        })()}
         {question.fullContent && question.fullContent !== question.content && (
           <button className="expand-btn" onClick={e => onToggleExpand(question.id, e)}>
             {expandedQuestion === question.id ? (
