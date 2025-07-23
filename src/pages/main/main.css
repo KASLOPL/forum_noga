@@ -30,7 +30,7 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  /* overflow: hidden; usunięte, by umożliwić scroll */
 }
 
 /* Header styles - ZMODYFIKOWANY: fixed height */
@@ -326,7 +326,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden; /* Główna sekcja nie przewija */
+  /* overflow: hidden; usunięte, by umożliwić scroll */
 }
 
 .app-main .welcome-banner {
@@ -360,6 +360,13 @@
   flex-direction: column;
   gap: 16px;
   padding-bottom: 20px; /* Padding na dole żeby ostatnie pytanie nie było przycięte */
+  overflow-y: auto; /* Dodane: lista pytań przewijalna */
+  max-height: 60vh; /* Możesz dostosować wysokość, by nie wychodziła poza ekran */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.app-main .questions-list::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
 }
 
 /* Right sidebar styles - ZMODYFIKOWANY: fixed width i height */

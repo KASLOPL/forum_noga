@@ -482,3 +482,11 @@
     display: none;
   }
 }
+
+.questions-list {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.questions-list::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
+}
