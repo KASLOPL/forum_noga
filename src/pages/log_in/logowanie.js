@@ -17,6 +17,7 @@ import facebook from '../../icons/facebook.png'
 import { db } from '../../firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { useLogout } from '../../hooks/logout';
+import { sendVerificationEmail } from '../../utils/emailVerification';
 
 // tu wszystkie obrazki do slidera
 const sliderImages = [
@@ -49,6 +50,8 @@ function Auth() {
   const [currentSlide, setCurrentSlide] = useState(0) // numer aktualnego slajdu
   const [fade, setFade] = useState(true) // stan do animacji slajdów
   const [isSubmitting, setIsSubmitting] = useState(false) // sprawdza czy formularz juz sie wysyla
+  const [verificationSent, setVerificationSent] = useState(false); // czy wysłano maila weryfikacyjnego
+  const [verificationError, setVerificationError] = useState(''); // błąd weryfikacji
   const navigate = useNavigate() // hook do przekierowywania uzytkownika
 
   // kiedy komponent sie zaladuje to sprawdzamy czy user juz zalogowany
@@ -159,26 +162,32 @@ function Auth() {
         // logowanie uzytkownika
         const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password) // logowanie przez firebase
         const user = userCredential.user // pobieramy dane uzytkownika
-        
-        async function fetchUserData(uid) {
-              try {
-                const docRef = doc(db, 'users', uid);
-                const docSnap = await getDoc(docRef);
 
-                if (docSnap.exists()) {
-                  const userData = docSnap.data();
-                  console.log("Dane użytkownika:", userData);
-                  return userData;
-                } else {
-                  console.log("Nie znaleziono dokumentu użytkownika");
-                  return null;
-                }
-              } catch (error) {
-                console.error("Błąd podczas pobierania danych:", error);
-                return null;
-              }
+        // Sprawdź czy email jest zweryfikowany
+        if (!user.emailVerified) {
+          setFormError('Twój adres email nie został potwierdzony. Sprawdź skrzynkę pocztową i kliknij w link weryfikacyjny.');
+          setIsSubmitting(false);
+          return;
+        }
+
+        async function fetchUserData(uid) {
+          try {
+            const docRef = doc(db, 'users', uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+              const userData = docSnap.data();
+              console.log("Dane użytkownika:", userData);
+              return userData;
+            } else {
+              console.log("Nie znaleziono dokumentu użytkownika");
+              return null;
             }
-            const userProfileData =  fetchUserData(user.uid);
+          } catch (error) {
+            console.error("Błąd podczas pobierania danych:", error);
+            return null;
+          }
+        }
+        const userProfileData = await fetchUserData(user.uid);
 
         const userData = {
           uid: user.uid, // unikalny identyfikator uzytkownika
@@ -211,22 +220,40 @@ function Auth() {
           fieldOfStudy: "",
           bio: "",
           interests: ""
-          });
+        });
 
+        // Wysyłanie maila weryfikacyjnego
+        const result = await sendVerificationEmail();
+        if (result.success) {
+          setVerificationSent(true);
+          setVerificationError('');
+        } else {
+          setVerificationError('Nie udało się wysłać maila weryfikacyjnego. Spróbuj ponownie.');
+          setVerificationSent(false);
+          return;
+        }
+
+        // Blokuj logowanie do czasu weryfikacji maila
+        if (!user.emailVerified) {
+          setFormError('Na podany email został wysłany link weryfikacyjny. Potwierdź adres email, aby się zalogować.');
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Jeśli email jest już zweryfikowany (teoretycznie niemożliwe od razu, ale dla bezpieczeństwa)
         const userData = {
-          uid: user.uid, // unikalny identyfikator uzytkownika
-          email: user.email, // email uzytkownika
-          userName: formData.userName.trim() || user.email.split('@')[0], // domyslna nazwa jak nie ma displayName
+          uid: user.uid,
+          email: user.email,
+          userName: formData.userName.trim() || user.email.split('@')[0],
           bio: '',
           school: '',
           fieldOfStudy: '',
           interests: ""
         }
-
-        localStorage.setItem('isLoggedIn', 'true'); // zapisujemy logowanie
-        localStorage.setItem('currentUser', JSON.stringify(userData)); // zapisujemy dane uzytkownika
-        setIsLoggedIn(true); // aktualizujemy kontekst
-        navigate('/main', { replace: true }); // przekierowanie
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        setIsLoggedIn(true);
+        navigate('/main', { replace: true });
       }
     } catch (error) {
       console.error('Auth error:', error) // logujemy blad
@@ -289,7 +316,7 @@ function Auth() {
                 className={errors.userName ? 'error-input' : ''}
                 disabled={isSubmitting}
               />
-              {errors.userName && <span className="error-message">{errors.userName}</span>} {/* wyswietlanie bledu dla nazwy użytkownika*/}
+              {errors.userName && <span className="error-message">{errors.userName}</span>}
             </label>
           )}
 
@@ -339,6 +366,13 @@ function Auth() {
 
           {/* Wyswietlanie ogolnego bledu formularza */}
           {formError && <p className="form-error">{formError}</p>}
+          {/* Komunikat o wysłaniu maila weryfikacyjnego */}
+          {verificationSent && (
+            <p className="form-info"></p>
+          )}
+          {verificationError && (
+            <p className="form-error">{verificationError}</p>
+          )}
 
           {/* Separator dla logowania przez social media */}
           <div className="or-divider">
@@ -384,11 +418,11 @@ function Auth() {
         />
         {/* Wskazniki slajdow */}
         <div className="slider-indicators">
-          {sliderImages.map((_, i) => ( // iteracja po wszystkich obrazkach w sliderze
+          {sliderImages.map((_, i) => (
             <span
-              key={i} // unikalny klucz dla kazdego wskaznika
-              className={`bar ${currentSlide === i ? 'active' : ''}`} // aktywna klasa dla aktualnego slajdu
-              onClick={() => goToSlide(i)} // zmiana slajdu po kliknieciu
+              key={i}
+              className={`bar ${currentSlide === i ? 'active' : ''}`}
+              onClick={() => goToSlide(i)}
             />
           ))}
         </div>
