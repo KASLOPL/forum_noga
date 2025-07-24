@@ -11,6 +11,7 @@ import { addQuestion } from '../../utils/firebaseUtils'; // Funkcja dodająca py
 import Sidebar from '../../components/side_bar/side_bar.js';
 import Notifications from '../notifications/Notifications'; // Import komponentu Notifications
 import Modal from '../notifications/Modal'; // Import komponentu Modal
+import FileUpload from '../../components/file_upload/file_upload';
 
 // Główna funkcja komponentu AddQuestion
 const AddQuestion = () => {
@@ -352,47 +353,22 @@ if (!answerVisibility) {
             </div>
 
             <div className="file-upload-section">
-              <div className="file-upload-area">
-                <Upload size={32} />
-                <div className="upload-content">
-                  <div className="upload-title">Select File to Upload</div>
-                  <div className="upload-formats">
-                    Supported formats:<br />
-                    .java, .py, .cpp, .js, .txt, .zip
-                  </div>
-                  <div className="upload-size">Max 10 MB</div>
-                 
-                      <input 
-                        type="file" 
-                        name="file"
-                        id="fileInput" 
-                        style={{ display: 'none' }}
-                        onChange={(e) => setSelectedFile(e.target.files[0])}
-                        disabled={isSubmitting}
-                      />
-                  <button 
-                    type="button" 
-                    className="select-file-btn"
-                    onClick={() => document.getElementById('fileInput').click()}
-                    disabled={isSubmitting}
-                  >
-                    <Upload size={16} />
-                    Select File
-                  </button>
-                  </div>
-                  </div>
-                </div>
-          </div>
+              <FileUpload 
+                onFileSelect={(file) => setSelectedFile(file)}
+                disabled={isSubmitting}
+              />
+            </div>
 
-          {/* Przycisk wysyłania pytania */}
-          <div className="submit-section">
-            <button type="submit" className="submit-btn" onClick={handleSubmit} disabled={isSubmitting}>
-              {isSubmitting ? 'Posting...' : 'Post'}
-            </button>
-          </div>
-        </div>
-      </div>
-<Modal 
+            {/* Przycisk wysyłania pytania */}
+            <div className="submit-section">
+              <button type="submit" className="submit-btn" onClick={handleSubmit} disabled={isSubmitting}>
+                {isSubmitting ? 'Posting...' : 'Post'}
+              </button>
+            </div>
+          </div> {/* content-wrapper */}
+        </div> {/* main-content */}
+      </div> {/* app-container */}
+      <Modal 
         isOpen={isNotificationModalOpen} 
         onClose={() => setIsNotificationModalOpen(false)}
         size="large"
@@ -402,7 +378,6 @@ if (!answerVisibility) {
           onClose={() => setIsNotificationModalOpen(false)}
         />
       </Modal>
-
     </div>
   );
 };
