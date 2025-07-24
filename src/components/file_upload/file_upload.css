@@ -1,0 +1,247 @@
+/* Enhanced File Upload Styles */
+.enhanced-file-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  /* Upload Area */
+  .file-upload-area {
+    border: 2px dashed #ededed;
+    border-radius: 8px;
+    padding: 32px 24px;
+    text-align: center;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .file-upload-area:hover {
+    border-color: #a9b18d;
+  }
+  
+  .upload-icon {
+    color: #9d9d9d;
+  }
+  
+  .upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .upload-title {
+    font-weight: 600;
+    color: #2e373f;
+    font-size: 16px;
+  }
+  
+  .upload-formats,
+  .upload-size {
+    font-size: 12px;
+    color: #5e5e5e;
+    line-height: 1.4;
+    text-align: center;
+  }
+  
+  .select-file-btn {
+    background: #2e373f;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .select-file-btn:hover {
+    background: #272d33;
+  }
+  
+  .select-file-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  
+  /* Uploaded Files List */
+  .uploaded-files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border: 1px solid #ededed;
+    border-radius: 8px;
+    background: white;
+    transition: all 0.3s ease;
+  }
+  
+  .file-item.uploading {
+    border-color: #8f986c;
+    background: #fdfff8;
+  }
+  
+  .file-item.completed {
+    border-color: #8f986c;
+    background: #fdfff8;
+  }
+  
+  .file-item.error {
+    border-color: #dc3545;
+    background: #fff5f5;
+  }
+  
+  .file-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+  }
+  
+  .file-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    color: #5e5e5e;
+  }
+  
+  .file-type {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: #2e373f;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 4px;
+    border-radius: 4px;
+    line-height: 1;
+  }
+  
+  .file-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .file-name {
+    font-weight: 600;
+    color: #2e373f;
+    font-size: 14px;
+  }
+  
+  .file-size-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+  
+  .file-size {
+    color: #5e5e5e;
+  }
+  
+  .upload-status {
+    font-weight: 500;
+  }
+  
+  .upload-status.completed {
+    color: #6daf33;
+  }
+  
+  .upload-status.error {
+    color: #dc3545;
+  }
+  
+  /* Progress Bar */
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: #ededed;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: #a9b18d;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  
+  .progress-fill.completed {
+    background: #B0B996;
+  }
+  
+  /* Remove File Button */
+  .remove-file-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    color: #5e5e5e;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .remove-file-btn:hover {
+    color: #dc3545;
+  }
+  
+  .remove-file-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  
+  .delete-icon {
+    font-size: 16px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .file-upload-area {
+      padding: 24px 16px;
+    }
+    
+    .file-item {
+      padding: 8px 12px;
+    }
+    
+    .file-icon {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .file-name {
+      font-size: 13px;
+    }
+    
+    .file-size-status {
+      font-size: 11px;
+    }
+  }
