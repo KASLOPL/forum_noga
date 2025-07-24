@@ -10,7 +10,6 @@
   background-color: #fafafa;
   color: #272d33;
   /* Ukrywa scrollbar dla całego body, bo teraz przewijamy tylko środkową część */
-  overflow: hidden;
 }
 
 .app-main a {
@@ -316,7 +315,7 @@
   display: flex;
   flex: 1;
   height: calc(100vh - 80px); /* Odejmujemy wysokość header */
-  overflow: hidden; /* Blokuje przewijanie na tym poziomie */
+  /* overflow: hidden; usunięte, by umożliwić scroll */
 }
 
 /* Main content styles - ZMIENIONY: bez scroll, tylko kontener pytań ma scroll */
@@ -326,7 +325,12 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  /* overflow: hidden; usunięte, by umożliwić scroll */
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.app-main .content::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
 }
 
 .app-main .welcome-banner {
@@ -360,8 +364,6 @@
   flex-direction: column;
   gap: 16px;
   padding-bottom: 20px; /* Padding na dole żeby ostatnie pytanie nie było przycięte */
-  overflow-y: auto; /* Dodane: lista pytań przewijalna */
-  max-height: 60vh; /* Możesz dostosować wysokość, by nie wychodziła poza ekran */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }

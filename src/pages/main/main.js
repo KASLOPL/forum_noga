@@ -18,6 +18,8 @@ import SearchPopout from '../../components/search_popout/search_popout';
 import Sidebar from '../../components/side_bar/side_bar.js';
 
 import QuestionField from '../../components/question_field/question_field';
+import { usePaginatedPostsContext } from '../../hooks/paginated_posts_context';
+import Pagination from '../../components/pagination/Pagination';
 
 
 // pobiera zakladki z localstorage na profilu
@@ -70,8 +72,16 @@ function Main() {
   const {user, setUser} = React.useContext(UserContext);
   const [expandedQuestion, setExpandedQuestion] = useState(null);
   const { toggleBookmark, isBookmarked } = useBookmarks();
-  const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // PAGINACJA:
+  const {
+    posts: questions,
+    loading,
+    currentPage,
+    totalPages,
+    goToPage,
+    goToNextPage,
+    goToPrevPage
+  } = usePaginatedPostsContext();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   // Dodaj stan dla modal notifications
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
@@ -103,21 +113,21 @@ function Main() {
   const cardClick = useCallback(async (question) => {
     await incrementViews(question.id);
     // zwiekszanie liczbe wyswietlen o wejsciu i zapisuje w bazie danych je 
-    setQuestions(prev => prev.map(q => 
-      q.id === question.id ? { ...q, views: (q.views || 0) + 1 } : q
-    ));
+    // setQuestions(prev => prev.map(q => 
+    //   q.id === question.id ? { ...q, views: (q.views || 0) + 1 } : q
+    // ));
     navigate(`/answer_q/${question.id}`, { state: { question } });
   }, [navigate]);
 
   // laduje pytania z bazy danych 
   const loadQuestions = useCallback(async () => {
     if (!isLoggedIn) return; // jesli zalogowany urzytkownik
-    setLoading(true);
-    const result = await getAllQuestions(); // pobiera dane z firebase 
-    if (result.success) {
-      setQuestions(result.questions); // aktualizuje pytania 
-    }
-    setLoading(false);
+    // setLoading(true);
+    // const result = await getAllQuestions(); // pobiera dane z firebase 
+    // if (result.success) {
+    //   setQuestions(result.questions); // aktualizuje pytania 
+    // }
+    // setLoading(false);
   }, [isLoggedIn]);
 
   // polubianie pytan 
@@ -130,18 +140,18 @@ function Main() {
       if (result.success) {
         const newLiked = likedQuestions.filter(id => id !== questionId);
         setLikedQuestions(newLiked);
-        setQuestions(prev => prev.map(q => 
-          q.id === questionId ? { ...q, likes: Math.max((q.likes || 0) - 1, 0) } : q
-        ));
+        // setQuestions(prev => prev.map(q => 
+        //   q.id === questionId ? { ...q, likes: Math.max((q.likes || 0) - 1, 0) } : q
+        // ));
       }
     } else {
       const result = await likeQuestion(questionId);
       if (result.success) {
         const newLiked = [...likedQuestions, questionId];
         setLikedQuestions(newLiked);
-        setQuestions(prev => prev.map(q => 
-          q.id === questionId ? { ...q, likes: (q.likes || 0) + 1 } : q
-        ));
+        // setQuestions(prev => prev.map(q => 
+        //   q.id === questionId ? { ...q, likes: (q.likes || 0) + 1 } : q
+        // ));
       }
     }
   }, [likedQuestions]);
@@ -198,8 +208,7 @@ function Main() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isSearchOpen]);
 
-  // Sorting logic for questions
-  const sortQuestions = (questions, option) => {
+  const sortQuestions = useCallback((questions, option) => {
     if (!option) return questions;
     switch (option.value) {
       case 'newest':
@@ -215,7 +224,7 @@ function Main() {
       default:
         return questions;
     }
-  };
+  }, []);
 
   // Filter questions based on selected filters
   const filterQuestions = (questions, filters) => {
@@ -270,15 +279,15 @@ function Main() {
   const orderedQuestions = sortQuestions([...filteredQuestions, ...remainingQuestions], sortOption);
 
   // ladowanie strony na srodku napis loading 
-  if (loading) {
-    return (
-      <div className="app-main">
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-          <div>Loading questions...</div>
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="app-main">
+  //       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+  //         <div>Loading questions...</div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="app-main">
@@ -362,8 +371,8 @@ function Main() {
             </div>
 
             <div className="questions-container">
-              <div className="questions-list">
-                {Array.isArray(orderedQuestions) && orderedQuestions.map((question) => (
+              <div className="questions-list" style={{ minHeight: 120 }}>
+                {Array.isArray(questions) && questions.map((question) => (
                   <QuestionField
                     key={question.id}
                     question={question}
@@ -377,6 +386,7 @@ function Main() {
                   />
                 ))}
               </div>
+              <Pagination />
             </div>
           </main>
 
