@@ -44,13 +44,16 @@ const QuestionField = ({
 
       <div className="question-content">
         {(() => {
-          const isLong = question.content && question.content.length > 300;
-          if (expandedQuestion === question.id) {
+          const content = question.content || '';
+          const hasNoSpaces = !content.includes(' ');
+          const limit = hasNoSpaces ? 90 : 300;
+          const isLong = content.length > limit;
+          if (expandedQuestion === question.id) { 
             return <p>{question.fullContent}</p>;
           } else if (isLong) {
             return (
               <p>
-                {question.content.slice(0, 300)}...
+                {content.slice(0, limit)}...
                 <button
                   className="see-more-btn"
                   onClick={e => { e.stopPropagation(); onCardClick(question); }}
@@ -60,7 +63,7 @@ const QuestionField = ({
               </p>
             );
           } else {
-            return <p>{question.content}</p>;
+            return <p>{content}</p>;
           }
         })()}
         {question.fullContent && question.fullContent !== question.content && (
