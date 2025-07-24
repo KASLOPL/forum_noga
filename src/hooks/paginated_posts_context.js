@@ -1,28 +1,45 @@
 import { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs, getCountFromServer } from 'firebase/firestore';
 import { app } from '../firebase';
-import { getAllQuestions } from '../utils/firebaseUtils';
 
 const db = getFirestore(app);
 
 const PaginatedPostsContext = createContext();
 
+// Mapowanie opcji sortowania na pola Firestore
+const getSortConfig = (sortOption) => {
+  if (!sortOption) return { field: 'createdAt', direction: 'desc' };
+  
+  switch (sortOption.value) {
+    case 'newest':
+      return { field: 'createdAt', direction: 'desc' };
+    case 'upvoted':
+      return { field: 'likes', direction: 'desc' };
+    case 'answered':
+      return { field: 'responders', direction: 'desc' };
+    case 'viewed':
+      return { field: 'views', direction: 'desc' };
+    case 'solved':
+      return { field: 'solved', direction: 'desc' };
+    default:
+      return { field: 'createdAt', direction: 'desc' };
+  }
+};
 
 export const PaginatedPostsProvider = ({
   children,
-  pageSize = 5,
+  pageSize = 7,
   collectionName = 'questions',
-  orderField = 'createdAt',
 }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [pageStarts, setPageStarts] = useState(new Map()); // Używamy Map zamiast array
-  const [lastFetchedPage, setLastFetchedPage] = useState(null); // Śledzimy ostatnio pobraną stronę
+  const [pageStarts, setPageStarts] = useState(new Map());
+  const [lastFetchedPage, setLastFetchedPage] = useState(null);
   const [totalCount, setTotalCount] = useState(0);
-
+  const [currentSort, setCurrentSort] = useState({ value: 'newest', label: 'Newest first' });
 
   // Liczba wszystkich dokumentów (do paginacji)
   useEffect(() => {
@@ -33,6 +50,7 @@ export const PaginatedPostsProvider = ({
         const total = snapshot.data().count;
         const calculatedPages = Math.max(1, Math.ceil(total / pageSize));
         
+        setTotalCount(total);
         setTotalPages(calculatedPages);
       } catch (err) {
         console.error('Error fetching count:', err);
@@ -42,11 +60,8 @@ export const PaginatedPostsProvider = ({
     fetchCount();
   }, [collectionName, pageSize]);
 
-  
-
-  // Pobieranie postów na daną stronę
-  const fetchPage = useCallback(async (page) => {
-    // Zabezpieczenie przed wielokrotnym klikaniem tej samej strony
+  // Pobieranie postów na daną stronę z aktualnym sortowaniem
+  const fetchPage = useCallback(async (page, sortOption = currentSort) => {
     if (loading || page === lastFetchedPage) {
       return;
     }
@@ -55,27 +70,29 @@ export const PaginatedPostsProvider = ({
     setError(null);
     
     try {
+      const sortConfig = getSortConfig(sortOption);
       let q;
       
       if (page === 1) {
         // Pierwsza strona - zawsze pobieramy od początku
         q = query(
           collection(db, collectionName),
-          orderBy(orderField, 'desc'),
+          orderBy(sortConfig.field, sortConfig.direction),
           limit(pageSize)
         );
       } else {
-        // Dla innych stron sprawdzamy czy mamy już punkt startowy
-        const startDoc = pageStarts.get(page - 1);
+        // Dla innych stron sprawdzamy czy mamy już punkt startowy dla tego sortowania
+        const sortKey = `${sortOption.value}_${page - 1}`;
+        const startDoc = pageStarts.get(sortKey);
         
         if (!startDoc) {
           // Jeśli nie mamy punktu startowego, musimy go znaleźć
-          await buildPageStarts(page);
-          const newStartDoc = pageStarts.get(page - 1);
+          await buildPageStarts(page, sortOption);
+          const newStartDoc = pageStarts.get(sortKey);
           
           q = query(
             collection(db, collectionName),
-            orderBy(orderField, 'desc'),
+            orderBy(sortConfig.field, sortConfig.direction),
             ...(newStartDoc ? [startAfter(newStartDoc)] : []),
             limit(pageSize)
           );
@@ -83,7 +100,7 @@ export const PaginatedPostsProvider = ({
           // Mamy punkt startowy, używamy go
           q = query(
             collection(db, collectionName),
-            orderBy(orderField, 'desc'),
+            orderBy(sortConfig.field, sortConfig.direction),
             startAfter(startDoc),
             limit(pageSize)
           );
@@ -96,10 +113,11 @@ export const PaginatedPostsProvider = ({
       setPosts(fetchedPosts);
       setLastFetchedPage(page);
       
-      // Zapisujemy punkt końcowy tej strony dla następnej
+      // Zapisujemy punkt końcowy tej strony dla następnej z kluczem zawierającym sortowanie
       if (snapshot.docs.length > 0) {
         const lastDoc = snapshot.docs[snapshot.docs.length - 1];
-        setPageStarts(prev => new Map(prev).set(page, lastDoc));
+        const sortKey = `${sortOption.value}_${page}`;
+        setPageStarts(prev => new Map(prev).set(sortKey, lastDoc));
       }
       
     } catch (err) {
@@ -108,22 +126,24 @@ export const PaginatedPostsProvider = ({
     }
     
     setLoading(false);
-  }, [collectionName, orderField, pageSize, pageStarts, loading, lastFetchedPage]);
+  }, [collectionName, pageSize, pageStarts, loading, lastFetchedPage, currentSort]);
 
-  // Pomocnicza funkcja do budowania punktów startowych
-  const buildPageStarts = useCallback(async (targetPage) => {
+  // Pomocnicza funkcja do budowania punktów startowych dla konkretnego sortowania
+  const buildPageStarts = useCallback(async (targetPage, sortOption) => {
+    const sortConfig = getSortConfig(sortOption);
     const newPageStarts = new Map(pageStarts);
     let currentDoc = null;
     
     for (let i = 1; i < targetPage; i++) {
-      if (newPageStarts.has(i)) {
-        currentDoc = newPageStarts.get(i);
+      const sortKey = `${sortOption.value}_${i}`;
+      if (newPageStarts.has(sortKey)) {
+        currentDoc = newPageStarts.get(sortKey);
         continue;
       }
       
       const q = query(
         collection(db, collectionName),
-        orderBy(orderField, 'desc'),
+        orderBy(sortConfig.field, sortConfig.direction),
         ...(currentDoc ? [startAfter(currentDoc)] : []),
         limit(pageSize)
       );
@@ -131,7 +151,7 @@ export const PaginatedPostsProvider = ({
       const snapshot = await getDocs(q);
       if (snapshot.docs.length > 0) {
         const lastDoc = snapshot.docs[snapshot.docs.length - 1];
-        newPageStarts.set(i, lastDoc);
+        newPageStarts.set(sortKey, lastDoc);
         currentDoc = lastDoc;
       } else {
         break;
@@ -139,18 +159,35 @@ export const PaginatedPostsProvider = ({
     }
     
     setPageStarts(newPageStarts);
-  }, [collectionName, orderField, pageSize, pageStarts]);
+  }, [collectionName, pageSize, pageStarts]);
+
+  // Funkcja do zmiany sortowania
+  const changeSort = useCallback(async (newSortOption) => {
+    setCurrentSort(newSortOption);
+    setCurrentPage(1);
+    setPageStarts(new Map()); // Czyścimy cache punktów startowych
+    setLastFetchedPage(null);
+    
+    // Pobieramy pierwszą stronę z nowym sortowaniem
+    await fetchPage(1, newSortOption);
+  }, [fetchPage]);
 
   // Reset przy zmianie konfiguracji
   useEffect(() => {
     setPageStarts(new Map());
     setLastFetchedPage(null);
     setCurrentPage(1);
-  }, [collectionName, orderField, pageSize]);
+  }, [collectionName, pageSize]);
 
-  // Pobieranie strony przy zmianie currentPage
+  // Pobieranie strony przy zmianie currentPage (ale nie przy pierwszym załadowaniu)
   useEffect(() => {
-    fetchPage(currentPage);
+    if (currentPage === 1 && !posts.length) {
+      // Pierwsza strona, pierwsze załadowanie
+      fetchPage(currentPage);
+    } else if (currentPage !== 1 || posts.length > 0) {
+      // Zmiana strony lub już mamy dane
+      fetchPage(currentPage);
+    }
   }, [currentPage, fetchPage]);
 
   const goToPage = useCallback((page) => {
@@ -177,10 +214,12 @@ export const PaginatedPostsProvider = ({
     currentPage,
     totalPages,
     totalCount,
+    currentSort,
     goToPage,
     goToNextPage,
     goToPrevPage,
-    setCurrentPage
+    setCurrentPage,
+    changeSort
   };
 
   return (

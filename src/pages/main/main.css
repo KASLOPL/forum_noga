@@ -214,6 +214,7 @@
   font-size: 14px;
   margin-left: 0;
   cursor: pointer;
+  margin-bottom: 16px;
   transition: background-color 0.2s ease;
 }
 
@@ -337,7 +338,7 @@
   background-color: #cacfb9;
   border-radius: 8px;
   padding: 24px;
-  margin-bottom: 16px;
+  margin-bottom: 16px; /* Changed from 16px to 32px */
   flex-shrink: 0; /* Banner zawsze widoczny */
 }
 
