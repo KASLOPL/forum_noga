@@ -2,6 +2,7 @@
 import React from 'react';
 import { FiBookmark, FiMoreVertical, FiChevronUp, FiChevronDown, FiHeart, FiEye } from 'react-icons/fi';
 import './question_field.css';
+import {shouldShowSeeMore} from '../../utils/schouldShowSeeMore';
 
 const QuestionField = ({
   question,
@@ -44,13 +45,17 @@ const QuestionField = ({
 
       <div className="question-content">
         {(() => {
-          const isLong = question.content && question.content.length > 300;
+          const content = question.content || '';
+          const showSeeMore = shouldShowSeeMore(content);
           if (expandedQuestion === question.id) {
             return <p>{question.fullContent}</p>;
-          } else if (isLong) {
+          } else if (showSeeMore) {
+            // Ustal limit wyświetlania: 300 dla długiego tekstu, 90 dla długiego słowa
+            const longWord = content.split(' ').find(word => word.length > 90);
+            const limit = longWord ? 90 : 300;
             return (
               <p>
-                {question.content.slice(0, 300)}...
+                {content.slice(0, limit)}...
                 <button
                   className="see-more-btn"
                   onClick={e => { e.stopPropagation(); onCardClick(question); }}
@@ -60,18 +65,9 @@ const QuestionField = ({
               </p>
             );
           } else {
-            return <p>{question.content}</p>;
+            return <p>{content}</p>;
           }
         })()}
-        {question.fullContent && question.fullContent !== question.content && (
-          <button className="expand-btn" onClick={e => onToggleExpand(question.id, e)}>
-            {expandedQuestion === question.id ? (
-              <><span>Show less</span><FiChevronUp /></>
-            ) : (
-              <><span>Read more</span><FiChevronDown /></>
-            )}
-          </button>
-        )}
       </div>
 
       <div className="card-footer" onClick={e => { e.stopPropagation(); }}>
