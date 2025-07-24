@@ -1,68 +1,159 @@
 .pagination-bar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  margin: 32px 0 0 0;
-  padding: 0 8px;
-  flex-wrap: wrap;
-}
-
-.pagination-btn {
-  background: white;
-  color: #272d33;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 50%;
-  min-width: 36px;
-  height: 36px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.18s, color 0.18s, box-shadow 0.18s, border 0.18s;
-  box-shadow: 0 1px 4px rgba(169,177,141,0.07);
-  outline: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pagination-btn:hover:not(:disabled),
-.pagination-btn:focus:not(:disabled) {
-  background: #f2f2f2;
-  color: #a9b18d;
-  border-color: #a9b18d;
-}
-
-.pagination-btn.active {
-  background: #a9b18d;
-  color: white;
-  border: 2.5px solid #619c4c;
-  font-weight: bold;
-  box-shadow: 0 4px 16px rgba(169,177,141,0.22), 0 0 0 2px #91a160;
-  z-index: 1;
-  transform: scale(1.08);
-}
-
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.pagination-ellipsis {
-  color: #a9b18d;
-  font-size: 18px;
-  padding: 0 6px;
-  user-select: none;
-}
-
-@media (max-width: 600px) {
-  .pagination-bar {
-    gap: 2px;
-    margin: 20px 0 0 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 32px 0 0 0;
+    padding: 0 8px;
+    flex-wrap: wrap;
   }
+  
   .pagination-btn {
-    min-width: 28px;
-    height: 28px;
-    font-size: 14px;
+    background: white;
+    color: #666;
+    border: 1px solid #ddd;
+    min-width: 40px;
+    height: 40px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
   }
-} 
+  
+  /* Strzałki - kwadratowe bez border-radius */
+  .pagination-btn:first-child,
+  .pagination-btn:last-child {
+    border-radius: 6px;
+  }
+  
+  /* Numery stron - okrągłe */
+  .pagination-btn:not(:first-child):not(:last-child) {
+    border-radius: 50%;
+  }
+  
+  .pagination-btn:hover:not(:disabled):not(.active) {
+    background: #f8f9fa;
+    border-color: #bbb;
+    transform: translateY(-1px);
+  }
+  
+  /* Aktywna strona - podwójne obramowanie */
+  .pagination-btn.active {
+    background: white;
+    color: #8b9a6b;
+    border: 3px solid #c5d4a1; /* jasniejsze zielone obramowanie zewnętrzne */
+    box-shadow: inset 0 0 0 2px #8b9a6b; /* ciemniejsze zielone obramowanie wewnętrzne */
+    font-weight: 600;
+    transform: scale(1.02);
+    z-index: 1;
+  }
+  
+  .pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    color: #ccc;
+    border-color: #eee;
+  }
+  
+  .pagination-btn:disabled:hover {
+    transform: none;
+    background: white;
+  }
+  
+  .pagination-ellipsis {
+    color: #999;
+    font-size: 16px;
+    padding: 0 4px;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+  }
+  
+  /* Animacja przy zmianie strony */
+  .pagination-btn.active {
+    animation: pageActivate 0.3s ease-out;
+  }
+  
+  @keyframes pageActivate {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1.02);
+    }
+  }
+  
+  /* Subtelna animacja hover - tylko dla numerów stron */
+  .pagination-btn:not(.active):not(:disabled):not(:first-child):not(:last-child):hover {
+    animation: hoverPulse 0.6s ease-in-out infinite alternate;
+  }
+  
+  @keyframes hoverPulse {
+    0% {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    100% {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+  }
+  
+  /* Responsywność */
+  @media (max-width: 768px) {
+    .pagination-bar {
+      gap: 6px;
+      margin: 24px 0 0 0;
+    }
+    
+    .pagination-btn {
+      min-width: 36px;
+      height: 36px;
+      font-size: 14px;
+    }
+    
+    .pagination-ellipsis {
+      min-width: 36px;
+      height: 36px;
+      font-size: 14px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .pagination-bar {
+      gap: 4px;
+      margin: 20px 0 0 0;
+    }
+    
+    .pagination-btn {
+      min-width: 32px;
+      height: 32px;
+      font-size: 13px;
+    }
+    
+    .pagination-ellipsis {
+      min-width: 32px;
+      height: 32px;
+      font-size: 13px;
+    }
+  }
+  
+  /* Dodatkowe style dla lepszej accessibility */
+  .pagination-btn:focus-visible {
+    outline: 2px solid #8b9a6b;
+    outline-offset: 2px;
+  }
+  
+  /* Smooth transition przy disable/enable */
+  .pagination-btn {
+    transition: all 0.2s ease, opacity 0.15s ease;
+  }

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import "./main.css";
 import { getAllQuestions, incrementViews, likeQuestion,unlikeQuestion } from '../../utils/firebaseUtils';
 import Modal from '../notifications/Modal'; // Import komponentu Modal
@@ -50,6 +50,25 @@ const useBookmarks = () => {
   return { toggleBookmark, isBookmarked };
 };
 
+// Przenieś sortQuestions wyżej, przed jej użyciem
+const sortQuestions = (questions, option) => {
+  if (!option) return questions;
+  switch (option.value) {
+    case 'newest':
+      return [...questions].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    case 'upvoted':
+      return [...questions].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+    case 'answered':
+      return [...questions].sort((a, b) => (b.responders || 0) - (a.responders || 0));
+    case 'viewed':
+      return [...questions].sort((a, b) => (b.views || 0) - (a.views || 0));
+    case 'solved':
+      return [...questions].sort((a, b) => (b.solved ? 1 : 0) - (a.solved ? 1 : 0));
+    default:
+      return questions;
+  }
+};
+
 export const UserContext = React.createContext();
 
 export const UserProvider = ({ children }) => {
@@ -80,7 +99,8 @@ function Main() {
     totalPages,
     goToPage,
     goToNextPage,
-    goToPrevPage
+    goToPrevPage,
+    setCurrentPage // Dodaj do hooka eksport setCurrentPage
   } = usePaginatedPostsContext();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   // Dodaj stan dla modal notifications
@@ -208,23 +228,12 @@ function Main() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isSearchOpen]);
 
-  const sortQuestions = useCallback((questions, option) => {
-    if (!option) return questions;
-    switch (option.value) {
-      case 'newest':
-        return [...questions].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-      case 'upvoted':
-        return [...questions].sort((a, b) => (b.likes || 0) - (a.likes || 0));
-      case 'answered':
-        return [...questions].sort((a, b) => (b.responders || 0) - (a.responders || 0));
-      case 'viewed':
-        return [...questions].sort((a, b) => (b.views || 0) - (a.views || 0));
-      case 'solved':
-        return [...questions].sort((a, b) => (b.solved ? 1 : 0) - (a.solved ? 1 : 0));
-      default:
-        return questions;
-    }
-  }, []);
+  const sortedQuestions = useMemo(() => {
+    const userTags = user?.tags || user?.interests || [];
+    const filteredQuestions = questions.filter(q => q.tags?.some(tag => userTags.includes(tag)));
+    const remainingQuestions = questions.filter(q => !filteredQuestions.includes(q));
+    return sortQuestions([...filteredQuestions, ...remainingQuestions], sortOption);
+  }, [questions, sortOption, user]);
 
   // Filter questions based on selected filters
   const filterQuestions = (questions, filters) => {
@@ -258,6 +267,11 @@ function Main() {
     });
   };
 
+  const handleSortChange = (option) => {
+    setSortOption(option);
+    if (setCurrentPage) setCurrentPage(1); // Resetuj na pierwszą stronę po zmianie sortowania
+  };
+
   // ekran po zalogowaniu
   if (!user || !isLoggedIn) {
     return (
@@ -276,18 +290,9 @@ function Main() {
   // inne
   const remainingQuestions = questions.filter(q => !filteredQuestions.includes(q));
   // poukladaj od tych pod urzytkownika do tych nie pasujacyh w tej kolejnosci 
-  const orderedQuestions = sortQuestions([...filteredQuestions, ...remainingQuestions], sortOption);
+  // const orderedQuestions = sortQuestions([...filteredQuestions, ...remainingQuestions], sortOption); // USUNIĘTE, bo niepotrzebne
 
-  // ladowanie strony na srodku napis loading 
-  // if (loading) {
-  //   return (
-  //     <div className="app-main">
-  //       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-  //         <div>Loading questions...</div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  const totalCount = questions.length;
 
   return (
     <div className="app-main">
@@ -364,9 +369,9 @@ function Main() {
 
               {/* PYTANIE */}
             <div className="posts-count" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span>{questions.length} posts</span>
+            <span>{totalCount || 0} posts</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <SortBy onSortChange={setSortOption} currentSort={sortOption} />
+                <SortBy onSortChange={handleSortChange} currentSort={sortOption} />
               </div>
             </div>
 

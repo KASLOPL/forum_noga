@@ -1,14 +1,16 @@
 import { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs, getCountFromServer } from 'firebase/firestore';
 import { app } from '../firebase';
+import { getAllQuestions } from '../utils/firebaseUtils';
 
 const db = getFirestore(app);
 
 const PaginatedPostsContext = createContext();
 
+
 export const PaginatedPostsProvider = ({
   children,
-  pageSize = 6,
+  pageSize = 5,
   collectionName = 'questions',
   orderField = 'createdAt',
 }) => {
@@ -17,7 +19,10 @@ export const PaginatedPostsProvider = ({
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [pageStarts, setPageStarts] = useState([]);
+  const [pageStarts, setPageStarts] = useState(new Map()); // Używamy Map zamiast array
+  const [lastFetchedPage, setLastFetchedPage] = useState(null); // Śledzimy ostatnio pobraną stronę
+  const [totalCount, setTotalCount] = useState(0);
+
 
   // Liczba wszystkich dokumentów (do paginacji)
   useEffect(() => {
@@ -37,75 +42,133 @@ export const PaginatedPostsProvider = ({
     fetchCount();
   }, [collectionName, pageSize]);
 
+  
+
   // Pobieranie postów na daną stronę
   const fetchPage = useCallback(async (page) => {
+    // Zabezpieczenie przed wielokrotnym klikaniem tej samej strony
+    if (loading || page === lastFetchedPage) {
+      return;
+    }
+
     setLoading(true);
     setError(null);
+    
     try {
-      let lastDoc = null;
-      // Jeśli idziemy na dalszą stronę i nie mamy referencji, pobierz po kolei
-      if (page > 1 && !pageStarts[page - 2]) {
-        let prevLastDoc = null;
-        for (let i = 1; i < page; i++) {
-          let q = query(
+      let q;
+      
+      if (page === 1) {
+        // Pierwsza strona - zawsze pobieramy od początku
+        q = query(
+          collection(db, collectionName),
+          orderBy(orderField, 'desc'),
+          limit(pageSize)
+        );
+      } else {
+        // Dla innych stron sprawdzamy czy mamy już punkt startowy
+        const startDoc = pageStarts.get(page - 1);
+        
+        if (!startDoc) {
+          // Jeśli nie mamy punktu startowego, musimy go znaleźć
+          await buildPageStarts(page);
+          const newStartDoc = pageStarts.get(page - 1);
+          
+          q = query(
             collection(db, collectionName),
             orderBy(orderField, 'desc'),
-            ...(prevLastDoc ? [startAfter(prevLastDoc)] : []),
+            ...(newStartDoc ? [startAfter(newStartDoc)] : []),
             limit(pageSize)
           );
-          const snap = await getDocs(q);
-          if (snap.docs.length > 0) {
-            prevLastDoc = snap.docs[snap.docs.length - 1];
-            setPageStarts(prev => {
-              const newStarts = [...prev];
-              newStarts[i - 1] = prevLastDoc;
-              return newStarts;
-            });
-          } else {
-            break;
-          }
+        } else {
+          // Mamy punkt startowy, używamy go
+          q = query(
+            collection(db, collectionName),
+            orderBy(orderField, 'desc'),
+            startAfter(startDoc),
+            limit(pageSize)
+          );
         }
       }
-      let q = query(
-        collection(db, collectionName),
-        orderBy(orderField, 'desc'),
-        ...(page > 1 && pageStarts[page - 2] ? [startAfter(pageStarts[page - 2])] : []),
-        limit(pageSize)
-      );
+
       const snapshot = await getDocs(q);
       const fetchedPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       
       setPosts(fetchedPosts);
+      setLastFetchedPage(page);
+      
+      // Zapisujemy punkt końcowy tej strony dla następnej
       if (snapshot.docs.length > 0) {
-        setPageStarts(prev => {
-          const newStarts = [...prev];
-          newStarts[page - 1] = snapshot.docs[snapshot.docs.length - 1];
-          return newStarts;
-        });
+        const lastDoc = snapshot.docs[snapshot.docs.length - 1];
+        setPageStarts(prev => new Map(prev).set(page, lastDoc));
       }
+      
     } catch (err) {
       console.error('Error fetching page:', err);
       setError(err);
     }
+    
     setLoading(false);
-  }, [collectionName, orderField, pageSize, pageStarts, totalPages]);
+  }, [collectionName, orderField, pageSize, pageStarts, loading, lastFetchedPage]);
 
+  // Pomocnicza funkcja do budowania punktów startowych
+  const buildPageStarts = useCallback(async (targetPage) => {
+    const newPageStarts = new Map(pageStarts);
+    let currentDoc = null;
+    
+    for (let i = 1; i < targetPage; i++) {
+      if (newPageStarts.has(i)) {
+        currentDoc = newPageStarts.get(i);
+        continue;
+      }
+      
+      const q = query(
+        collection(db, collectionName),
+        orderBy(orderField, 'desc'),
+        ...(currentDoc ? [startAfter(currentDoc)] : []),
+        limit(pageSize)
+      );
+      
+      const snapshot = await getDocs(q);
+      if (snapshot.docs.length > 0) {
+        const lastDoc = snapshot.docs[snapshot.docs.length - 1];
+        newPageStarts.set(i, lastDoc);
+        currentDoc = lastDoc;
+      } else {
+        break;
+      }
+    }
+    
+    setPageStarts(newPageStarts);
+  }, [collectionName, orderField, pageSize, pageStarts]);
+
+  // Reset przy zmianie konfiguracji
+  useEffect(() => {
+    setPageStarts(new Map());
+    setLastFetchedPage(null);
+    setCurrentPage(1);
+  }, [collectionName, orderField, pageSize]);
+
+  // Pobieranie strony przy zmianie currentPage
   useEffect(() => {
     fetchPage(currentPage);
-  }, [fetchPage, currentPage]);
+  }, [currentPage, fetchPage]);
 
   const goToPage = useCallback((page) => {
-    if (page < 1 || page > totalPages) return;
+    if (page < 1 || page > totalPages || loading) return;
     setCurrentPage(page);
-  }, [totalPages]);
+  }, [totalPages, loading]);
 
   const goToNextPage = useCallback(() => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  }, [currentPage, totalPages]);
+    if (currentPage < totalPages && !loading) {
+      setCurrentPage(currentPage + 1);
+    }
+  }, [currentPage, totalPages, loading]);
 
   const goToPrevPage = useCallback(() => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  }, [currentPage]);
+    if (currentPage > 1 && !loading) {
+      setCurrentPage(currentPage - 1);
+    }
+  }, [currentPage, loading]);
 
   const value = {
     posts,
@@ -113,9 +176,11 @@ export const PaginatedPostsProvider = ({
     error,
     currentPage,
     totalPages,
+    totalCount,
     goToPage,
     goToNextPage,
-    goToPrevPage
+    goToPrevPage,
+    setCurrentPage
   };
 
   return (
