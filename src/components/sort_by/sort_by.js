@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo , setSortOption} from 'react';
 import { createPortal } from 'react-dom';
 import './sort_by.css';
 
@@ -8,6 +8,10 @@ const SortBy = ({ options = [], onSortChange, currentSort = null }) => {
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const buttonRef = useRef(null);
   const dropdownRef = useRef(null);
+
+  const handleSortChange = useCallback((newSortOption) => {
+    setSortOption(newSortOption);
+  }, []);
 
   const defaultOptions = [
     { value: 'recommended', label: 'Recommended' },

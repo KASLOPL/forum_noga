@@ -21,25 +21,29 @@ import MyQuestions from './pages/my_questions/my_questions.js';
 import Search from './pages/search/search.js';
 import ResetPassword from './pages/reset_password/ResetPassword.js';
 import { LogoutProvider } from './hooks/logout';
+import { PaginatedPostsProvider } from './hooks/paginated_posts_context';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <UserProvider>
-        <Routes>
-          <Route path="/" element={<LogoutProvider><Logowanie /></LogoutProvider>} />
-          <Route path="/logowanie" element={<LogoutProvider><Logowanie /></LogoutProvider>} />
-          <Route path="/reset_password" element={<ResetPassword />} />
-          <Route path="/main" element={<LogoutProvider><Main /></LogoutProvider>} />
-          <Route path="/addquestion" element={<LogoutProvider><AddQuestion /></LogoutProvider>} />
-          <Route path="/zakładki" element={<LogoutProvider><Zakladki /></LogoutProvider>} />
-          <Route path="/help" element={<LogoutProvider><Help /></LogoutProvider>} />
-          <Route path="/profile" element={<LogoutProvider><Profile /></LogoutProvider>} />
-          <Route path="/answer_q/:id" element={<LogoutProvider><QuestionDetail /></LogoutProvider>} />
-          <Route path="/my_questions" element={<LogoutProvider><MyQuestions /></LogoutProvider>} />
-          <Route path="/search" element={<LogoutProvider><Search /></LogoutProvider>} />
-        </Routes>
+        <PaginatedPostsProvider>
+          <Routes>
+            <Route path="/" element={<LogoutProvider><Logowanie /></LogoutProvider>} />
+            <Route path="/logowanie" element={<LogoutProvider><Logowanie /></LogoutProvider>} />
+            <Route path="/reset_password" element={<ResetPassword />} />
+            <Route path="/main" element={<LogoutProvider><Main /></LogoutProvider>} />
+            <Route path="/addquestion" element={<LogoutProvider><AddQuestion /></LogoutProvider>} />
+            <Route path="/zakładki" element={<LogoutProvider><Zakladki /></LogoutProvider>} />
+            <Route path="/help" element={<LogoutProvider><Help /></LogoutProvider>} />
+            <Route path="/profile" element={<LogoutProvider><Profile /></LogoutProvider>} />
+            <Route path="/answer_q/:id" element={<LogoutProvider><QuestionDetail /></LogoutProvider>} />
+            <Route path="/my_questions" element={<LogoutProvider><MyQuestions /></LogoutProvider>} />
+            <Route path="/search" element={<LogoutProvider><Search /></LogoutProvider>} />
+          </Routes>
+        </PaginatedPostsProvider>
       </UserProvider>
     </BrowserRouter>
   </React.StrictMode>
