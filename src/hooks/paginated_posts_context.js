@@ -28,7 +28,7 @@ const getSortConfig = (sortOption) => {
 
 export const PaginatedPostsProvider = ({
   children,
-  pageSize = 7,
+  pageSize = 2,
   collectionName = 'questions',
 }) => {
   const [posts, setPosts] = useState([]);
