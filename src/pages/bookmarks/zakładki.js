@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Bookmark } from 'lucide-react';
-import { FiBookmark, FiHome, FiLogOut, FiMessageSquare, FiPlus, FiSettings, FiUser, FiUsers, FiHelpCircle, FiZap } from 'react-icons/fi';
+import { FiZap } from 'react-icons/fi';
+import Sidebar from '../../components/side_bar/side_bar.js';
+import Modal from '../notifications/Modal';
+import Notifications from '../notifications/Notifications';
 import './zakładki.css';
 
 function useBookmarks() {
@@ -124,8 +127,8 @@ const EmptyState = React.memo(() => (
 function Zakladki() {
   // uzywanie hooka bookmarks oraz obsluga nawigacji na stronie 
   const nav = useNavigate();
-  const [active, setActive] = useState('/bookmarks');
   const { bookmarks, removeBookmark, updateBookmarkLikes } = useBookmarks();
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   
   const [liked, setLiked] = useState(() => {
     const saved = localStorage.getItem("likedQuestions");
@@ -136,23 +139,6 @@ function Zakladki() {
     // jak zmienia sie liked zapisuje sie w localstorage 
     localStorage.setItem("likedQuestions", JSON.stringify(liked));
   }, [liked]);
-
-  // zmiana aktywnego elementu na stronie w naiwgacji 
-  const handleNav = useCallback((path) => {
-    setActive(path);
-    nav(path);
-  }, [nav]);
-
-  const handleLogout = useCallback(() => {
-    try {
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-    nav('/');
-  }, [nav]);
 
   const handleClick = useCallback((bookmark) => {
     nav(`/answer_q/${bookmark.id}`, { state: { question: bookmark } });
@@ -206,34 +192,6 @@ function Zakladki() {
     // gdy zmienis ie jakas z tych wartosci aktualizacja 
   }, [liked, bookmarks, updateBookmarkLikes]);
 
-  const navItems = [
-    { path: '/main', icon: FiHome, label: 'Home' },
-    { path: '/notifications', icon: FiMessageSquare, label: 'Notifications' },
-    { path: '/specialists', icon: FiUsers, label: 'Specialists' },
-    { path: '/my_questions', icon: FiUser, label: 'My Questions' },
-    { path: '/bookmarks', icon: FiBookmark, label: 'Bookmarks' }
-  ];
-
-  const secItems = [
-    { path: '/settings', icon: FiSettings, label: 'Settings' },
-    { path: '/help', icon: FiHelpCircle, label: 'Help & FAQ' }
-  ];
-
-  // podswietalnie podstrony na ktorej jestes aktualnie oraz onclick
-  const NavItem = ({ item }) => {
-    const Icon = item.icon;
-    return (
-      <a
-        href="#"
-        className={`nav-item ${active === item.path ? 'active' : ''}`}
-        onClick={(e) => { e.preventDefault(); handleNav(item.path); }}
-      >
-        <Icon />
-        <span>{item.label}</span>
-      </a>
-    );
-  };
-
   return (
     <div className='bookall'>
       <div className="app">
@@ -252,33 +210,7 @@ function Zakladki() {
         </header>
 
         <div className="main-container">
-          <aside className="sidebar">
-            <div className="sidebar-content">
-              <div className="add-btn-container">
-                <button 
-                  className="add-btn" 
-                  onClick={() => handleNav('/addquestion')}
-                >
-                  <span>ADD QUESTION</span>
-                  <div className="plus-icon"><FiPlus /></div>
-                </button>
-              </div>
-
-              <nav className="nav">
-                {navItems.map(item => <NavItem key={item.path} item={item} />)}
-              </nav>
-
-              <div className="nav-sec">
-                {secItems.map(item => <NavItem key={item.path} item={item} />)}
-              </div>
-            </div>
-
-            <div className="sidebar-footer">
-              <button className="logout-btn" onClick={handleLogout}>
-                <FiLogOut /> Sign out
-              </button>
-            </div>
-          </aside>
+          <Sidebar onNotificationClick={() => setIsNotificationModalOpen(true)} />
 
           <main className="main">
             <div className="main-content">
@@ -306,6 +238,17 @@ function Zakladki() {
           </main>
         </div>
       </div>
+
+      <Modal 
+        isOpen={isNotificationModalOpen} 
+        onClose={() => setIsNotificationModalOpen(false)}
+        size="large"
+        title="Notifications"
+      >
+        <Notifications 
+          onClose={() => setIsNotificationModalOpen(false)}
+        />
+      </Modal>
     </div>
   );
 }
