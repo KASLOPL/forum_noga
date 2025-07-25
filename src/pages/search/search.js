@@ -392,7 +392,7 @@ const filterByStatus = (questions, statusFilter) => {
                   <span className="user-name">{getUserName()}</span>
                   <span className="user-role">Student</span>
                 </div>
-                <FiChevronDown className="dropdown-icon" />
+          
               </div>
             </div>
           </div>
