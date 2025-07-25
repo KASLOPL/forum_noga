@@ -98,19 +98,23 @@
   padding: 0;
   margin-right: 0;
   position: relative;
-  z-index: 2001;
+  z-index: 2002;
 }
 
 
 .app-main .search-icon {
   position: absolute;
-  left: 8px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
   color: #9d9d9d;
   font-size: 14px;
-  z-index: 2;
+  z-index: 2003;
   pointer-events: none;
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  height: 100%; 
 }
 
 .app-main .search-input {
@@ -149,6 +153,7 @@
   background-color: #fff;
   border: 1px solid #e9ecef;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  z-index: 2002;
 }
 
 /* Search actions */
