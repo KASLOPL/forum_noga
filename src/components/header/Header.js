@@ -99,7 +99,6 @@ const Header = () => {
               <span className="user-name-main">{getUserDisplayName()}</span>
               <div className="role-main">Student</div>
             </div>
-            <FiChevronDown size={16} style={{ color: '#9d9d9d', marginLeft: '4px' }} />
           </div>
         </div>
       </div>
