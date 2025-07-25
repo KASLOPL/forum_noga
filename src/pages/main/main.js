@@ -66,6 +66,7 @@ function Main() {
   const {user, setUser} = React.useContext(UserContext);
   const [expandedQuestion, setExpandedQuestion] = useState(null);
   const { toggleBookmark, isBookmarked } = useBookmarks();
+  const questionsContainerRef = useRef(null);
   
   // PAGINACJA z nową funkcją changeSort:
   const {
@@ -316,7 +317,7 @@ function Main() {
               </div>
             </div>
 
-            <div className="questions-container">
+            <div className="questions-container" ref={questionsContainerRef}>
               <div className="questions-list" style={{ minHeight: 120 }}>
                 {Array.isArray(displayedQuestions) && displayedQuestions.map((question) => (
                   <QuestionField
