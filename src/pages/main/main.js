@@ -78,7 +78,8 @@ function Main() {
     goToPage,
     goToNextPage,
     goToPrevPage,
-    changeSort
+    changeSort,
+    updatePost
   } = usePaginatedPostsContext();
   
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -104,8 +105,14 @@ function Main() {
 
   const cardClick = useCallback(async (question) => {
     await incrementViews(question.id);
+    
+    // Odśwież lokalne dane pytania (zwiększ views)
+    updatePost(question.id, {
+      views: (question.views || 0) + 1
+    });
+    
     navigate(`/answer_q/${question.id}`, { state: { question } });
-  }, [navigate]);
+  }, [navigate, updatePost]);
 
   const loadQuestions = useCallback(async () => {
     if (!isLoggedIn) return;
@@ -116,20 +123,37 @@ function Main() {
     e.stopPropagation();
     const isAlreadyLiked = likedQuestions.includes(questionId);
     
+    // Szukaj pytania w bieżących pytaniach
+    const currentQuestion = questions.find(q => q.id === questionId);
+    
     if (isAlreadyLiked) {
       const result = await unlikeQuestion(questionId);
       if (result.success) {
         const newLiked = likedQuestions.filter(id => id !== questionId);
         setLikedQuestions(newLiked);
+        
+        // Odśwież lokalne dane pytania
+        if (currentQuestion) {
+          updatePost(questionId, {
+            likes: Math.max((currentQuestion.likes || 0) - 1, 0)
+          });
+        }
       }
     } else {
       const result = await likeQuestion(questionId);
       if (result.success) {
         const newLiked = [...likedQuestions, questionId];
         setLikedQuestions(newLiked);
+        
+        // Odśwież lokalne dane pytania
+        if (currentQuestion) {
+          updatePost(questionId, {
+            likes: (currentQuestion.likes || 0) + 1
+          });
+        }
       }
     }
-  }, [likedQuestions]);
+  }, [likedQuestions, questions, updatePost]);
 
   const getUserName = useCallback(() => user?.userName || user?.name || 'Guest', [user]);
   const getUserInitials = useCallback(() => {

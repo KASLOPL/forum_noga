@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Bookmark } from 'lucide-react';
 import { FiZap } from 'react-icons/fi';
+import { likeQuestion, unlikeQuestion } from '../../utils/firebaseUtils';
 import Sidebar from '../../components/side_bar/side_bar.js';
 import Modal from '../notifications/Modal';
 import Notifications from '../notifications/Notifications';
@@ -155,41 +156,39 @@ function Zakladki() {
   }, [nav]);
   
   // e - event klikniecia i id pytania ktore polubiamy 
-  const handleLike = useCallback((questionId, e) => {
+  const handleLike = useCallback(async (questionId, e) => {
     e.stopPropagation();
     
     // czy pytanie jest polubione i w zaleznosci zmienic o jedno w gore albo w dol
     const isLiked = liked.includes(questionId);
     const inc = isLiked ? -1 : 1;
     
-    setLiked(prev => 
-      isLiked ? prev.filter(id => id !== questionId) // usuwa polubienie
-      : [...prev, questionId] // dodaje do polubionych 
-    );
-    
-    // Aktualizuj likes w bookmarkach
-    const bookmark = bookmarks.find(b => b.id === questionId);
-    if (bookmark) {
-      // jesli istnieje 
-      const newLikes = (bookmark.likes || 0) + inc;
-      updateBookmarkLikes(questionId, newLikes);
-      
-      // Aktualizuj również w głównej liście pytań w localStorage
-      try {
-        const questions = localStorage.getItem("questions");
-        if (questions) {
-          const parsedQuestions = JSON.parse(questions);
-          // aktuazlizuje z tym samym id 
-          const updatedQuestions = parsedQuestions.map(q => 
-            q.id === questionId ? { ...q, likes: q.likes + inc } : q
-          );
-          localStorage.setItem("questions", JSON.stringify(updatedQuestions));
+    // Wyślij żądanie do Firebase
+    if (isLiked) {
+      const result = await unlikeQuestion(questionId);
+      if (result.success) {
+        setLiked(prev => prev.filter(id => id !== questionId));
+        
+        // Aktualizuj likes w bookmarkach
+        const bookmark = bookmarks.find(b => b.id === questionId);
+        if (bookmark) {
+          const newLikes = Math.max((bookmark.likes || 0) - 1, 0);
+          updateBookmarkLikes(questionId, newLikes);
         }
-      } catch (error) {
-        console.error('Error updating questions:', error);
+      }
+    } else {
+      const result = await likeQuestion(questionId);
+      if (result.success) {
+        setLiked(prev => [...prev, questionId]);
+        
+        // Aktualizuj likes w bookmarkach
+        const bookmark = bookmarks.find(b => b.id === questionId);
+        if (bookmark) {
+          const newLikes = (bookmark.likes || 0) + 1;
+          updateBookmarkLikes(questionId, newLikes);
+        }
       }
     }
-    // gdy zmienis ie jakas z tych wartosci aktualizacja 
   }, [liked, bookmarks, updateBookmarkLikes]);
 
   return (
