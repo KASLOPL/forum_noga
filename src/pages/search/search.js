@@ -2,7 +2,7 @@ import * as React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState, useCallback, useRef } from "react";
 import "./search.css";
-import { getAllQuestions, incrementViews, likeQuestion } from '../../utils/firebaseUtils';
+import { getAllQuestions, incrementViews, likeQuestion, unlikeQuestion } from '../../utils/firebaseUtils';
 import Modal from '../notifications/Modal';
 import Notifications from '../notifications/Notifications';
 import {
@@ -109,11 +109,14 @@ function SearchPage() {
     const isAlreadyLiked = likedQuestions.includes(questionId);
     
     if (isAlreadyLiked) {
-      const newLiked = likedQuestions.filter(id => id !== questionId);
-      setLikedQuestions(newLiked);
-      setQuestions(prev => prev.map(q => 
-        q.id === questionId ? { ...q, likes: Math.max((q.likes || 0) - 1, 0) } : q
-      ));
+      const result = await unlikeQuestion(questionId);
+      if (result.success) {
+        const newLiked = likedQuestions.filter(id => id !== questionId);
+        setLikedQuestions(newLiked);
+        setQuestions(prev => prev.map(q => 
+          q.id === questionId ? { ...q, likes: Math.max((q.likes || 0) - 1, 0) } : q
+        ));
+      }
     } else {
       const result = await likeQuestion(questionId);
       if (result.success) {

@@ -207,6 +207,13 @@ export const PaginatedPostsProvider = ({
     }
   }, [currentPage, loading]);
 
+  // Funkcja do aktualizacji pojedynczego postu (np. po like)
+  const updatePost = useCallback((postId, updates) => {
+    setPosts(prev => prev.map(post => 
+      post.id === postId ? { ...post, ...updates } : post
+    ));
+  }, []);
+
   const value = {
     posts,
     loading,
@@ -219,7 +226,8 @@ export const PaginatedPostsProvider = ({
     goToNextPage,
     goToPrevPage,
     setCurrentPage,
-    changeSort
+    changeSort,
+    updatePost
   };
 
   return (
